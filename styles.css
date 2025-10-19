@@ -15,7 +15,7 @@
     --error-red: #EF4444;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+    --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #ec48d1 100%);
     
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -193,7 +193,7 @@ body {
 
 .search-section {
     flex: 1;
-    max-width: 500px;
+    max-width: 650px;
 }
 
 .search-bar {
@@ -204,26 +204,71 @@ body {
 
 .search-bar i {
     position: absolute;
-    left: var(--spacing-sm);
+    left: var(--spacing-md);
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--text-light);
-    z-index: 1;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
 }
 
 .search-bar input {
     width: 100%;
-    padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 32px;
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 48px;
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
     background-color: var(--background-white);
-    transition: border-color 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.search-bar input::placeholder {
+    color: var(--text-light);
 }
 
 .search-bar input:focus {
     outline: none;
     border-color: var(--primary-purple);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
+
+/* 
+Comparison with the events page styles:
+
+.search-container {
+    position: relative;
+    flex: 1;
+}
+
+.search-container i {
+    position: absolute;
+    left: var(--spacing-md);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: var(--font-size-base);
+}
+
+.search-input {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 48px;
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.search-input::placeholder {
+    color: var(--text-light);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-purple);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+*/
 
 .header-right {
     display: flex;
@@ -827,7 +872,7 @@ body {
 
 /* Events Page Specific Styles */
 .page-header {
-    background: linear-gradient(135deg, #8B5CF6 0%, #e448ec 100%);
+    background: var(--gradient-primary);
     padding: var(--spacing-xl) var(--spacing-lg);
     border-radius: var(--radius-lg);
     margin-bottom: var(--spacing-lg);
