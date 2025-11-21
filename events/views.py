@@ -22,3 +22,6 @@ def add_person(request):
 def index(request):
     persons = Person.objects.values()
     return render(request, 'index.html', {'persons': persons})
+
+def events_page(request):
+    return render(request, 'events.html')
