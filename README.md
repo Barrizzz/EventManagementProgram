@@ -13,11 +13,11 @@ This is a complete web application for managing events from start to finish. You
 
 ## Pages Included
 
-- Dashboard** (`index.html`) - Overview of your events and quick stats
-- Events** (`events.html`) - Create and manage all your events
-- Attendees** (`attendees.html`) - Manage people attending your events
-- Reports** (`reports.html`) - View analytics and event performance
-- Settings** (`settings.html`) - Customize your profile and system preferences
+- Dashboard (`index.html`) - Overview of your events and quick stats
+- Events (`events.html`) - Create and manage all your events
+- Attendees (`attendees.html`) - Manage people attending your events
+- Reports (`reports.html`) - View analytics and event performance
+- Settings (`settings.html`) - Customize your profile and system preferences
 
 ## How to Use
 
@@ -51,18 +51,23 @@ python -m http.server 8000
 
 
 # For Developers
--This is built with plain HTML, CSS, and JavaScript - no frameworks required. The code is clean and easy to understand if you want to customize it.
--The design uses modern CSS features like:
--CSS Grid and Flexbox for layouts
--CSS custom properties for easy theming
--Responsive design that works everywhere
+This is built with plain HTML, CSS, and JavaScript - no frameworks required. The code is clean and easy to understand if you want to customize it.
+
+The design uses modern CSS features like:
+
+CSS Grid and Flexbox for layouts
+
+CSS custom properties for easy theming
+
+Responsive design that works everywhere
 
 # Getting Help
-
 If you run into issues:
 
 Check that all files are in the same folder
+
 Make sure you're opening index.html first
+
 Try using a local server if some features don't work
 
 # About
