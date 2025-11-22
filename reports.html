@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Analytics | Visionary Events</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <h1 class="logo">
+                    <span class="logo-visionary">Visionary</span>
+                    <span class="logo-events">EVENTS</span>
+                </h1>
+            </div>
+
+            <nav class="navigation">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+
+                <a href="events.html" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Events</span>
+                </a>
+
+                <a href="attendees.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Attendees</span>
+                </a>
+
+                <a href="reports.html" class="nav-item active">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+
+                <a href="settings.html" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+
+                  <div class="nav-item logout">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Log out</span>
+      </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="reports-header">
+                <div class="reports-title">
+                    <h1>Event Analytics Dashboard</h1>
+                    <p class="subtitle">Comprehensive insights into your event performance</p>
+                </div>
+                <button class="export-btn">
+                    <i class="fas fa-download"></i>
+                    Export Report
+                </button>
+            </header>
+
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="summary-card primary">
+                    <div class="summary-value">1,201</div>
+                    <div class="summary-label">Total Events</div>
+                    <div class="summary-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        12.5% from last period
+                    </div>
+                </div>
+
+                <div class="summary-card success">
+                    <div class="summary-value">23,416</div>
+                    <div class="summary-label">Total Attendees</div>
+                    <div class="summary-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        8.3% from last period
+                    </div>
+                </div>
+
+                <div class="summary-card warning">
+                    <div class="summary-value">19.5</div>
+                    <div class="summary-label">Avg. Event Size</div>
+                    <div class="summary-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        2.1% from last period
+                    </div>
+                </div>
+
+                <div class="summary-card danger">
+                    <div class="summary-value">$21,250.99</div>
+                    <div class="summary-label">Total Revenue</div>
+                    <div class="summary-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        15.7% from last period
+                    </div>
+                </div>
+            </div>
+
+            <!-- Time Period Selector -->
+            <div class="time-period-selector">
+                <button class="time-period-btn active">Last 7 Days</button>
+                <button class="time-period-btn">Last 30 Days</button>
+                <button class="time-period-btn">Last 6 Months</button>
+                <button class="time-period-btn">Last Year</button>
+                <button class="time-period-btn">Custom Range</button>
+            </div>
+
+            <!-- Filters Section -->
+            <section class="reports-filters">
+                <h3>Filter Data</h3>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Event Type</label>
+                        <select class="filter-select">
+                            <option>All Event Types</option>
+                            <option>Conference</option>
+                            <option>Workshop</option>
+                            <option>Networking</option>
+                            <option>Webinar</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Event Status</label>
+                        <select class="filter-select">
+                            <option>All Statuses</option>
+                            <option>Upcoming</option>
+                            <option>Completed</option>
+                            <option>Cancelled</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Ticket Type</label>
+                        <select class="filter-select">
+                            <option>All Ticket Types</option>
+                            <option>Free</option>
+                            <option>Paid</option>
+                            <option>VIP</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Location</label>
+                        <select class="filter-select">
+                            <option>All Locations</option>
+                            <option>Online</option>
+                            <option>In-Person</option>
+                            <option>Hybrid</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button class="btn-filter reset">Reset Filters</button>
+                    <button class="btn-filter apply">Apply Filters</button>
+                </div>
+            </section>
+
+            <!-- Charts Grid -->
+            <section class="charts-grid">
+                <div class="main-chart">
+                    <div class="chart-container-large">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Events & Attendance Over Time</h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn">Monthly</button>
+                                <button class="chart-action-btn active">Quarterly</button>
+                                <button class="chart-action-btn">Yearly</button>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="eventsAttendanceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-container-large">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Revenue Analysis</h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn active">By Event Type</button>
+                                <button class="chart-action-btn">By Location</button>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="side-charts">
+                    <div class="chart-container-small">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Event Distribution</h3>
+                        </div>
+                        <div class="chart-content-small">
+                            <canvas id="eventDistributionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-container-small">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Attendance Rate</h3>
+                        </div>
+                        <div class="chart-content-small">
+                            <canvas id="attendanceRateChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-container-small">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Top Performing Events</h3>
+                        </div>
+                        <div class="chart-content-small">
+                            <canvas id="topEventsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- KPI Cards -->
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon attendance">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="kpi-value">84.2%</div>
+                    <div class="kpi-label">Average Attendance Rate</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon revenue">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="kpi-value">$187.50</div>
+                    <div class="kpi-label">Avg. Revenue Per Event</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon engagement">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="kpi-value">76.8%</div>
+                    <div class="kpi-label">Attendee Satisfaction</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon satisfaction">
+                        <i class="fas fa-redo"></i>
+                    </div>
+                    <div class="kpi-value">42.5%</div>
+                    <div class="kpi-label">Repeat Attendance Rate</div>
+                </div>
+            </section>
+
+            <!-- Comparison Cards -->
+            <section class="comparison-cards">
+                <div class="comparison-card">
+                    <div class="comparison-header">
+                        <h3 class="comparison-title">Current Period</h3>
+                        <span class="comparison-period">Jan 1 - Jun 30, 2023</span>
+                    </div>
+                    <div class="comparison-metrics">
+                        <div class="comparison-metric">
+                            <div class="metric-value">214</div>
+                            <div class="metric-label">Events</div>
+                            <div class="metric-change positive">+12%</div>
+                        </div>
+                        <div class="comparison-metric">
+                            <div class="metric-value">4,182</div>
+                            <div class="metric-label">Attendees</div>
+                            <div class="metric-change positive">+8%</div>
+                        </div>
+                        <div class="comparison-metric">
+                            <div class="metric-value">$8,450</div>
+                            <div class="metric-label">Revenue</div>
+                            <div class="metric-change positive">+15%</div>
+                        </div>
+                        <div class="comparison-metric">
+                            <div class="metric-value">83.7%</div>
+                            <div class="metric-label">Satisfaction</div>
+                            <div class="metric-change positive">+3%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-card">
+                    <div class="comparison-header">
+                        <h3 class="comparison-title">Previous Period</h3>
+                        <span class="comparison-period">Jul 1 - Dec 31, 2022</span>
+                    </div>
+                    <div class="comparison-metrics">
+                        <div class="comparison-metric">
+                            <div class="metric-value">191</div>
+                            <div class="metric-label">Events</div>
+                        </div>
+                        <div class="comparison-metric">
+                            <div class="metric-value">3,865</div>
+                            <div class="metric-label">Attendees</div>
+                        </div>
+                        <div class="comparison-metric">
+                            <div class="metric-value">$7,320</div>
+                            <div class="metric-label">Revenue</div>
+                        </div>
+                        <div class="comparison-metric">
+                            <div class="metric-value">81.2%</div>
+                            <div class="metric-label">Satisfaction</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detailed Reports -->
+            <section class="detailed-reports">
+                <div class="reports-tabs">
+                    <button class="report-tab active">Event Performance</button>
+                    <button class="report-tab">Attendee Demographics</button>
+                    <button class="report-tab">Revenue Details</button>
+                    <button class="report-tab">Marketing Channels</button>
+                </div>
+
+                <div class="report-table-container">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Date</th>
+                                <th>Attendees</th>
+                                <th>Capacity</th>
+                                <th>Revenue</th>
+                                <th>Satisfaction</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Tech Innovation Summit 2023</td>
+                                <td>Jun 15, 2025</td>
+                                <td>245</td>
+                                <td>300</td>
+                                <td class="metric-cell">$12,450</td>
+                                <td>94%</td>
+                                <td><span class="status-badge completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>Digital Marketing Workshop</td>
+                                <td>Jun 22, 2025</td>
+                                <td>78</td>
+                                <td>80</td>
+                                <td class="metric-cell">$3,850</td>
+                                <td>89%</td>
+                                <td><span class="status-badge completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>Leadership Conference</td>
+                                <td>Jul 5, 2025</td>
+                                <td>312</td>
+                                <td>350</td>
+                                <td class="metric-cell">$18,200</td>
+                                <td>91%</td>
+                                <td><span class="status-badge upcoming">Upcoming</span></td>
+                            </tr>
+                            <tr>
+                                <td>Startup Networking Night</td>
+                                <td>Dec 30, 2025</td>
+                                <td>120</td>
+                                <td>120</td>
+                                <td class="metric-cell">$2,400</td>
+                                <td>87%</td>
+                                <td><span class="status-badge completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>AI & Machine Learning Expo</td>
+                                <td>Dec 18, 2025</td>
+                                <td>430</td>
+                                <td>500</td>
+                                <td class="metric-cell">$24,750</td>
+                                <td>-</td>
+                                <td><span class="status-badge upcoming">Upcoming</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
