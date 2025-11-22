@@ -101,4 +101,4 @@ Meetup groups
 Anyone who needs to manage events
 
 
-                                                                      Simple event management that was built with ❤️ for efficiency!
+                      Simple event management that was built with ❤️ for efficiency!
