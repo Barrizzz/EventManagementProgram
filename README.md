@@ -32,27 +32,27 @@ This is a complete web application for managing events from start to finish. You
 2. Open `index.html`** in your web browser
 3. Start exploring** - Click through the different sections in the sidebar
 
-For the best experience, run it on a local server:
-# If you have Python installed
+# For the best experience, run it on a local server:
+If you have Python installed
 python -m http.server 8000
 
-# Then visit http://localhost:8000 in your browser
+Then visit http://localhost:8000 in your browser
 
 # What's Inside
 
--index.html - Main dashboard page
+index.html - Main dashboard page
 
--events.html - Events management
+events.html - Events management
 
--attendees.html - Attendee tracking
+attendees.html - Attendee tracking
 
--reports.html - Analytics and reports
+reports.html - Analytics and reports
 
--settings.html - System configuration
+settings.html - System configuration
 
--styles.css - All the styling and design
+styles.css - All the styling and design
 
--script.js - Interactive features and functionality
+script.js - Interactive features and functionality
 
 # Features You'll Love
 
@@ -101,4 +101,4 @@ Meetup groups
 Anyone who needs to manage events
 
 
-Simple event management that was built with ❤️ for efficiency!
+                                                                      Simple event management that was built with ❤️ for efficiency!
