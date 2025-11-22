@@ -33,29 +33,29 @@ python -m http.server 8000
 
 # What's Inside
 
-index.html - Main dashboard page
-events.html - Events management
-attendees.html - Attendee tracking
-reports.html - Analytics and reports
-settings.html - System configuration
-styles.css - All the styling and design
-script.js - Interactive features and functionality
+-index.html - Main dashboard page
+-events.html - Events management
+-attendees.html - Attendee tracking
+-reports.html - Analytics and reports
+-settings.html - System configuration
+-styles.css - All the styling and design
+-script.js - Interactive features and functionality
 
 # Features You'll Love
 
-Clean, professional design that's easy to use
-Works on all devices - phones, tablets, and computers
-No complex setup - just open and go
-Real-looking data and examples to help you get started
-Everything you need to manage events professionally
+-Clean, professional design that's easy to use
+-Works on all devices - phones, tablets, and computers
+-No complex setup - just open and go
+-Real-looking data and examples to help you get started
+-Everything you need to manage events professionally
 
 
 # For Developers
-This is built with plain HTML, CSS, and JavaScript - no frameworks required. The code is clean and easy to understand if you want to customize it.
-The design uses modern CSS features like:
-CSS Grid and Flexbox for layouts
-CSS custom properties for easy theming
-Responsive design that works everywhere
+-This is built with plain HTML, CSS, and JavaScript - no frameworks required. The code is clean and easy to understand if you want to customize it.
+-The design uses modern CSS features like:
+-CSS Grid and Flexbox for layouts
+-CSS custom properties for easy theming
+-Responsive design that works everywhere
 
 # Getting Help
 
