@@ -9,8 +9,13 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+from dotenv import load_dotenv
+import os
 from pathlib import Path
+
+# .env initialization
+load_dotenv()
+SQL_PASS = os.getenv("SQL_PASs")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ems_db',
         'USER': 'root',
-        'PASSWORD': '1234',
+        'PASSWORD': SQL_PASS,
         'HOST':'localhost',
         'PORT':'3306',
     }
