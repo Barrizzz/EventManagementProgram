@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visionary Events - Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -28,7 +29,7 @@
                     <i class="fas fa-home"></i>
                     <span>Home</span>
                 </a>
-                <a href="events.html" class="nav-item" data-node-id="1:24">
+                <a href="{% url 'home_page' %}" class="nav-item" data-node-id="6:63">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Events</span>
                 </a>
@@ -218,13 +219,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {% for p in persons %}
                                     <tr>
                                         <td>
                                             <div class="attendee-info">
                                                 <div class="attendee-avatar sm">SM</div>
                                                 <div class="attendee-details">
-                                                    <div class="name">Sarah Martinez</div>
-                                                    <div class="email">sarah.martinez@email.com</div>
+                                                    <div class="name">{{ p.first_name|add:" "|add:p.last_name }}</div>
+                                                    <div class="email">{{p.email}}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -234,70 +236,7 @@
                                         <td><span class="checkin checked">Checked in</span></td>
                                         <td><a href="#" class="action-link">View Details</a></td>
                                     </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="attendee-info">
-                                                <div class="attendee-avatar mj">MJ</div>
-                                                <div class="attendee-details">
-                                                    <div class="name">Michael Johnson</div>
-                                                    <div class="email">m.johnson@email.com</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>Jul 12, 2024 11:15 AM</td>
-                                        <td><span class="ticket-type general">General</span></td>
-                                        <td><span class="status confirmed">Confirmed</span></td>
-                                        <td><span class="checkin pending">Pending</span></td>
-                                        <td><a href="#" class="action-link">View Details</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="attendee-info">
-                                                <div class="attendee-avatar ec">EC</div>
-                                                <div class="attendee-details">
-                                                    <div class="name">Emily Chen</div>
-                                                    <div class="email">emily.chen@email.com</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>Jul 8, 2024 4:45 PM</td>
-                                        <td><span class="ticket-type early">Early Bird</span></td>
-                                        <td><span class="status confirmed">Confirmed</span></td>
-                                        <td><span class="checkin checked">Checked in</span></td>
-                                        <td><a href="#" class="action-link">View Details</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="attendee-info">
-                                                <div class="attendee-avatar dw">DW</div>
-                                                <div class="attendee-details">
-                                                    <div class="name">David Wilson</div>
-                                                    <div class="email">david.wilson@email.com</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>Jul 14, 2024 9:30 AM</td>
-                                        <td><span class="ticket-type general">General</span></td>
-                                        <td><span class="status pending">Pending</span></td>
-                                        <td><span class="checkin pending">Pending</span></td>
-                                        <td><a href="#" class="action-link">View Details</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="attendee-info">
-                                                <div class="attendee-avatar lt">LT</div>
-                                                <div class="attendee-details">
-                                                    <div class="name">Lisa Thompson</div>
-                                                    <div class="email">lisa.thompson@email.com</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>Jul 11, 2024 1:10 PM</td>
-                                        <td><span class="ticket-type vip">VIP Pass</span></td>
-                                        <td><span class="status confirmed">Confirmed</span></td>
-                                        <td><span class="checkin pending">Pending</span></td>
-                                        <td><a href="#" class="action-link">View Details</a></td>
-                                    </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
@@ -385,6 +324,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
+    <script src="{% static 'script.js' %}"></script>
 </body>
 </html>
