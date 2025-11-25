@@ -17,7 +17,7 @@
         </button>
         
         <!-- Left Sidebar -->
-        <aside class="sidebar" data-node-id="1:21">
+        <aside class="sidebar">
             <div class="logo-section">
                 <h1 class="logo">
                     <span class="logo-visionary">Visionary</span>
@@ -34,17 +34,17 @@
                     <i class="fas fa-calendar-alt"></i>
                     <span>Events</span>
                 </a>
-                <a href="attendees.html" class="nav-item">
+                <a href="{% url 'attendees' %}" class="nav-item">
                       <i class="fas fa-users"></i>
                       <span>Attendees</span>
                 </a>
 
-                 <a href="Reports.html" class="nav-item">
+                 <a href="{% url 'reports' %}" class="nav-item">
                       <i class="fas fa-users"></i>
                       <span>Reports</span>
                 </a>
 
-               <a href="settings.html" class="nav-item">
+               <a href="{% url 'settings' %}" class="nav-item">
                       <i class="fas fa-users"></i>
                      <span>Setting</span>
                 </a>
