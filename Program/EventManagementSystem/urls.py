@@ -16,10 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
-    path('home/', include('events.urls')),
     path('admin/', admin.site.urls),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('', include('home.urls')),         # root -> home.index (http://127.0.0.1:8000/)
+    path('events/', include('events.urls')),# /events/ -> events.events_page (http://127.0.0.1:8000/events/)
+]

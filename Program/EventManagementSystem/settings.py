@@ -9,13 +9,20 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
+
 import os
 from pathlib import Path
 
-# .env initialization
-load_dotenv()
-SQL_PASS = os.getenv("SQL_PASs")
+# .env initialization (only if python-dotenv is available)
+if load_dotenv:
+    load_dotenv()
+
+# read password (fixed env var name)
+SQL_PASS = os.getenv("SQL_PASS", "")  # default empty if not set
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,6 +43,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'home',
     'events',
     'django.contrib.admin',
     'django.contrib.auth',
