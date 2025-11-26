@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visionary Events - Events Management</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% csrf_token %}
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Toggle Button -->
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <h1 class="logo">
+                    <span class="logo-visionary">Visionary</span>
+                    <span class="logo-events">EVENTS</span>
+                </h1>
+            </div>
+            
+            <nav class="navigation">
+                <a href="{% url 'home:home_page' %}" class="nav-item" data-node-id="1:23">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="{% url 'events:events' %}" class="nav-item active" data-node-id="1:24">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Events</span>
+                </a>
+                <a href="{% url 'attendees' %}" class="nav-item">
+                      <i class="fas fa-users"></i>
+                      <span>Attendees</span>
+                </a>
+
+                 <a href="{% url 'reports' %}" class="nav-item">
+                      <i class="fas fa-users"></i>
+                      <span>Reports</span>
+                </a>
+
+               <a href="{% url 'settings' %}" class="nav-item">
+                      <i class="fas fa-users"></i>
+                     <span>Setting</span>
+                </a>
+
+                 <div class="nav-item logout">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Log out</span>
+      </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+       <!-- Page Header -->
+<header class="page-header" data-node-id="1:13">
+    <div class="header-content">
+        <div class="page-title-section">
+            <h1 class="page-title">All Events</h1>
+            <p class="page-subtitle">Manage your events efficiently</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-create-event" data-node-id="1:15">
+                <i class="fas fa-plus"></i>
+                <span>Create event</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+            <!-- Filters and Controls -->
+            <div class="filters-section" data-node-id="1:12">
+                <div class="search-filter">
+                    <div class="search-container" data-node-id="1:16">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search events by name, venue, type" class="search-input">
+                    </div>
+                    
+                    <div class="filter-controls">
+                        <div class="status-filter" data-node-id="1:17">
+                            <select class="status-select">
+                                <option value="all">All status</option>
+                                <option value="ongoing">Ongoing</option>
+                                <option value="upcoming">Upcoming</option>
+                                <option value="finished">Finished</option>
+                            </select>
+                        </div>
+                        
+                        <div class="view-toggle">
+                            <button class="view-btn active" data-view="cards" data-node-id="1:18">
+                                <i class="fas fa-th-large"></i>
+                                <span>Cards</span>
+                            </button>
+                            <button class="view-btn" data-view="table" data-node-id="1:19">
+                                <i class="fas fa-table"></i>
+                                <span>Table</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Content -->
+            <div class="events-content" data-node-id="1:20">
+                <!-- Cards View -->
+                <div class="events-cards-view" id="cardsView">
+                    <!-- Ongoing Events Section -->
+                    <section class="events-section ongoing-events">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-play-circle"></i>
+                                Ongoing Events
+                            </h2>
+                            <span class="event-count">{{ ongoing_events|length }} events</span>
+                        </div>
+                        <div class="events-grid">
+                            {% for event in ongoing_events %}
+                            <div class="event-card ongoing">
+                                <div class="event-image">
+                                    {% if event.image_url %}
+                                    <img src="{{ event.image_url }}" alt="{{ event.title }}">
+                                    {% else %}
+                                    <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=200&fit=crop" alt="{{ event.title }}">
+                                    {% endif %}
+                                    <div class="event-status-badge ongoing">Live Now</div>
+                                </div>
+                                <div class="event-info">
+                                    <h3 class="event-title">{{ event.title }}</h3>
+                                    <p class="event-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ event.location }}
+                                    </p>
+                                    <p class="event-description">{{ event.description }}</p>
+                                    <div class="event-details">
+                                        <div class="event-date">
+                                            <i class="fas fa-calendar"></i>
+                                            <span>{{ event.date|date:"M d, Y" }} | {{ event.start_time|time:"g:i A" }} - {{ event.end_time|time:"g:i A" }}</span>
+                                        </div>
+                                        <div class="event-attendees">
+                                            <i class="fas fa-users"></i>
+                                            <span>{{ event.max_attendees }} max attendees</span>
+                                        </div>
+                                    </div>
+                                    <div class="event-actions">
+                                        <button class="btn-action primary">View Details</button>
+                                        <button class="btn-action secondary">Edit Event</button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="no-events">
+                                <p>No ongoing events.</p>
+                            </div>
+                            {% endfor %}
+
+
+                        </div>
+                    </section>
+
+                    <!-- Upcoming Events Section -->
+                    <section class="events-section upcoming-events">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-clock"></i>
+                                Upcoming Events
+                            </h2>
+                            <span class="event-count">{{ upcoming_events|length }} events</span>
+                        </div>
+                        <div class="events-grid">
+                            {% for event in upcoming_events %}
+                            <div class="event-card upcoming">
+                                <div class="event-image">
+                                    {% if event.image_url %}
+                                    <img src="{{ event.image_url }}" alt="{{ event.title }}">
+                                    {% else %}
+                                    <img src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=200&fit=crop" alt="{{ event.title }}">
+                                    {% endif %}
+                                    <div class="event-status-badge upcoming">Upcoming</div>
+                                </div>
+                                <div class="event-info">
+                                    <h3 class="event-title">{{ event.title }}</h3>
+                                    <p class="event-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ event.location }}
+                                    </p>
+                                    <p class="event-description">{{ event.description }}</p>
+                                    <div class="event-details">
+                                        <div class="event-date">
+                                            <i class="fas fa-calendar"></i>
+                                            <span>{{ event.date|date:"M d, Y" }} | {{ event.start_time|time:"g:i A" }} - {{ event.end_time|time:"g:i A" }}</span>
+                                        </div>
+                                        <div class="event-attendees">
+                                            <i class="fas fa-users"></i>
+                                            <span>{{ event.max_attendees }} max attendees</span>
+                                        </div>
+                                    </div>
+                                    <div class="event-actions">
+                                        <button class="btn-action primary">View Details</button>
+                                        <button class="btn-action secondary">Edit Event</button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="no-events">
+                                <p>No upcoming events.</p>
+                            </div>
+                            {% endfor %}
+
+
+                        </div>
+                    </section>
+
+                    <!-- Finished Events Section -->
+                    <section class="events-section finished-events">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-check-circle"></i>
+                                Finished Events
+                            </h2>
+                            <span class="event-count">{{ finished_events|length }} events</span>
+                        </div>
+                        <div class="events-grid">
+                            {% for event in finished_events %}
+                            <div class="event-card finished">
+                                <div class="event-image">
+                                    {% if event.image_url %}
+                                    <img src="{{ event.image_url }}" alt="{{ event.title }}">
+                                    {% else %}
+                                    <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=200&fit=crop" alt="{{ event.title }}">
+                                    {% endif %}
+                                    <div class="event-status-badge finished">Finished</div>
+                                </div>
+                                <div class="event-info">
+                                    <h3 class="event-title">{{ event.title }}</h3>
+                                    <p class="event-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ event.location }}
+                                    </p>
+                                    <p class="event-description">{{ event.description }}</p>
+                                    <div class="event-details">
+                                        <div class="event-date">
+                                            <i class="fas fa-calendar"></i>
+                                            <span>{{ event.date|date:"M d, Y" }} | {{ event.start_time|time:"g:i A" }} - {{ event.end_time|time:"g:i A" }}</span>
+                                        </div>
+                                        <div class="event-attendees">
+                                            <i class="fas fa-users"></i>
+                                            <span>{{ event.max_attendees }} max attendees</span>
+                                        </div>
+                                    </div>
+                                    <div class="event-actions">
+                                        <button class="btn-action primary">View Details</button>
+                                        <button class="btn-action secondary">View Report</button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="no-events">
+                                <p>No finished events.</p>
+                            </div>
+                            {% endfor %}
+                    </section>
+                </div>
+
+                <!-- Table View -->
+                <div class="events-table-view" id="tableView" style="display: none;">
+                    <div class="table-container">
+                        <table class="events-table">
+                            <thead>
+                                <tr>
+                                    <th>Event</th>
+                                    <th>Date & Time</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Attendees</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in all_events %}
+                                <tr class="event-row {{ event.status }}">
+                                    <td>
+                                        <div class="event-cell">
+                                            {% if event.image_url %}
+                                            <img src="{{ event.image_url }}" alt="{{ event.title }}" class="event-thumb">
+                                            {% else %}
+                                            <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=60&h=60&fit=crop" alt="{{ event.title }}" class="event-thumb">
+                                            {% endif %}
+                                            <div class="event-info-cell">
+                                                <h4>{{ event.title }}</h4>
+                                                <p>{{ event.description }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ event.date|date:"M d, Y" }}<br>{{ event.start_time|time:"g:i A" }} - {{ event.end_time|time:"g:i A" }}</td>
+                                    <td>{{ event.location }}</td>
+                                    <td>
+                                        <span class="status-badge {{ event.status }}">
+                                            {% if event.status == 'ongoing' %}Live Now{% elif event.status == 'upcoming' %}Upcoming{% else %}Finished{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ event.max_attendees }} max</td>
+                                    <td>
+                                        <button class="btn-action primary">View</button>
+                                        <button class="btn-action secondary">Edit</button>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 2rem;">
+                                        No events found.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{% static 'common.js' %}"></script>
+    <script src="{% static 'events.js' %}"></script>
+</body>
+</html>
