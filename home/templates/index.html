@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visionary Events - Dashboard</title>
     <link rel="stylesheet" href="{% static 'styles.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="dashboard-container">
@@ -25,7 +25,8 @@
                 </h1>
             </div>
             
-         <a href="{% url 'home:home_page' %}" class="nav-item active" data-node-id="1:23">
+            <nav class="navigation">
+                <a href="{% url 'home:home_page' %}" class="nav-item active" data-node-id="1:23">
                     <i class="fas fa-home"></i>
                     <span>Home</span>
                 </a>
@@ -34,26 +35,25 @@
                     <span>Events</span>
                 </a>
                 <a href="{% url 'attendees' %}" class="nav-item">
-                      <i class="fas fa-users"></i>
-                      <span>Attendees</span>
+                    <i class="fas fa-users"></i>
+                    <span>Attendees</span>
                 </a>
 
-                 <a href="{% url 'reports' %}" class="nav-item">
-                      <i class="fas fa-chart-bar"></i>
-                      <span>Reports</span>
+                <a href="{% url 'reports' %}" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
                 </a>
 
-               <a href="{% url 'settings' %}" class="nav-item">
-                      <i class="fas fa-cog"></i>
-                     <span>Settings</span>
+                <a href="{% url 'settings' %}" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
                 </a>
 
-                 <div class="nav-item logout">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Log out</span>
-      </div>
-
-
+                <div class="nav-item logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Log out</span>
+                </div>
+            </nav>
         </aside>
 
         <!-- Main Content Area -->
@@ -136,7 +136,7 @@
                                         <span class="datetime">{{ event.date|date:"M d, Y" }} | {{ event.start_time|time:"g:i A" }} - {{ event.end_time|time:"g:i A" }}</span>
                                         <span class="attendees">{{ event.max_attendees }} max attendees</span>
                                     </div>
-                                    <button class="btn-book">Book Now</button>
+                                    <button class="btn-register">Register Now!</button>
                                 </div>
                             </div>
                             {% empty %}
