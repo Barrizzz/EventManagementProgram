@@ -68,9 +68,9 @@
                 </div>
                 
                 <div class="header-right">
-                    <div class="datetime" data-node-id="6:57">10/13/2025 | 3:19 PM</div>
+                    <div class="datetime" data-node-id="6:57"></div>
                     <div class="user-info">
-                        <span class="username" data-node-id="6:59">Angel</span>
+                        <span class="username" data-node-id="6:59">DatabaseGuy</span>
                         <div class="user-avatar" data-node-id="6:50"></div>
                         <div class="notification-icon" data-node-id="6:51">
                             <i class="fas fa-bell"></i>
@@ -90,53 +90,29 @@
                             <a href="#" class="view-all">View All ></a>
                         </div>
                         <div class="events-list">
+                            {% for event in ongoing_events %}
                             <div class="event-card">
                                 <div class="event-icon purple">
-                                    <i class="fas fa-music"></i>
+                                    <i class="fas fa-calendar"></i>
                                 </div>
                                 <div class="event-content">
-                                    <h3>Summer Music Festival</h3>
-                                    <p class="location">Central Park, New York</p>
-                                    <p class="description">Join us for an amazing outdoor concert featuring local and international artists. Food trucks and activities for the whole family!</p>
+                                    <h3>{{ event.title }}</h3>
+                                    <p class="location">{{ event.location }}</p>
+                                    <p class="description">{{ event.description }}</p>
                                     <div class="event-details">
-                                        <span class="datetime">Jul 13, 2024 | 2:00 PM - 8:00 PM EST</span>
-                                        <span class="attendees">3.5K attending</span>
+                                        <span class="datetime">{{ event.date|date:"M d, Y" }} | {{ event.start_time|time:"g:i A" }} - {{ event.end_time|time:"g:i A" }}</span>
+                                        <span class="attendees">{{ event.max_attendees }} max attendees</span>
                                     </div>
                                     <button class="btn-live">Live Now</button>
                                 </div>
                             </div>
-
+                            {% empty %}
                             <div class="event-card">
-                                <div class="event-icon blue">
-                                    <i class="fas fa-lightbulb"></i>
-                                </div>
                                 <div class="event-content">
-                                    <h3>Tech Innovation Summit</h3>
-                                    <p class="location">Convention Center, San Francisco</p>
-                                    <p class="description">Discover the latest in AI, automation, and emerging technologies. Network with industry leaders and startup founders.</p>
-                                    <div class="event-details">
-                                        <span class="datetime">Jul 18, 2024 | 9:00 AM - 5:00 PM PST</span>
-                                        <span class="attendees">2.1K attending</span>
-                                    </div>
-                                    <button class="btn-register">Register Now</button>
+                                    <p>No ongoing events at the moment.</p>
                                 </div>
                             </div>
-
-                            <div class="event-card">
-                                <div class="event-icon green">
-                                    <i class="fas fa-running"></i>
-                                </div>
-                                <div class="event-content">
-                                    <h3>City Marathon Challenge</h3>
-                                    <p class="location">Downtown City Park</p>
-                                    <p class="description">Annual marathon event with 5K, 10K, and full marathon options. Prizes for top finishers and participation medals for all!</p>
-                                    <div class="event-details">
-                                        <span class="datetime">Jul 20, 2024 | 6:00 AM - 12:00 PM EST</span>
-                                        <span class="attendees">1.8K registered</span>
-                                    </div>
-                                    <button class="btn-register">Register Now</button>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
                     </div>
 
@@ -147,53 +123,29 @@
                             <a href="#" class="view-all">View All ></a>
                         </div>
                         <div class="events-list">
-                            <div class="event-card">
-                                <div class="event-icon purple">
-                                    <i class="fas fa-wine-glass"></i>
-                                </div>
-                                <div class="event-content">
-                                    <h3>Wine Tasting Evening</h3>
-                                    <p class="location">Vineyard Terrace, Napa Valley</p>
-                                    <p class="description">Experience premium wines from local vineyards with expert sommeliers. Includes cheese pairings and live jazz music.</p>
-                                    <div class="event-details">
-                                        <span class="datetime">Jul 25, 2024 | 7:00 PM - 10:00 PM PST</span>
-                                        <span class="attendees">142 registered</span>
-                                    </div>
-                                    <button class="btn-book">Book Now</button>
-                                </div>
-                            </div>
-
-                            <div class="event-card">
-                                <div class="event-icon green">
-                                    <i class="fas fa-chart-line"></i>
-                                </div>
-                                <div class="event-content">
-                                    <h3>Digital Marketing Workshop</h3>
-                                    <p class="location">Remote, Online</p>
-                                    <p class="description">Learn the latest strategies in social media marketing, SEO, and content creation. Hands-on exercises and networking included.</p>
-                                    <div class="event-details">
-                                        <span class="datetime">Jul 28, 2024 | 9:00 AM - 1:00 PM EST</span>
-                                        <span class="attendees">85 registered</span>
-                                    </div>
-                                    <button class="btn-book">Book Now</button>
-                                </div>
-                            </div>
-
+                            {% for event in upcoming_events %}
                             <div class="event-card">
                                 <div class="event-icon blue">
-                                    <i class="fas fa-theater-masks"></i>
+                                    <i class="fas fa-calendar-plus"></i>
                                 </div>
                                 <div class="event-content">
-                                    <h3>Shakespeare in the Park</h3>
-                                    <p class="location">Riverside Park, Portland</p>
-                                    <p class="description">Enjoy a classic outdoor theater performance of 'A Midsummer Night's Dream'. Bring blankets and enjoy a magical evening under the stars.</p>
+                                    <h3>{{ event.title }}</h3>
+                                    <p class="location">{{ event.location }}</p>
+                                    <p class="description">{{ event.description }}</p>
                                     <div class="event-details">
-                                        <span class="datetime">Aug 3, 2024 | 7:30 PM - 9:30 PM PST</span>
-                                        <span class="attendees">210 registered</span>
+                                        <span class="datetime">{{ event.date|date:"M d, Y" }} | {{ event.start_time|time:"g:i A" }} - {{ event.end_time|time:"g:i A" }}</span>
+                                        <span class="attendees">{{ event.max_attendees }} max attendees</span>
                                     </div>
-                                    <button class="btn-reminder">Set Reminder</button>
+                                    <button class="btn-book">Book Now</button>
                                 </div>
                             </div>
+                            {% empty %}
+                            <div class="event-card">
+                                <div class="event-content">
+                                    <p>No upcoming events scheduled.</p>
+                                </div>
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
 

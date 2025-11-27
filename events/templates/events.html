@@ -53,27 +53,27 @@
                  <div class="nav-item logout">
         <i class="fas fa-sign-out-alt"></i>
         <span>Log out</span>
-      </div>
+        </div>
             </nav>
         </aside>
 
         <!-- Main Content Area -->
         <main class="main-content">
-       <!-- Page Header -->
-<header class="page-header" data-node-id="1:13">
-    <div class="header-content">
-        <div class="page-title-section">
-            <h1 class="page-title">All Events</h1>
-            <p class="page-subtitle">Manage your events efficiently</p>
-        </div>
-        <div class="header-actions">
-            <button class="btn-create-event" data-node-id="1:15">
-                <i class="fas fa-plus"></i>
-                <span>Create event</span>
-            </button>
-        </div>
-    </div>
-</header>
+            <!-- Page Header -->
+            <header class="page-header" data-node-id="1:13">
+                <div class="header-content">
+                    <div class="page-title-section">
+                        <h1 class="page-title">All Events</h1>
+                        <p class="page-subtitle">Manage your events efficiently</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-create-event" data-node-id="1:15">
+                            <i class="fas fa-plus"></i>
+                            <span>Create event</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
 
             <!-- Filters and Controls -->
             <div class="filters-section" data-node-id="1:12">
@@ -122,7 +122,7 @@
                         </div>
                         <div class="events-grid">
                             {% for event in ongoing_events %}
-                            <div class="event-card ongoing">
+                            <div class="event-card ongoing" data-event-id="{{ event.id }}">
                                 <div class="event-image">
                                     {% if event.image_url %}
                                     <img src="{{ event.image_url }}" alt="{{ event.title }}">
@@ -150,7 +150,7 @@
                                     </div>
                                     <div class="event-actions">
                                         <button class="btn-action primary">View Details</button>
-                                        <button class="btn-action secondary">Edit Event</button>
+                                        <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.id }}">Edit Event</button>
                                     </div>
                                 </div>
                             </div>
@@ -175,7 +175,7 @@
                         </div>
                         <div class="events-grid">
                             {% for event in upcoming_events %}
-                            <div class="event-card upcoming">
+                            <div class="event-card upcoming" data-event-id="{{ event.id }}">
                                 <div class="event-image">
                                     {% if event.image_url %}
                                     <img src="{{ event.image_url }}" alt="{{ event.title }}">
@@ -203,7 +203,7 @@
                                     </div>
                                     <div class="event-actions">
                                         <button class="btn-action primary">View Details</button>
-                                        <button class="btn-action secondary">Edit Event</button>
+                                        <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.id }}">Edit Event</button>
                                     </div>
                                 </div>
                             </div>
@@ -228,7 +228,7 @@
                         </div>
                         <div class="events-grid">
                             {% for event in finished_events %}
-                            <div class="event-card finished">
+                            <div class="event-card finished" data-event-id="{{ event.id }}">
                                 <div class="event-image">
                                     {% if event.image_url %}
                                     <img src="{{ event.image_url }}" alt="{{ event.title }}">
@@ -258,6 +258,9 @@
                                         <button class="btn-action primary">View Details</button>
                                         <button class="btn-action secondary">View Report</button>
                                     </div>
+                                    <div class="event-actions event-actions-secondary">
+                                        <button class="btn-action danger delete-event-btn" data-event-id="{{ event.id }}">Delete Event</button>
+                                    </div>
                                 </div>
                             </div>
                             {% empty %}
@@ -284,7 +287,7 @@
                             </thead>
                             <tbody>
                                 {% for event in all_events %}
-                                <tr class="event-row {{ event.status }}">
+                                <tr class="event-row {{ event.status }}" data-event-id="{{ event.id }}">
                                     <td>
                                         <div class="event-cell">
                                             {% if event.image_url %}
@@ -308,7 +311,7 @@
                                     <td>{{ event.max_attendees }} max</td>
                                     <td>
                                         <button class="btn-action primary">View</button>
-                                        <button class="btn-action secondary">Edit</button>
+                                        <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.id }}">Edit</button>
                                     </td>
                                 </tr>
                                 {% empty %}
@@ -325,7 +328,6 @@
             </div>
         </main>
     </div>
-
     <script src="{% static 'common.js' %}"></script>
     <script src="{% static 'events.js' %}"></script>
 </body>
