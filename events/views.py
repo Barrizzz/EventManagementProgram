@@ -18,10 +18,6 @@ def add_person(request):
     elif request.method == 'GET':
         persons = Person.objects.values()
         return render(request, 'index.html', {'persons': persons})
-    
-def index(request):
-    persons = Person.objects.values()
-    return render(request, 'index.html', {'persons': persons})
 
 def events_page(request):
     return render(request, 'events.html')
