@@ -19,9 +19,9 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 
 urlpatterns = [
+    path('events/', include('events.urls', namespace='events')),
+    path('', include('home.urls', namespace='home')),
     path('admin/', admin.site.urls),
-    path('', include('home.urls')),
-    path('events/', include('events.urls')),
     # Top-level pages for homepage access
     path('attendees/', TemplateView.as_view(template_name='attendees.html'), name='attendees'),
     path('reports/', TemplateView.as_view(template_name='reports.html'), name='reports'),
