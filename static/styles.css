@@ -204,20 +204,19 @@ body {
 
 .search-bar i {
     position: absolute;
-    left: var(--spacing-sm);
+    left: 10px;
+    top: 25%;
     color: var(--text-light);
     z-index: 1;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
+    pointer-events: none;
 }
 
 .search-bar input {
-    width: 100%;
-    padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 32px;
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    background-color: var(--background-white);
-    transition: border-color 0.2s ease;
+    position: relative;  /* Add this so the icon positions relative to the input */
+    max-width: 500px;
+    padding-left: 40px;
+    text-indent: 16px;
 }
 
 .search-bar input:focus {
@@ -431,7 +430,6 @@ body {
 /* Buttons */
 .btn-live,
 .btn-register,
-.btn-book,
 .btn-reminder {
     padding: var(--spacing-sm) var(--spacing-md);
     border: none;
@@ -929,6 +927,8 @@ body {
     font-size: var(--font-size-base);
     color: var(--text-primary);
     transition: all 0.2s ease;
+    padding-left: 40px; /* Ensure space for icon */
+    position: relative;
 }
 
 .search-input::placeholder {
@@ -939,6 +939,15 @@ body {
     outline: none;
     border-color: var(--primary-purple);
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px; /* Adjust to center in padding */
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    pointer-events: none;
 }
 
 .filter-controls {
@@ -1181,6 +1190,12 @@ body {
     gap: var(--spacing-sm);
 }
 
+.event-actions-secondary {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+}
+
 .btn-action {
     flex: 1;
     padding: var(--spacing-sm) var(--spacing-md);
@@ -1210,6 +1225,16 @@ body {
 
 .btn-action.secondary:hover {
     background-color: var(--border-light);
+}
+
+.btn-action.danger {
+    background-color: #dc3545;
+    color: var(--background-white);
+}
+
+.btn-action.danger:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
 }
 
 /* Events Table View */
@@ -2142,7 +2167,7 @@ body {
     width: 100%;
     min-height: 200px;
 }
-.chart-content-small canvas,
+.chart-content_small canvas,
 .chart-content canvas {
     display: block !important;
     width: 100% !important;
@@ -2522,7 +2547,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
     background: var(--border-light);
-    border-radius:3px;
+    border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
