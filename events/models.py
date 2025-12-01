@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.functional import cached_property
         
 class EventCategory(models.Model):
     """
@@ -149,7 +150,7 @@ class Event(models.Model):
     # Many-to-Many relationship with Customer (via EventCustomer)
     customers = models.ManyToManyField(Customer, through='EventCustomer', related_name='attended_events')
     
-    @property
+    @cached_property
     def status(self):
         """Determine event status based on current date/time and event schedule"""
         now = timezone.now()
@@ -166,7 +167,7 @@ class Event(models.Model):
         else:
             return 'finished'
     
-    @property
+    @cached_property
     def revenue(self):
         """Calculate total revenue generated from ticket sales for this event"""
         total_revenue = 0
