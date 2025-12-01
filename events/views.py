@@ -37,17 +37,22 @@ def events_page(request):
             return JsonResponse({'success': False, 'error': str(e)})
 
     # GET request - display events
-    all_events = Event.objects.all()
-    ongoing_events = all_events.filter(status='ongoing')
-    upcoming_events = all_events.filter(status='upcoming')
-    finished_events = all_events.filter(status='finished')
-    
     context = {
-        'ongoing_events': ongoing_events,
-        'upcoming_events': upcoming_events,
-        'finished_events': finished_events,
-        'all_events': all_events
+        'upcoming_events': [],
+        'ongoing_events': [],
+        'finished_events': [],
     }
+    
+    all_events = Event.objects.all()
+    for event in all_events:
+        status = event.status
+        if status == 'upcoming':
+            context['upcoming_events'].append(event)
+        elif status == 'ongoing':
+            context['ongoing_events'].append(event)
+        elif status == 'finished':
+            context['finished_events'].append(event)
+            
     return render(request, 'events.html', context)
 
 @require_POST
