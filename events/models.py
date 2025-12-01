@@ -149,6 +149,23 @@ class Event(models.Model):
     # Many-to-Many relationship with Customer (via EventCustomer)
     customers = models.ManyToManyField(Customer, through='EventCustomer', related_name='attended_events')
     
+    @property
+    def status(self):
+        """Determine event status based on current date/time and event schedule"""
+        now = timezone.now()
+        event_start = timezone.make_aware(
+            timezone.datetime.combine(self.datetime.date, self.datetime.startTime)
+        )
+        event_end = timezone.make_aware(
+            timezone.datetime.combine(self.datetime.date, self.datetime.endTime)
+        )
+        if now < event_start:
+            return 'upcoming'
+        elif event_start <= now <= event_end:
+            return 'ongoing'
+        else:
+            return 'finished'
+    
     class Meta:
         db_table = 'event'
     
