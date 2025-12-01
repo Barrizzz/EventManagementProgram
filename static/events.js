@@ -31,13 +31,6 @@ function initializeEventsPage() {
         });
     }
 
-    const statusSelect = document.querySelector('.status-select');
-    if (statusSelect) {
-        statusSelect.addEventListener('change', function() {
-            filterEventsByStatus(this.value);
-        });
-    }
-
     const createEventBtn = document.querySelector('.btn-create-event');
     if (createEventBtn) {
         createEventBtn.addEventListener('click', function() {
@@ -261,14 +254,6 @@ function showEventModal(eventData = null) {
                     <div class="form-group">
                         <label for="maxAttendees">Max Attendees</label>
                         <input type="number" id="maxAttendees" name="max_attendees" value="${isEditMode ? eventData.max_attendees : ''}" min="1">
-                    </div>
-                    <div class="form-group">
-                        <label for="eventStatus">Status</label>
-                        <select id="eventStatus" name="status">
-                            <option value="upcoming" ${isEditMode && eventData.status === 'upcoming' ? 'selected' : ''}>Upcoming</option>
-                            <option value="ongoing" ${isEditMode && eventData.status === 'ongoing' ? 'selected' : ''}>Ongoing</option>
-                            <option value="finished" ${isEditMode && eventData.status === 'finished' ? 'selected' : ''}>Finished</option>
-                        </select>
                     </div>
                 </div>
 

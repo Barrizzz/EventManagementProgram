@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 
 from django.views.decorators.http import require_POST
 
-from .models import Event
+from .models import Event, EventDateTime
 
 # Create your views here.
 def events_page(request):
@@ -16,22 +16,18 @@ def events_page(request):
         date = request.POST.get('date')
         start_time = request.POST.get('start_time')
         end_time = request.POST.get('end_time')
-        status = request.POST.get('status', 'upcoming')
         max_attendees = request.POST.get('max_attendees', 0)
         image_url = request.POST.get('image_url')
 
         try:
-            event = Event.objects.create(
-                title=title,
-                description=description,
-                location=location,
+            dateTime_obj = EventDateTime.objects.create(
                 date=date,
-                start_time=start_time,
-                end_time=end_time,
-                status=status,
-                max_attendees=max_attendees if max_attendees else 0,
-                image_url=image_url if image_url else None
+                startTime=start_time,
+                endTime=end_time
             )
+            
+            # TODO - Create Venue, Organizer, Category as needed to initialize Event
+            
             return JsonResponse({'success': True, 'event_id': event.id})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
@@ -78,7 +74,6 @@ def get_event(request, event_id):
                 'date': event.date.strftime('%Y-%m-%d'),
                 'start_time': event.start_time.strftime('%H:%M'),
                 'end_time': event.end_time.strftime('%H:%M'),
-                'status': event.status,
                 'max_attendees': event.max_attendees,
                 'image_url': event.image_url or ''
             }
@@ -99,7 +94,6 @@ def update_event(request, event_id):
         event.date = request.POST.get('date')
         event.start_time = request.POST.get('start_time')
         event.end_time = request.POST.get('end_time')
-        event.status = request.POST.get('status', 'upcoming')
         event.max_attendees = request.POST.get('max_attendees', 0)
         event.image_url = request.POST.get('image_url') if request.POST.get('image_url') else None
         

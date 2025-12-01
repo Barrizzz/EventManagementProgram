@@ -141,7 +141,7 @@ class Event(models.Model):
         verbose_name='Organizer'
     )
 
-    name = models.CharField(max_length=100, )
+    name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     rundown = models.TextField(blank=True)
     materials = models.TextField(blank=True)
@@ -165,6 +165,15 @@ class Event(models.Model):
             return 'ongoing'
         else:
             return 'finished'
+    
+    @property
+    def revenue(self):
+        """Calculate total revenue generated from ticket sales for this event"""
+        total_revenue = 0
+        tickets = Ticket.objects.filter(event=self, status='sold')
+        for ticket in tickets:
+            total_revenue += ticket.ticket_type.price
+        return total_revenue
     
     class Meta:
         db_table = 'event'
