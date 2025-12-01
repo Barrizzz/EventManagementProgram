@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 
 from django.views.decorators.http import require_POST
 
-from .models import Event, EventDateTime
+from .models import Event
 
 # Create your views here.
 def events_page(request):
@@ -18,13 +18,7 @@ def events_page(request):
         end_time = request.POST.get('end_time')
         max_attendees = request.POST.get('max_attendees', 0)
         image_url = request.POST.get('image_url')
-
         try:
-            dateTime_obj = EventDateTime.objects.create(
-                date=date,
-                startTime=start_time,
-                endTime=end_time
-            )
             
             # TODO - Create Venue, Organizer, Category as needed to initialize Event
             
