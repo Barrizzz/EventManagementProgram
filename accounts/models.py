@@ -14,7 +14,7 @@ class Customer(AbstractBaseUser):
     lName = models.CharField(max_length=100)
     email = models.EmailField(max_length=255, unique=True)
     phoneNum = models.CharField(max_length=20, unique=True)
-    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['fName', 'lName', 'phoneNum']
