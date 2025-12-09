@@ -1,6 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser
 from django.utils import timezone
 from django.utils.functional import cached_property
+from accounts.models import Customer
         
 class EventCategory(models.Model):
     """
@@ -88,25 +90,6 @@ class TicketType(models.Model):
     def __str__(self):
         return f"{self.type} (Zone {self.zone})" 
     
-class Customer(models.Model):
-    """
-    Model representing an application user/customer.
-    Maps to the Customer entity.
-    (Note: In a production app, consider extending Django's AbstractUser for authentication.)
-    """
-    customerID = models.AutoField(primary_key=True)
-    fName = models.CharField(max_length=100)
-    lName = models.CharField(max_length=100)
-    email = models.EmailField(max_length=255)
-    hashedPassword = models.CharField(max_length=255) # Stores the hashed password
-    phoneNum = models.CharField(max_length=20, unique=True)
-    
-    class Meta:
-        db_table = 'customer'
-
-    def __str__(self):
-        return f"{self.fName} {self.lName}"
-
 class Event(models.Model):
     """
     Model representing the main event details.
@@ -181,6 +164,7 @@ class Event(models.Model):
     
     def __str__(self):
         return self.name
+    
 
 class Ticket(models.Model):
     """

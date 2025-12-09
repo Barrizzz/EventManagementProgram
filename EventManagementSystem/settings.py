@@ -43,6 +43,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_extensions',
+    'accounts',
     'home',
     'events',
     'django.contrib.admin',
@@ -97,6 +99,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'accounts.Customer'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
