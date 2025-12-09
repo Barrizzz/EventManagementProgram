@@ -1,11 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 
 from .models import Event
 
 # Create your views here.
+@login_required
 def events_page(request):
     if request.method == 'POST':
         # Handle event creation
@@ -45,6 +47,7 @@ def events_page(request):
     return render(request, 'events.html', context)
 
 @require_POST
+@login_required
 def delete_event(request, event_id):
     try:
         event = get_object_or_404(Event, id=event_id)
@@ -75,6 +78,7 @@ def get_event(request, event_id):
         return JsonResponse({'success': False, 'error': str(e)})
 
 @require_POST
+@login_required
 def update_event(request, event_id):
     """Update an existing event"""
     try:

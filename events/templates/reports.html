@@ -12,47 +12,8 @@
 <body>
     <!-- Dashboard Container -->
     <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo-section">
-                <h1 class="logo">
-                    <span class="logo-visionary">Visionary</span>
-                    <span class="logo-events">EVENTS</span>
-                </h1>
-            </div>
-
-            <nav class="navigation">
-                <a href="{% url 'home:home_page' %}" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </a>
-
-                <a href="{% url 'events:events' %}" class="nav-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Events</span>
-                </a>
-
-                <a href="{% url 'attendees' %}" class="nav-item">
-                    <i class="fas fa-users"></i>
-                    <span>Attendees</span>
-                </a>
-
-                <a href="{% url 'reports' %}" class="nav-item active">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Reports</span>
-                </a>
-
-                <a href="{% url 'settings' %}" class="nav-item">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
-
-                  <div class="nav-item logout">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Log out</span>
-      </div>
-            </nav>
-        </aside>
+        <!-- Include Sidebar -->
+        {% include 'sidebar.html' %}
 
         <!-- Main Content -->
         <main class="main-content">

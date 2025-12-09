@@ -26,4 +26,5 @@ urlpatterns = [
     path('attendees/', TemplateView.as_view(template_name='attendees.html'), name='attendees'),
     path('reports/', TemplateView.as_view(template_name='reports.html'), name='reports'),
     path('settings/', TemplateView.as_view(template_name='settings.html'), name='settings'),
+    path('accounts/', include('accounts.urls', namespace='customers')),
 ]
