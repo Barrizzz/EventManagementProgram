@@ -5,7 +5,9 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 @login_required
 def index(request):
+    user = request.user
     context = {
+        'user': user,
         'upcoming_events': [],
         'ongoing_events': [],
         'finished_events': [],
