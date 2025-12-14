@@ -11,13 +11,16 @@ function initializeRevenueChart() {
     const ctx = document.getElementById('revenueChart');
     if (!ctx) return;
 
+    // TODO: Fetch real data from database API
+    // Example: fetch('/api/revenue-data/').then(res => res.json()).then(data => { ... })
+    
     new Chart(ctx, {
         type: 'line',
         data: {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [{
                 label: 'Revenue (USD)',
-                data: [12000, 15000, 18000, 22000, 25000, 28000, 32000, 35000, 30000, 26000, 20000, 18000],
+                data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Will be populated from database
                 borderColor: '#8B5CF6',
                 backgroundColor: 'rgba(139, 92, 246, 0.1)',
                 borderWidth: 3,
@@ -60,13 +63,15 @@ function initializeBookingChart() {
     const ctx = document.getElementById('bookingChart');
     if (!ctx) return;
 
+    // TODO: Fetch real booking data from database API
+    
     const chart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['6AM','8AM','10AM','12PM','2PM','4PM','6PM','8PM','10PM'],
             datasets: [{
                 label: 'Bookings',
-                data: [5,12,18,25,35,28,20,15,8],
+                data: [0,0,0,0,0,0,0,0,0], // Will be populated from database
                 backgroundColor: '#8B5CF6',
                 borderRadius: 6,
                 borderSkipped: false
@@ -90,20 +95,23 @@ function initializeBookingChart() {
 function updateBookingChart(selectedTab) {
     if (!window.bookingChart) return;
 
+    // TODO: Fetch filtered data from database based on selectedTab
+    // Example: fetch(`/api/bookings/?period=${selectedTab}`).then(res => res.json()).then(data => { ... })
+
     let newData, newLabels;
 
     switch(selectedTab) {
         case 'Today':
             newLabels = ['6AM','8AM','10AM','12PM','2PM','4PM','6PM','8PM','10PM'];
-            newData = [5,12,18,25,35,28,20,15,8];
+            newData = [0,0,0,0,0,0,0,0,0]; // Populate from database
             break;
         case 'This Week':
             newLabels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-            newData = [45,52,38,65,58,42,35];
+            newData = [0,0,0,0,0,0,0]; // Populate from database
             break;
         case 'This Month':
             newLabels = ['Week 1','Week 2','Week 3','Week 4'];
-            newData = [180,220,195,240];
+            newData = [0,0,0,0]; // Populate from database
             break;
         default:
             return;
@@ -119,12 +127,15 @@ function initializeBreakdownChart() {
     const ctx = document.getElementById('breakdownChart');
     if (!ctx) return;
 
+    // TODO: Fetch attendance breakdown data from database
+    // Example: fetch('/api/attendance-breakdown/').then(res => res.json()).then(data => { ... })
+
     new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: ['Active Attendance', 'Inactive/Missed'],
             datasets: [{
-                data: [87, 13],
+                data: [0, 0], // Will be populated from database
                 backgroundColor: ['#10B981', '#EF4444'],
                 borderWidth: 0,
                 cutout: '70%'

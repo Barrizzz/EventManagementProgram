@@ -20,203 +20,66 @@
 
     <!-- MAIN PAGE -->
     <main class="page-container">
-      <!-- Page Header -->
-      <header class="page-header">
-        <h2>System Settings</h2>
-        <div class="header-actions">
-          <button class="btn-primary" id="saveBtn"><i class="fas fa-save"></i> Save Changes</button>
-          <button class="btn-secondary" id="resetBtn"><i class="fas fa-sync"></i> Reset to Default</button>
+      <!-- Django Messages -->
+      {% if messages %}
+        <div class="messages-container">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+              {{ message }}
+            </div>
+          {% endfor %}
         </div>
-      </header>
+      {% endif %}
 
       <!-- Settings Content -->
       <section class="settings-main">
-        <!-- Left Menu -->
-        <div class="settings-menu">
+        <!-- Left Menu (Hidden - Only Profile) -->
+        <div class="settings-menu" style="display: none;">
           <button class="menu-item active" data-section="profile"><i class="fas fa-user"></i> Profile</button>
-          <button class="menu-item" data-section="system"><i class="fas fa-sliders-h"></i> System</button>
-          <button class="menu-item" data-section="notifications"><i class="fas fa-bell"></i> Notifications</button>
-          <button class="menu-item" data-section="security"><i class="fas fa-shield-alt"></i> Security</button>
-          <button class="menu-item" data-section="integrations"><i class="fas fa-plug"></i> Integrations</button>
         </div>
 
         <!-- Right Content Area -->
         <div class="settings-content">
           <!-- Profile Settings -->
           <div class="settings-section active" id="profile">
-            <h3 class="section-title">Profile Settings</h3>
+            <h3 class="section-title">Profile Information</h3>
 
-            <div class="avatar-upload">
-              <div class="avatar-preview">
-                <i class="fas fa-user fa-2x" style="color: #6c757d;"></i>
+            <form method="post" action="{% url 'home:update_profile' %}" id="profileForm">
+              {% csrf_token %}
+              
+              <div class="avatar-upload">
+                <div class="avatar-preview">
+                  <i class="fas fa-user fa-2x" style="color: #6c757d;"></i>
+                </div>
+                <div class="avatar-upload-controls">
+                  <label>Email (Login)</label>
+                  <input type="text" name="username" value="{{ user.email }}" readonly style="background: #f5f5f5;">
+                  <small>Email address cannot be changed</small>
+                </div>
               </div>
-              <div class="avatar-upload-controls">
-                <label>Upload Avatar</label>
-                <input type="file" accept="image/*" id="avatarUpload">
-                <small>Recommended: Square image, 200x200 pixels or larger</small>
+
+              <label for="firstName">First Name</label>
+              <input type="text" name="first_name" id="firstName" placeholder="Enter your first name" value="{{ user.fName }}">
+
+              <label for="lastName">Last Name</label>
+              <input type="text" name="last_name" id="lastName" placeholder="Enter your last name" value="{{ user.lName }}">
+
+              <label for="phoneNum">Phone Number</label>
+              <input type="text" name="phone_num" id="phoneNum" placeholder="Enter phone number" value="{{ user.phoneNum }}">
+
+              <div style="margin-top: 24px;">
+                <button type="submit" class="btn-primary">
+                  <i class="fas fa-save"></i> Update Profile
+                </button>
               </div>
-            </div>
+            </form>
 
-            <label for="fullName">Full Name</label>
-            <input type="text" id="fullName" placeholder="Enter your full name" value="Jane Johnson">
-
-            <label for="email">Email Address</label>
-            <input type="email" id="email" placeholder="Enter email address" value="jane.johnson@example.com">
-
-            <label for="jobTitle">Job Title</label>
-            <input type="text" id="jobTitle" placeholder="Enter your job title" value="Event Manager">
-
-            <label for="phone">Phone Number</label>
-            <input type="text" id="phone" placeholder="Enter phone number" value="+1 (555) 123-4567">
-          </div>
-
-          <!-- System Settings -->
-          <div class="settings-section" id="system">
-            <h3 class="section-title">System Preferences</h3>
-
-            <label for="theme">Theme</label>
-            <select id="theme">
-              <option>Light Mode</option>
-              <option>Dark Mode</option>
-              <option>Auto (System Preference)</option>
-            </select>
-
-            <label for="eventView">Default Event View</label>
-            <select id="eventView">
-              <option>Card View</option>
-              <option>Table View</option>
-              <option>Calendar View</option>
-            </select>
-
-            <label for="dateFormat">Date Format</label>
-            <select id="dateFormat">
-              <option>MM/DD/YYYY</option>
-              <option>DD/MM/YYYY</option>
-              <option>YYYY-MM-DD</option>
-            </select>
-
-            <label for="timezone">Time Zone</label>
-            <select id="timezone">
-              <option>Eastern Time (ET)</option>
-              <option>Central Time (CT)</option>
-              <option>Mountain Time (MT)</option>
-              <option>Pacific Time (PT)</option>
-            </select>
-
-            <label for="eventsPerPage">Events Per Page</label>
-            <select id="eventsPerPage">
-              <option>10</option>
-              <option selected>25</option>
-              <option>50</option>
-              <option>100</option>
-            </select>
-          </div>
-
-          <!-- Notifications -->
-          <div class="settings-section" id="notifications">
-            <h3 class="section-title">Notification Settings</h3>
-
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="emailNotifications" checked> Email Notifications
-              </label>
-              <small>Receive updates and announcements via email</small>
-            </div>
-
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="eventReminders" checked> Event Reminders
-              </label>
-              <small>Get reminders for upcoming events</small>
-            </div>
-
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="attendeeAlerts" checked> New Attendee Alerts
-              </label>
-              <small>Receive notifications when new attendees register</small>
-            </div>
-
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="marketingUpdates"> Marketing Updates
-              </label>
-              <small>Receive tips and updates about event marketing</small>
-            </div>
-
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="weeklyReports"> Weekly Reports
-              </label>
-              <small>Get weekly summaries of event performance</small>
-            </div>
-          </div>
-
-          <!-- Security -->
-          <div class="settings-section" id="security">
-            <h3 class="section-title">Security Settings</h3>
-
-            <label for="currentPassword">Current Password</label>
-            <input type="password" id="currentPassword" placeholder="Enter current password">
-
-            <label for="newPassword">New Password</label>
-            <input type="password" id="newPassword" placeholder="Enter new password">
-
-            <label for="confirmPassword">Confirm New Password</label>
-            <input type="password" id="confirmPassword" placeholder="Confirm new password">
-
-            <div class="checkbox-group" style="margin-top: 24px;">
-              <label>
-                <input type="checkbox" id="twoFactor"> Two-Factor Authentication
-              </label>
-              <small>Add an extra layer of security to your account</small>
-            </div>
-
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="loginNotifications" checked> Login Notifications
-              </label>
-              <small>Get notified when someone logs into your account</small>
-            </div>
-          </div>
-
-          <!-- Integrations -->
-          <div class="settings-section" id="integrations">
-            <h3 class="section-title">Third-Party Integrations</h3>
-
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="googleCalendar" checked> Google Calendar Sync
-              </label>
-              <small>Automatically sync events with your Google Calendar</small>
-            </div>
-
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="mailchimp"> Mailchimp Integration
-              </label>
-              <small>Connect with your Mailchimp account for email campaigns</small>
-            </div>
-
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="stripe"> Stripe Payment Processing
-              </label>
-              <small>Enable Stripe for event ticket payments</small>
-            </div>
-
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="zoom"> Zoom Integration
-              </label>
-              <small>Automatically create Zoom meetings for virtual events</small>
-            </div>
-
-            <div class="checkbox-group">
-              <label>
-                <input type="checkbox" id="slack" checked> Slack Notifications
-              </label>
-              <small>Send event updates to your Slack channels</small>
+            <div style="margin-top: 48px; padding-top: 24px; border-top: 1px solid #E2E8F0;">
+              <h3 class="section-title" style="color: #EF4444;">Danger Zone</h3>
+              <p style="color: #64748B; margin-bottom: 16px;">Once you delete your account, there is no going back. Please be certain.</p>
+              <button type="button" class="btn-danger" id="deleteAccountBtn">
+                <i class="fas fa-trash-alt"></i> Delete Account
+              </button>
             </div>
           </div>
         </div>

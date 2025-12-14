@@ -1,42 +1,66 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-    </head>
-    <body>
-        {% block title %}Register{% endblock %}
-
-{% block content %}
-    <h2>Create New Account</h2>
-
-    <form method="post">
-        {% csrf_token %}
-        
-        {% if form.non_field_errors %}
-            <div style="color: red;">
-                {% for error in form.non_field_errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Visionary Events</title>
+    <link rel="stylesheet" href="{% static 'auth.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <h1>
+                    <span class="logo-visionary">Visionary</span>
+                    <span class="logo-events">EVENTS</span>
+                </h1>
             </div>
-        {% endif %}
-
-        {{ form.as_p }} 
-        
-        <button type="submit">Sign Up</button>
-    </form>
-
-    <p>Already have an account? <a href="{% url 'customers:login' %}">Log In</a></p>
-{% endblock %}
-        
-        <script src="" async defer></script>
-    </body>
+            
+            <div class="auth-header">
+                <h2>Create Account</h2>
+                <p>Join Visionary Events to manage your events</p>
+            </div>
+            
+            {% if form.non_field_errors %}
+                <div class="error-message">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <ul class="errorlist">
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <span class="helptext">{{ field.help_text }}</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <button type="submit" class="auth-button">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                Already have an account? <a href="{% url 'customers:login' %}">Sign In</a>
+            </div>
+        </div>
+    </div>
+</body>
 </html>

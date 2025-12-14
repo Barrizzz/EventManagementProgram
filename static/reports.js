@@ -129,6 +129,7 @@ function createEventsAttendanceChart() {
         }
 
         const ctx = canvas.getContext('2d');
+        // TODO: Fetch events and attendance data from database API
         const chart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -136,7 +137,7 @@ function createEventsAttendanceChart() {
                 datasets: [
                     {
                         label: 'Events',
-                        data: [18, 22, 25, 30, 28, 35, 32],
+                        data: [0, 0, 0, 0, 0, 0, 0], // Will be populated from database
                         borderColor: '#8B5CF6',
                         backgroundColor: 'rgba(139, 92, 246, 0.1)',
                         borderWidth: 3,
@@ -149,7 +150,7 @@ function createEventsAttendanceChart() {
                     },
                     {
                         label: 'Attendance',
-                        data: [320, 380, 420, 510, 480, 590, 550],
+                        data: [0, 0, 0, 0, 0, 0, 0], // Will be populated from database
                         borderColor: '#10B981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
                         borderWidth: 3,
@@ -240,7 +241,7 @@ function createRevenueAnalysisChart() {
                 labels: ['Conference', 'Workshop', 'Networking', 'Webinar', 'Other'],
                 datasets: [{
                     label: 'Revenue ($)',
-                    data: [12500, 4200, 1800, 3100, 1200],
+                    data: [0, 0, 0, 0, 0], // Will be populated from database
                     backgroundColor: [
                         '#8B5CF6',
                         '#10B981',
@@ -325,7 +326,7 @@ function createEventDistributionChart() {
             data: {
                 labels: ['Conference', 'Workshop', 'Networking', 'Webinar'],
                 datasets: [{
-                    data: [35, 25, 20, 20],
+                    data: [0, 0, 0, 0], // Will be populated from database
                     backgroundColor: [
                         '#8B5CF6',
                         '#10B981',
@@ -406,7 +407,7 @@ function createAttendanceRateChart() {
             data: {
                 labels: ['Attended', 'Registered', 'No Show'],
                 datasets: [{
-                    data: [84, 12, 4],
+                    data: [0, 0, 0], // Will be populated from database
                     backgroundColor: [
                         '#10B981',
                         '#F59E0B',
@@ -487,7 +488,7 @@ function createTopEventsChart() {
                 labels: ['Tech Summit', 'Marketing Workshop', 'Leadership Conf', 'AI Expo', 'Startup Night'],
                 datasets: [{
                     label: 'Attendance',
-                    data: [245, 180, 312, 430, 120],
+                    data: [0, 0, 0, 0, 0], // Will be populated from database
                     backgroundColor: '#8B5CF6',
                     borderWidth: 0,
                     borderRadius: 8,

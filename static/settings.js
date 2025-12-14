@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     initializeSettingsPage();
     initializeSidebarToggle();
+    initializeDeleteAccount();
 });
 
 // Initialize settings page functionality
@@ -179,6 +180,44 @@ function initializeLogout() {
                 setTimeout(() => {
                     window.location.href = 'login.html';
                 }, 1000);
+            }
+        });
+    }
+}
+
+// Delete account functionality
+function initializeDeleteAccount() {
+    const deleteBtn = document.getElementById('deleteAccountBtn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function() {
+            const confirmDelete = confirm(
+                'Are you absolutely sure you want to delete your account?\n\n' +
+                'This action cannot be undone. All your data will be permanently deleted.'
+            );
+            
+            if (confirmDelete) {
+                const doubleConfirm = confirm(
+                    'This is your last chance!\n\n' +
+                    'Click OK to permanently delete your account, or Cancel to keep it.'
+                );
+                
+                if (doubleConfirm) {
+                    // Submit delete form
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'delete-account/';
+                    
+                    // Add CSRF token
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrfmiddlewaretoken';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
             }
         });
     }

@@ -149,21 +149,40 @@ body {
     color: var(--text-secondary);
     font-size: var(--font-size-sm);
     text-decoration: none;
+    position: relative;
 }
 
 .nav-item:hover {
     background-color: var(--background-gray);
     color: var(--text-primary);
+    transform: translateX(2px);
 }
 
 .nav-item.active {
-    background-color: var(--primary-purple);
-    color: var(--background-white);
+    background-color: var(--primary-purple) !important;
+    color: var(--background-white) !important;
+}
+
+.nav-item.active:hover {
+    background-color: #7C3AED !important;
+    opacity: 1;
+    transform: translateX(2px);
+}
+
+.nav-item.active i,
+.nav-item.active span,
+.nav-item.active a {
+    color: var(--background-white) !important;
 }
 
 .nav-item i {
     width: 20px;
     text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.nav-item:hover i {
+    transform: scale(1.1);
 }
 
 /* Main Content */
@@ -2845,6 +2864,60 @@ input::placeholder {
     font-size: var(--font-size-sm);
     display: block;
     margin-top: var(--spacing-xs);
+}
+
+.btn-danger {
+    background: #EF4444;
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-danger:hover {
+    background: #DC2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Messages */
+.messages-container {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.alert-success {
+    background: #D1FAE5;
+    color: #065F46;
+    border: 1px solid #A7F3D0;
+}
+
+.alert-error {
+    background: #FEE2E2;
+    color: #991B1B;
+    border: 1px solid #FECACA;
+}
+
+.alert-info {
+    background: #DBEAFE;
+    color: #1E40AF;
+    border: 1px solid #BFDBFE;
 }
 
 /* Checkbox Groups */

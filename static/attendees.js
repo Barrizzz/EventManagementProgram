@@ -102,12 +102,13 @@ function createSubscriptionChart() {
         }
 
         const ctx = canvas.getContext('2d');
+        // TODO: Fetch subscription data from database API
         const chart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: ['Subscribed', 'Non-Subscribed'],
                 datasets: [{
-                    data: [245, 520],
+                    data: [0, 0], // Will be populated from database
                     backgroundColor: ['#8B5CF6', '#F59E0B'],
                     borderWidth: 2,
                     borderColor: '#FFFFFF',
@@ -170,13 +171,14 @@ function createTopAttendeesChart() {
         }
 
         const ctx = canvas.getContext('2d');
+        // TODO: Fetch top attendees data from database API
         const chart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Hassan I.', 'Abdulrahman N.', 'Layla K.', 'Khalid F.', 'Sadia A.'],
+                labels: [], // Will be populated from database
                 datasets: [{
                     label: 'Events Attended',
-                    data: [21, 22, 19, 18, 17],
+                    data: [], // Will be populated from database
                     backgroundColor: '#8B5CF6',
                     borderWidth: 0,
                     borderRadius: 6
@@ -235,13 +237,14 @@ function createTrendChart() {
         }
 
         const ctx = canvas.getContext('2d');
+        // TODO: Fetch new attendees trend data from database API
         const chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                 datasets: [{
                     label: 'New Attendees',
-                    data: [28, 32, 45, 38, 52, 48],
+                    data: [0, 0, 0, 0, 0, 0], // Will be populated from database
                     borderColor: '#10B981',
                     backgroundColor: 'rgba(16, 185, 129, 0.1)',
                     borderWidth: 3,

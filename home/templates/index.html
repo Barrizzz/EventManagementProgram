@@ -112,50 +112,21 @@
                         </div>
                     </div>
 
-                    <!-- Event Attendees -->
-                    <div class="card attendees-card" data-node-id="6:55">
+                    <!-- Event Attendees - TO BE IMPLEMENTED WITH DATABASE -->
+                    <!-- <div class="card attendees-card" data-node-id="6:55">
                         <div class="card-header">
                             <div class="card-title-section">
                                 <h2>Event Attendees</h2>
-                                <p class="subtitle">Summer Music Festival • 247 registered</p>
+                                <p class="subtitle">Will be populated from database</p>
                             </div>
-                            <a href="#" class="view-all">View All ></a>
+                            <a href="{% url 'attendees' %}" class="view-all">View All ></a>
                         </div>
                         <div class="attendees-table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Attendee</th>
-                                        <th>Registration</th>
-                                        <th>Ticket Type</th>
-                                        <th>Status</th>
-                                        <th>Check-in</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for p in persons %}
-                                    <tr>
-                                        <td>
-                                            <div class="attendee-info">
-                                                <div class="attendee-avatar sm">SM</div>
-                                                <div class="attendee-details">
-                                                    <div class="name">{{ p.first_name|add:" "|add:p.last_name }}</div>
-                                                    <div class="email">{{p.email}}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>Jul 10, 2024 2:50 PM</td>
-                                        <td><span class="ticket-type vip">VIP Pass</span></td>
-                                        <td><span class="status confirmed">Confirmed</span></td>
-                                        <td><span class="checkin checked">Checked in</span></td>
-                                        <td><a href="#" class="action-link">View Details</a></td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                            <p style="text-align: center; padding: 40px; color: #64748B;">
+                                Attendee data will be loaded from the database once implemented.
+                            </p>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
 
                 <!-- Right Column -->
@@ -178,19 +149,19 @@
                         </div>
                         <div class="stats-grid">
                             <div class="stat-item">
-                                <div class="stat-number">315</div>
+                                <div class="stat-number">0</div>
                                 <div class="stat-label">Total Bookings</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-number">2 PM</div>
+                                <div class="stat-number">-</div>
                                 <div class="stat-label">Peak Hour</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-number">21</div>
+                                <div class="stat-number">0</div>
                                 <div class="stat-label">Average Bookings</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-number">15</div>
+                                <div class="stat-number">0</div>
                                 <div class="stat-label">Lowest Bookings</div>
                             </div>
                         </div>
@@ -218,7 +189,7 @@
                                     <div class="legend-color active"></div>
                                     <div class="legend-text">
                                         <div class="legend-label">Active Attendance</div>
-                                        <div class="legend-percentage">87%</div>
+                                        <div class="legend-percentage">0%</div>
                                         <div class="legend-description">Attendees who actively participated in events</div>
                                     </div>
                                 </div>
@@ -226,7 +197,7 @@
                                     <div class="legend-color inactive"></div>
                                     <div class="legend-text">
                                         <div class="legend-label">Inactive/Missed</div>
-                                        <div class="legend-percentage">13%</div>
+                                        <div class="legend-percentage">0%</div>
                                         <div class="legend-description">No-shows and cancelled registrations</div>
                                     </div>
                                 </div>

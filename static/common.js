@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Initializing Event Management System...');
 
     // Initialize all components
+    setActiveNavItem();
     initializePageSpecificCharts();
     initializeNavigation();
     initializeSearch();
@@ -108,29 +109,80 @@ function handleWindowResize() {
     }
 }
 
+// Set active navigation item based on current page
+function setActiveNavItem() {
+    const currentPath = window.location.pathname;
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    console.log('Current path:', currentPath);
+    
+    // Remove all active classes first
+    navItems.forEach(item => item.classList.remove('active'));
+    
+    // Find matching nav item
+    let matched = false;
+    navItems.forEach(item => {
+        const itemHref = item.getAttribute('href');
+        const dataPage = item.getAttribute('data-page');
+        
+        if (itemHref && !matched) {
+            // Check for exact match first
+            if (currentPath === itemHref) {
+                item.classList.add('active');
+                matched = true;
+                console.log('Exact match for:', itemHref);
+            }
+            // Check if current path contains the data-page value
+            else if (dataPage && currentPath.includes(dataPage)) {
+                item.classList.add('active');
+                matched = true;
+                console.log('Data-page match for:', dataPage);
+            }
+            // Check if path starts with href (but not for root)
+            else if (itemHref !== '/' && currentPath.startsWith(itemHref)) {
+                item.classList.add('active');
+                matched = true;
+                console.log('Starts with match for:', itemHref);
+            }
+        }
+    });
+    
+    // If no match found and we're at root, activate home
+    if (!matched && currentPath === '/') {
+        navItems.forEach(item => {
+            const itemHref = item.getAttribute('href');
+            if (itemHref === '/' || item.getAttribute('data-page') === 'home') {
+                item.classList.add('active');
+                console.log('Home page activated');
+            }
+        });
+    }
+}
+
 // Navigation functionality
 function initializeNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
 
     navItems.forEach(item => {
-        if (!item.hasAttribute('href')) {
-            item.addEventListener('click', function() {
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 150);
-
-                const itemText = this.querySelector('span').textContent;
-                showNotification(`${itemText} feature coming soon!`, 'info');
-            });
-        } else {
-            item.addEventListener('click', function() {
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 150);
-            });
-        }
+        item.addEventListener('click', function(e) {
+            // Handle logout confirmation
+            if (this.classList.contains('logout')) {
+                e.preventDefault();
+                
+                const confirmed = confirm('Are you sure you want to log out?');
+                
+                if (confirmed) {
+                    window.location.href = this.getAttribute('href');
+                }
+                return;
+            }
+            
+            // Add click animation for other nav items
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
     });
 }
 
