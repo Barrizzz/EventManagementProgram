@@ -72,33 +72,10 @@ function initializeFormHandling() {
     }
 }
 
-// Save functionality
+// Save functionality - Removed to allow form natural submission
 function initializeSaveFunctionality() {
-    const saveButton = document.querySelector('.btn-primary');
-    const resetButton = document.querySelectorAll('.btn-primary')[1];
-
-    if (saveButton) {
-        saveButton.addEventListener('click', function() {
-            // Simulate save operation
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            this.disabled = true;
-
-            setTimeout(() => {
-                this.innerHTML = '<i class="fas fa-save"></i> Save Changes';
-                this.disabled = false;
-                showNotification('Settings saved successfully!', 'success');
-            }, 1500);
-        });
-    }
-
-    if (resetButton) {
-        resetButton.addEventListener('click', function() {
-            if (confirm('Are you sure you want to reset all settings to default?')) {
-                // Reset form logic would go here
-                showNotification('Settings reset to default values', 'info');
-            }
-        });
-    }
+    // Profile form submits naturally via POST to backend
+    // No need to intercept the submission
 }
 
 // Password strength indicator

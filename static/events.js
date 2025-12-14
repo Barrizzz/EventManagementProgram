@@ -218,56 +218,105 @@ function showEventModal(eventData = null) {
                 <button class="modal-close">&times;</button>
             </div>
             <form class="event-form" id="eventForm" ${isEditMode ? `data-event-id="${eventData.id}"` : ''}>
-                <div class="form-group">
-                    <label for="eventTitle">Event Title *</label>
-                    <input type="text" id="eventTitle" name="title" value="${isEditMode ? eventData.title : ''}" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="eventDescription">Description *</label>
-                    <textarea id="eventDescription" name="description" rows="4" required>${isEditMode ? eventData.description : ''}</textarea>
-                </div>
-
-                <div class="form-row">
+                <!-- Basic Event Information -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Basic Information</h3>
+                    
                     <div class="form-group">
-                        <label for="eventDate">Date *</label>
-                        <input type="date" id="eventDate" name="date" value="${isEditMode ? eventData.date : ''}" required>
+                        <label for="eventName">Event Name *</label>
+                        <input type="text" id="eventName" name="name" 
+                            value="${isEditMode ? eventData.name : ''}" 
+                            placeholder="Enter event name" required>
                     </div>
-                    <div class="form-group">
-                        <label for="eventLocation">Location *</label>
-                        <input type="text" id="eventLocation" name="location" value="${isEditMode ? eventData.location : ''}" required>
-                    </div>
-                </div>
 
-                <div class="form-row">
                     <div class="form-group">
-                        <label for="startTime">Start Time *</label>
-                        <input type="time" id="startTime" name="start_time" value="${isEditMode ? eventData.start_time : ''}" required>
+                        <label for="eventDescription">Description *</label>
+                        <input type="text" id="eventDescription" name="description" 
+                            placeholder="Describe the event" required value="${isEditMode ? eventData.description : ''}">
                     </div>
+
                     <div class="form-group">
-                        <label for="endTime">End Time *</label>
-                        <input type="time" id="endTime" name="end_time" value="${isEditMode ? eventData.end_time : ''}" required>
+                        <label for="eventRundown">Event Rundown *</label>
+                        <input type="text" id="eventRundown" name="rundown" 
+                            placeholder="Event schedule and activities (please enter a document link)" required value="${isEditMode ? eventData.rundown : ''}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventMaterials">Materials Needed</label>
+                        <input type="text" id="eventMaterials" name="materials" 
+                            placeholder="The materials required for the event (please enter a folder link)" value="${isEditMode ? eventData.materials : ''}">
                     </div>
                 </div>
 
-                <div class="form-row">
+                <!-- Event Category -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Category & Type</h3>
+                    
                     <div class="form-group">
-                        <label for="maxAttendees">Max Attendees</label>
-                        <input type="number" id="maxAttendees" name="max_attendees" value="${isEditMode ? eventData.max_attendees : ''}" min="1">
+                        <label for="eventCategory">Event Category *</label>
+                        <input type="text" id="eventCategory" name="category" 
+                            placeholder="Enter category name (e.g., Conference, Workshop)" 
+                            list="categoryList" required>
+                        <datalist id="categoryList">
+                            <!-- Options will be populated from existing categories -->
+                        </datalist>
+                        <small class="form-help">Type to enter new category or select from existing ones</small>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="eventImage">Image URL (optional)</label>
-                    <input type="url" id="eventImage" name="image_url" value="${isEditMode ? eventData.image_url : ''}" placeholder="https://example.com/image.jpg">
+                <!-- Date & Time -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Date & Time</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventDate">Date *</label>
+                            <input type="date" id="eventDate" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventTime">Time *</label>
+                            <input type="time" id="eventTime" name="time" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Organizer -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Organizer</h3>
+                    
+                    <div class="form-group">
+                        <label for="eventOrganizer">Event Organizer Name *</label>
+                        <input type="text" id="eventOrganizer" name="organizer" 
+                            placeholder="Enter organizer name" 
+                            list="organizerList" required>
+                        <datalist id="organizerList">
+                            <!-- Options will be populated from existing organizers -->
+                        </datalist>
+                        <small class="form-help">Type to enter new organizer or select from existing ones</small>
+                    </div>
+                </div>
+
+                <!-- Venue -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Venue</h3>
+                    
+                    <div class="form-group">
+                        <label for="eventVenue">Venue Name *</label>
+                        <input type="text" id="eventVenue" name="venue" 
+                            placeholder="Enter venue name" 
+                            list="venueList" required>
+                        <datalist id="venueList">
+                            <!-- Options will be populated from existing venues -->
+                        </datalist>
+                        <small class="form-help">Type to enter new venue or select from existing ones</small>
+                    </div>
                 </div>
 
                 <div class="form-actions">
-                    ${isEditMode ? '<button type="button" class="btn-danger" id="deleteBtn"><i class="fas fa-trash"></i> Delete Event</button>' : '<div></div>'}
-                    <div class="right-actions">
-                        <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
-                        <button type="submit" class="btn-primary">${submitButtonText}</button>
-                    </div>
+                    <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-${isEditMode ? 'save' : 'plus'}"></i> ${submitButtonText}
+                    </button>
                 </div>
             </form>
         </div>
@@ -381,11 +430,10 @@ function showEventModal(eventData = null) {
         .form-actions {
             display: flex;
             gap: 12px;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid #e2e8f0;
+            margin-top: 24px;
+            padding-top: 0;
         }
 
         .btn-primary, .btn-secondary, .btn-danger {
@@ -433,12 +481,53 @@ function showEventModal(eventData = null) {
         .event-form {
             padding: 24px;
         }
+
+        .form-section {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-help {
+            display: block;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .form-help a {
+            color: #8b5cf6;
+            text-decoration: none;
+        }
+
+        .form-help a:hover {
+            text-decoration: underline;
+        }
     `;
         document.head.appendChild(style);
     }
 
     // Add modal to page
     document.body.appendChild(modal);
+
+    // Populate dropdowns with data
+    populateEventFormDropdowns(modal, eventData);
 
     // Event listeners
     const closeBtn = modal.querySelector('.modal-close');
@@ -470,23 +559,28 @@ function showEventModal(eventData = null) {
         });
     }
 
+    // TODO: REQUIRES BACKEND WORK
     // Form submission
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const formData = new FormData(form);
-        const submitData = Object.fromEntries(formData.entries());
-
-        const url = isEditMode ? `/events/update/${eventData.id}/` : '/events/';
+        // Collect and structure the form data
+        const submitData = collectEventFormData(form);
+        
+        const url = isEditMode ? `/events/update/${eventData.id}/` : '/events/create/';
         const successMessage = isEditMode ? 'Event updated successfully!' : 'Event created successfully!';
 
+        console.log('Submitting event data:', submitData);
+        console.log('To URL:', url);
+
+        // Submit to backend
         fetch(url, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
                 'X-CSRFToken': getCSRFToken()
             },
-            body: new URLSearchParams(submitData)
+            body: JSON.stringify(submitData)
         })
         .then(response => response.json())
         .then(data => {
@@ -529,3 +623,110 @@ function deleteEvent(eventId, closeModalCallback) {
         showNotification('Error deleting event. Please try again.', 'error');
     });
 }
+
+// Populate datalists with existing data for autocomplete
+function populateEventFormDropdowns(modal, eventData = null) {
+    const categoryList = modal.querySelector('#categoryList');
+    const organizerList = modal.querySelector('#organizerList');
+    const venueList = modal.querySelector('#venueList');
+    
+    const categoryInput = modal.querySelector('#eventCategory');
+    const organizerInput = modal.querySelector('#eventOrganizer');
+    const venueInput = modal.querySelector('#eventVenue');
+    const dateInput = modal.querySelector('#eventDate');
+    const timeInput = modal.querySelector('#eventTime');
+
+    // If editing, populate form fields
+    if (eventData) {
+        categoryInput.value = eventData.category || '';
+        organizerInput.value = eventData.organizer || '';
+        venueInput.value = eventData.venue || '';
+        dateInput.value = eventData.date || '';
+        timeInput.value = eventData.time || '';
+    }
+
+    // TODO: BACKEND WORK NEEDED
+    // Fetch categories for autocomplete suggestions
+    fetch('/api/categories/', {
+        headers: {
+            'X-CSRFToken': getCSRFToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const categories = data.categories || data || [];
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.name;
+            categoryList.appendChild(option);
+        });
+    })
+    .catch(error => {
+        console.log('Categories not loaded (empty or error):', error);
+    });
+
+    // Fetch organizers for autocomplete suggestions
+    fetch('/api/organizers/', {
+        headers: {
+            'X-CSRFToken': getCSRFToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const organizers = data.organizers || data || [];
+        organizers.forEach(organizer => {
+            const option = document.createElement('option');
+            option.value = organizer.name;
+            organizerList.appendChild(option);
+        });
+    })
+    .catch(error => {
+        console.log('Organizers not loaded (empty or error):', error);
+    });
+
+    // Fetch venues for autocomplete suggestions
+    fetch('/api/venues/', {
+        headers: {
+            'X-CSRFToken': getCSRFToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const venues = data.venues || data || [];
+        venues.forEach(venue => {
+            const option = document.createElement('option');
+            option.value = venue.name;
+            venueList.appendChild(option);
+        });
+    })
+    .catch(error => {
+        console.log('Venues not loaded (empty or error):', error);
+    });
+}
+
+// Helper function to collect form data
+function collectEventFormData(form) {
+    const formData = new FormData(form);
+    
+    // Convert to object with proper structure
+    const eventData = {
+        // Main event fields
+        name: formData.get('name'),
+        description: formData.get('description'),
+        rundown: formData.get('rundown'),
+        materials: formData.get('materials') || null,
+        
+        // Related data (backend will handle creating/linking these)
+        category: formData.get('category'),
+        organizer: formData.get('organizer'),
+        venue: formData.get('venue'),
+        
+        // Date and time fields
+        date: formData.get('date'),
+        time: formData.get('time')
+    };
+    
+    console.log('Collected event data:', eventData);
+    return eventData;
+}
+
