@@ -32,39 +32,23 @@
             <!-- Summary Cards - Data from Database -->
             <div class="summary-cards">
                 <div class="summary-card primary">
-                    <div class="summary-value">0</div>
+                    <div class="summary-value">{{ total_events }}</div>
                     <div class="summary-label">Total Events</div>
-                    <div class="summary-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        0% from last period
-                    </div>
                 </div>
 
                 <div class="summary-card success">
-                    <div class="summary-value">0</div>
+                    <div class="summary-value">{{ total_attendees }}</div>
                     <div class="summary-label">Total Attendees</div>
-                    <div class="summary-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        0% from last period
-                    </div>
                 </div>
 
                 <div class="summary-card warning">
-                    <div class="summary-value">0</div>
+                    <div class="summary-value">{{ avg_event_size }}</div>
                     <div class="summary-label">Avg. Event Size</div>
-                    <div class="summary-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        0% from last period
-                    </div>
                 </div>
 
                 <div class="summary-card danger">
-                    <div class="summary-value">$0.00</div>
+                    <div class="summary-value">${{ total_revenue }}</div>
                     <div class="summary-label">Total Revenue</div>
-                    <div class="summary-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        0% from last period
-                    </div>
                 </div>
             </div>
 
@@ -305,12 +289,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Event performance data will be populated from database -->
-                            <tr>
-                                <td colspan="7" style="text-align: center; padding: 40px; color: #64748B;">
-                                    No event performance data available. Data will be loaded from database.
-                                </td>
-                            </tr>
+                            {% if all_events %}
+                                {% for event_data in all_events %}
+                                <tr>
+                                    <td>{{ event_data.event.name }}</td>
+                                    <td>{{ event_data.event.datetime.date }}</td>
+                                    <td>{{ event_data.tickets_sold }}</td>
+                                    <td>{{ event_data.event.venue.capacity }}</td>
+                                    <td>${{ event_data.revenue }}</td>
+                                    <td>{{ event_data.attendance_rate|floatformat:0 }}%</td>
+                                    <td>
+                                        <span class="status-badge {{ event_data.event.status }}">{{ event_data.event.status }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 40px; color: #64748B;">
+                                        No event performance data available
+                                    </td>
+                                </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
@@ -318,8 +317,6 @@
         </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'common.js' %}"></script>
-    <script src="{% static 'reports.js' %}"></script>
 </body>
 </html>

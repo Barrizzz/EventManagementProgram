@@ -33,9 +33,6 @@ function initializeMenuNavigation() {
                     section.classList.add('active');
                 }
             });
-
-            // Show notification
-            showNotification(`Switched to ${this.textContent.trim()} settings`, 'info');
         });
     });
 }
@@ -58,7 +55,6 @@ function initializeFormHandling() {
                     }
                 };
                 reader.readAsDataURL(e.target.files[0]);
-                showNotification('Avatar updated successfully!', 'success');
             }
         });
     }
@@ -68,7 +64,7 @@ function initializeFormHandling() {
     if (themeSelect) {
         themeSelect.addEventListener('change', function() {
             showNotification(`Theme changed to ${this.value}`, 'info');
-        });
+        });// Theme changed
     }
 }
 
@@ -146,22 +142,6 @@ function initializeSidebarToggle() {
     }
 }
 
-// Logout functionality
-function initializeLogout() {
-    const logoutButton = document.querySelector('.nav-item.logout');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', function() {
-            if (confirm('Are you sure you want to log out?')) {
-                // Simulate logout
-                showNotification('Logging out...', 'info');
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 1000);
-            }
-        });
-    }
-}
-
 // Delete account functionality
 function initializeDeleteAccount() {
     const deleteBtn = document.getElementById('deleteAccountBtn');
@@ -199,15 +179,5 @@ function initializeDeleteAccount() {
         });
     }
 }
-
-// Initialize logout when DOM is ready
-document.addEventListener('DOMContentLoaded', initializeLogout);
-
-// Export functions for global access
-window.SettingsManager = {
-    initializeSettingsPage,
-    showNotification,
-    calculatePasswordStrength
-};
 
 console.log('🎉 Settings page loaded successfully!');

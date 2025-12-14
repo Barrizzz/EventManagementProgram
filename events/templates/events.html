@@ -85,35 +85,31 @@
                         </div>
                         <div class="events-grid">
                             {% for event in ongoing_events %}
-                            <div class="event-card ongoing" data-event-id="{{ event.id }}">
+                            <div class="event-card ongoing" data-event-id="{{ event.eventID }}">
                                 <div class="event-image">
-                                    {% if event.image_url %}
-                                    <img src="{{ event.image_url }}" alt="{{ event.title }}">
-                                    {% else %}
-                                    <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=200&fit=crop" alt="{{ event.title }}">
-                                    {% endif %}
+                                    <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=200&fit=crop" alt="{{ event.name }}">
                                     <div class="event-status-badge ongoing">Live Now</div>
                                 </div>
                                 <div class="event-info">
-                                    <h3 class="event-title">{{ event.title }}</h3>
+                                    <h3 class="event-title">{{ event.name }}</h3>
                                     <p class="event-location">
                                         <i class="fas fa-map-marker-alt"></i>
-                                        {{ event.location }}
+                                        {{ event.venue.city }}, {{ event.venue.name }} - {{ event.venue.address }}
                                     </p>
                                     <p class="event-description">{{ event.description }}</p>
                                     <div class="event-details">
                                         <div class="event-date">
                                             <i class="fas fa-calendar"></i>
-                                            <span>{{ event.date|date:"M d, Y" }} | {{ event.start_time|time:"g:i A" }} - {{ event.end_time|time:"g:i A" }}</span>
+                                            <span>{{ event.datetime.date|date:"M d, Y" }} | {{ event.datetime.startTime|time:"g:i A" }} - {{ event.datetime.endTime|time:"g:i A" }}</span>
                                         </div>
                                         <div class="event-attendees">
                                             <i class="fas fa-users"></i>
-                                            <span>{{ event.max_attendees }} max attendees</span>
+                                            <span>Max Attendees: {{ event.venue.capacity }}</span>
                                         </div>
                                     </div>
                                     <div class="event-actions">
                                         <button class="btn-action primary">View Details</button>
-                                        <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.id }}">Edit Event</button>
+                                        <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.eventID }}">Edit Event</button>
                                     </div>
                                 </div>
                             </div>
@@ -138,35 +134,31 @@
                         </div>
                         <div class="events-grid">
                             {% for event in upcoming_events %}
-                            <div class="event-card upcoming" data-event-id="{{ event.id }}">
+                            <div class="event-card upcoming" data-event-id="{{ event.eventID }}">
                                 <div class="event-image">
-                                    {% if event.image_url %}
-                                    <img src="{{ event.image_url }}" alt="{{ event.title }}">
-                                    {% else %}
-                                    <img src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=200&fit=crop" alt="{{ event.title }}">
-                                    {% endif %}
+                                    <img src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=200&fit=crop" alt="{{ event.name }}">
                                     <div class="event-status-badge upcoming">Upcoming</div>
                                 </div>
                                 <div class="event-info">
-                                    <h3 class="event-title">{{ event.title }}</h3>
+                                    <h3 class="event-title">{{ event.name }}</h3>
                                     <p class="event-location">
                                         <i class="fas fa-map-marker-alt"></i>
-                                        {{ event.location }}
+                                        {{ event.venue.city }}, {{ event.venue.name }} - {{ event.venue.address }} 
                                     </p>
                                     <p class="event-description">{{ event.description }}</p>
                                     <div class="event-details">
                                         <div class="event-date">
                                             <i class="fas fa-calendar"></i>
-                                            <span>{{ event.date|date:"M d, Y" }} | {{ event.start_time|time:"g:i A" }} - {{ event.end_time|time:"g:i A" }}</span>
+                                            <span>{{ event.datetime.date|date:"M d, Y" }} | {{ event.datetime.startTime|time:"g:i A" }} - {{ event.datetime.endTime|time:"g:i A" }}</span>
                                         </div>
                                         <div class="event-attendees">
                                             <i class="fas fa-users"></i>
-                                            <span>{{ event.max_attendees }} max attendees</span>
+                                            <span>Max Attendees: {{ event.venue.capacity }}</span>
                                         </div>
                                     </div>
                                     <div class="event-actions">
                                         <button class="btn-action primary">View Details</button>
-                                        <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.id }}">Edit Event</button>
+                                        <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.eventID }}">Edit Event</button>
                                     </div>
                                 </div>
                             </div>
@@ -191,30 +183,26 @@
                         </div>
                         <div class="events-grid">
                             {% for event in finished_events %}
-                            <div class="event-card finished" data-event-id="{{ event.id }}">
+                            <div class="event-card finished" data-event-id="{{ event.eventID }}">
                                 <div class="event-image">
-                                    {% if event.image_url %}
-                                    <img src="{{ event.image_url }}" alt="{{ event.title }}">
-                                    {% else %}
-                                    <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=200&fit=crop" alt="{{ event.title }}">
-                                    {% endif %}
+                                    <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=200&fit=crop" alt="{{ event.name }}">
                                     <div class="event-status-badge finished">Finished</div>
                                 </div>
                                 <div class="event-info">
-                                    <h3 class="event-title">{{ event.title }}</h3>
+                                    <h3 class="event-title">{{ event.name }}</h3>
                                     <p class="event-location">
                                         <i class="fas fa-map-marker-alt"></i>
-                                        {{ event.location }}
+                                        {{ event.venue.city }}, {{ event.venue.name }} - {{ event.venue.address }}
                                     </p>
                                     <p class="event-description">{{ event.description }}</p>
                                     <div class="event-details">
                                         <div class="event-date">
                                             <i class="fas fa-calendar"></i>
-                                            <span>{{ event.date|date:"M d, Y" }} | {{ event.start_time|time:"g:i A" }} - {{ event.end_time|time:"g:i A" }}</span>
+                                            <span>{{ event.datetime.date|date:"M d, Y" }} | {{ event.datetime.startTime|time:"g:i A" }} - {{ event.datetime.endTime|time:"g:i A" }}</span>
                                         </div>
                                         <div class="event-attendees">
                                             <i class="fas fa-users"></i>
-                                            <span>{{ event.max_attendees }} max attendees</span>
+                                            <span>Max Attendees: {{ event.venue.capacity }}</span>
                                         </div>
                                     </div>
                                     <div class="event-actions">
@@ -222,7 +210,7 @@
                                         <button class="btn-action secondary">View Report</button>
                                     </div>
                                     <div class="event-actions event-actions-secondary">
-                                        <button class="btn-action danger delete-event-btn" data-event-id="{{ event.id }}">Delete Event</button>
+                                        <button class="btn-action danger delete-event-btn" data-event-id="{{ event.eventID }}">Delete Event</button>
                                     </div>
                                 </div>
                             </div>
@@ -250,31 +238,27 @@
                             </thead>
                             <tbody>
                                 {% for event in all_events %}
-                                <tr class="event-row {{ event.status }}" data-event-id="{{ event.id }}">
+                                <tr class="event-row {{ event.status }}" data-event-id="{{ event.eventID }}">
                                     <td>
                                         <div class="event-cell">
-                                            {% if event.image_url %}
-                                            <img src="{{ event.image_url }}" alt="{{ event.title }}" class="event-thumb">
-                                            {% else %}
-                                            <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=60&h=60&fit=crop" alt="{{ event.title }}" class="event-thumb">
-                                            {% endif %}
+                                            <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=60&h=60&fit=crop" alt="{{ event.name }}" class="event-thumb">
                                             <div class="event-info-cell">
-                                                <h4>{{ event.title }}</h4>
+                                                <h4>{{ event.name }}</h4>
                                                 <p>{{ event.description }}</p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ event.date|date:"M d, Y" }}<br>{{ event.start_time|time:"g:i A" }} - {{ event.end_time|time:"g:i A" }}</td>
-                                    <td>{{ event.location }}</td>
+                                    <td>{{ event.datetime.date|date:"M d, Y" }}<br>{{ event.datetime.startTime|time:"g:i A" }} - {{ event.datetime.endTime|time:"g:i A" }}</td>
+                                    <td>{{ event.venue.name }}, {{ event.venue.city }}</td>
                                     <td>
                                         <span class="status-badge {{ event.status }}">
                                             {% if event.status == 'ongoing' %}Live Now{% elif event.status == 'upcoming' %}Upcoming{% else %}Finished{% endif %}
                                         </span>
                                     </td>
-                                    <td>{{ event.max_attendees }} max</td>
+                                    <td>{{ event.venue.capacity }} max</td>
                                     <td>
                                         <button class="btn-action primary">View</button>
-                                        <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.id }}">Edit</button>
+                                        <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.eventID }}">Edit</button>
                                     </td>
                                 </tr>
                                 {% empty %}

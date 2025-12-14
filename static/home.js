@@ -1,5 +1,398 @@
 // Home page specific JavaScript
-// Note: initializePageSpecificCharts is now handled in common.js// Home page charts
+// Note: initializePageSpecificCharts is now handled in common.js
+
+// Initialize home page functionality
+function initializeHomePage() {
+    initializeHomeCharts();
+    initializeRegisterButtons();
+}
+
+// Initialize "Register Now" button listeners for upcoming events
+function initializeRegisterButtons() {
+    // Get all "Register Now" buttons on the page
+    const registerButtons = document.querySelectorAll('.btn-register');
+    
+    registerButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Find the parent event card to extract event information
+            const eventCard = this.closest('.event-card');
+            
+            if (eventCard) {
+                // Extract event data from the card
+                const eventId = eventCard.dataset.eventId || null;
+                const eventName = eventCard.querySelector('h3')?.textContent || 'Event';
+                
+                // Show ticket selection modal
+                showTicketRegistrationModal(eventId, eventName);
+            }
+        });
+    });
+}
+
+/**
+ * Show ticket registration modal for event registration
+ * This modal will:
+ * 1. Check if user already registered for this event (one ticket per person per event)
+ * 2. Display available ticket types (from ticketType table)
+ * 3. Allow user to select ticket type and seat
+ * 4. Create ticket and eventCustomer record
+ * 
+ * @param {number} eventId - The event ID from the Event table
+ * @param {string} eventName - The name of the event for display
+ */
+function showTicketRegistrationModal(eventId, eventName) {
+    // Create modal overlay
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content ticket-registration-modal">
+            <div class="modal-header">
+                <h2>Register for ${eventName}</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            
+            <div class="modal-body" id="ticketModalBody">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading ticket information...</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Close button handler
+    const closeBtn = modal.querySelector('.modal-close');
+    closeBtn.addEventListener('click', () => modal.remove());
+    
+    // Close on overlay click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
+    
+    // Load ticket types and check if user already registered
+    loadTicketRegistrationForm(eventId, eventName);
+}
+
+/**
+ * Load ticket types and check user registration status
+ * Backend will:
+ * 1. Check EventCustomer table if current user already has a ticket for this event
+ * 2. Fetch available TicketType records for display
+ * 3. Return venue capacity to calculate available seats
+ */
+function loadTicketRegistrationForm(eventId, eventName) {
+    const modalBody = document.getElementById('ticketModalBody');
+    
+    // TODO: Call backend endpoint to check registration and get ticket types
+    // Expected endpoint: GET /events/<eventId>/registration-info/
+    // Expected response: {
+    //   already_registered: boolean,
+    //   ticket_types: [{ticketTypeID, type, zone, price}, ...],
+    //   venue_capacity: number,
+    //   available_seats: number
+    // }
+    
+    fetch(`/events/${eventId}/registration-info/`, {
+        headers: {
+            'X-CSRFToken': getCSRFToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.already_registered) {
+            // User already has a ticket - show their ticket info
+            displayAlreadyRegistered(modalBody, data.ticket_info);
+        } else {
+            // Show ticket selection form
+            displayTicketSelectionForm(modalBody, eventId, eventName, data.ticket_types, data.available_seats);
+        }
+    })
+    .catch(error => {
+        console.error('Error loading ticket info:', error);
+        modalBody.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Unable to load ticket information. Please try again later.</p>
+            </div>
+        `;
+    });
+}
+
+/**
+ * Display message when user already registered for the event
+ * Shows their existing ticket details from the Ticket table
+ */
+function displayAlreadyRegistered(container, ticketInfo) {
+    container.innerHTML = `
+        <div class="already-registered-message">
+            <i class="fas fa-check-circle"></i>
+            <h3>You're Already Registered!</h3>
+            <p>You already have a ticket for this event.</p>
+            
+            <div class="ticket-details">
+                <h4>Your Ticket Details:</h4>
+                <div class="ticket-info-grid">
+                    <div class="ticket-info-item">
+                        <span class="label">Ticket Type:</span>
+                        <span class="value">${ticketInfo.ticket_type}</span>
+                    </div>
+                    <div class="ticket-info-item">
+                        <span class="label">Zone:</span>
+                        <span class="value">${ticketInfo.zone}</span>
+                    </div>
+                    <div class="ticket-info-item">
+                        <span class="label">Seat:</span>
+                        <span class="value">Row ${ticketInfo.row}, Seat ${ticketInfo.seat}</span>
+                    </div>
+                    <div class="ticket-info-item">
+                        <span class="label">Price:</span>
+                        <span class="value">$${ticketInfo.price}</span>
+                    </div>
+                    <div class="ticket-info-item">
+                        <span class="label">Purchase Date:</span>
+                        <span class="value">${new Date(ticketInfo.purchase_date).toLocaleString()}</span>
+                    </div>
+                    <div class="ticket-info-item">
+                        <span class="label">Status:</span>
+                        <span class="value status-${ticketInfo.status}">${ticketInfo.status}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="note">Note: Each person can only register once per event.</p>
+        </div>
+    `;
+}
+
+/**
+ * Display ticket type selection form
+ * Shows available ticket types from TicketType table
+ * Allows user to select seat (rowNum, seatNum)
+ */
+function displayTicketSelectionForm(container, eventId, eventName, ticketTypes, availableSeats) {
+    container.innerHTML = `
+        <div class="ticket-selection-form">
+            <p class="available-info">
+                <i class="fas fa-info-circle"></i>
+                ${availableSeats} seats available
+            </p>
+            
+            <form id="ticketRegistrationForm">
+                <!-- Ticket Type Selection -->
+                <div class="form-section">
+                    <h3>Select Ticket Type</h3>
+                    <div class="ticket-types-grid" id="ticketTypesGrid">
+                        ${ticketTypes.map(type => `
+                            <div class="ticket-type-card" data-ticket-type-id="${type.ticketTypeID}">
+                                <input type="radio" 
+                                    name="ticketType" 
+                                    id="ticket_${type.ticketTypeID}" 
+                                    value="${type.ticketTypeID}" 
+                                    required>
+                                <label for="ticket_${type.ticketTypeID}">
+                                    <div class="ticket-type-header">
+                                        <span class="ticket-type-name">${type.type}</span>
+                                        <span class="ticket-zone">Zone ${type.zone}</span>
+                                    </div>
+                                    <div class="ticket-price">$${parseFloat(type.price).toFixed(2)}</div>
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <!-- Seat Selection -->
+                <div class="form-section">
+                    <h3>Select Your Seat</h3>
+                    <div class="seat-selection">
+                        <div class="form-group">
+                            <label for="rowNumber">Row Number *</label>
+                            <input type="number" 
+                                id="rowNumber" 
+                                name="rowNumber" 
+                                min="1" 
+                                max="50" 
+                                placeholder="Enter row number" 
+                                required>
+                            <small class="form-help">Rows 1-50</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="seatNumber">Seat Number *</label>
+                            <input type="number" 
+                                id="seatNumber" 
+                                name="seatNumber" 
+                                min="1" 
+                                max="20" 
+                                placeholder="Enter seat number" 
+                                required>
+                            <small class="form-help">Seats 1-20 per row</small>
+                        </div>
+                    </div>
+                    
+                    <p class="seat-note">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Note: The system will check if your selected seat is available. 
+                        Each seat can only be assigned once per event.
+                    </p>
+                </div>
+                
+                <!-- Registration Summary -->
+                <div class="registration-summary" id="registrationSummary" style="display: none;">
+                    <h4>Registration Summary</h4>
+                    <div class="summary-content">
+                        <p><strong>Event:</strong> ${eventName}</p>
+                        <p><strong>Ticket Type:</strong> <span id="summaryTicketType">-</span></p>
+                        <p><strong>Seat:</strong> <span id="summarySeat">-</span></p>
+                        <p><strong>Total:</strong> <span id="summaryTotal">$0.00</span></p>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelRegistration">Cancel</button>
+                    <button type="submit" class="btn-primary" id="confirmRegistration">
+                        <i class="fas fa-ticket-alt"></i> Confirm Registration
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    
+    // Setup form event listeners
+    setupTicketRegistrationFormListeners(eventId, ticketTypes);
+}
+
+/**
+ * Setup event listeners for ticket registration form
+ * Handles form updates and submission
+ */
+function setupTicketRegistrationFormListeners(eventId, ticketTypes) {
+    const form = document.getElementById('ticketRegistrationForm');
+    const ticketTypeCards = document.querySelectorAll('.ticket-type-card');
+    const rowInput = document.getElementById('rowNumber');
+    const seatInput = document.getElementById('seatNumber');
+    const summary = document.getElementById('registrationSummary');
+    const cancelBtn = document.getElementById('cancelRegistration');
+    
+    // Update summary when selections change
+    const updateSummary = () => {
+        const selectedTicketType = document.querySelector('input[name="ticketType"]:checked');
+        const row = rowInput.value;
+        const seat = seatInput.value;
+        
+        if (selectedTicketType && row && seat) {
+            const ticketTypeId = selectedTicketType.value;
+            const ticketType = ticketTypes.find(t => t.ticketTypeID == ticketTypeId);
+            
+            document.getElementById('summaryTicketType').textContent = 
+                `${ticketType.type} (Zone ${ticketType.zone})`;
+            document.getElementById('summarySeat').textContent = 
+                `Row ${row}, Seat ${seat}`;
+            document.getElementById('summaryTotal').textContent = 
+                `$${parseFloat(ticketType.price).toFixed(2)}`;
+            
+            summary.style.display = 'block';
+        } else {
+            summary.style.display = 'none';
+        }
+    };
+    
+    // Add visual selection feedback for ticket types
+    ticketTypeCards.forEach(card => {
+        card.addEventListener('click', function() {
+            ticketTypeCards.forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input[type="radio"]').checked = true;
+            updateSummary();
+        });
+    });
+    
+    // Update summary on input changes
+    form.addEventListener('input', updateSummary);
+    
+    // Cancel button
+    cancelBtn.addEventListener('click', () => {
+        document.querySelector('.modal-overlay').remove();
+    });
+    
+    // Form submission - handles ticket purchase
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        handleTicketRegistration(eventId, ticketTypes);
+    });
+}
+
+/**
+ * Handle ticket registration submission
+ * Creates records in:
+ * 1. Ticket table (ticketID, rowNum, seatNum, status='sold', event_id, ticket_type_id)
+ * 2. EventCustomer table (event_id, customer_id, ticket_id) - links customer to event via ticket
+ */
+function handleTicketRegistration(eventId, ticketTypes) {
+    const form = document.getElementById('ticketRegistrationForm');
+    const submitBtn = document.getElementById('confirmRegistration');
+    
+    // Disable submit button to prevent double submission
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    
+    // Collect form data
+    const formData = new FormData(form);
+    const ticketTypeId = formData.get('ticketType');
+    const rowNumber = parseInt(formData.get('rowNumber'));
+    const seatNumber = parseInt(formData.get('seatNumber'));
+    
+    // Prepare data for backend
+    // Backend will:
+    // 1. Check if seat is already taken (Ticket table unique_together constraint)
+    // 2. Check if user already registered (EventCustomer table - one ticket per person per event)
+    // 3. Create Ticket record with status='sold'
+    // 4. Create EventCustomer record linking customer to ticket
+    const registrationData = {
+        event_id: eventId,
+        ticket_type_id: ticketTypeId,
+        row_number: rowNumber,
+        seat_number: seatNumber
+    };
+    
+    // TODO: Call backend endpoint to create ticket and eventCustomer record
+    // Expected endpoint: POST /events/<eventId>/register/
+    // Backend should return: {success: true, ticket_id: X, message: "..."}
+    
+    fetch(`/events/${eventId}/register/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: JSON.stringify(registrationData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Registration successful! Your ticket has been confirmed.', 'success');
+            document.querySelector('.modal-overlay').remove();
+            
+            // Reload page to update UI (could be optimized to update specific elements)
+            setTimeout(() => window.location.reload(), 1500);
+        } else {
+            // Handle errors (seat taken, already registered, etc.)
+            showNotification(`Registration failed: ${data.error}`, 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-ticket-alt"></i> Confirm Registration';
+        }
+    })
+    .catch(error => {
+        console.error('Registration error:', error);
+        showNotification('An error occurred during registration. Please try again.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-ticket-alt"></i> Confirm Registration';
+    });
+}
+
+// Home page charts
 function initializeHomeCharts() {
     initializeRevenueChart();
     initializeBookingChart();
@@ -147,4 +540,80 @@ function initializeBreakdownChart() {
             plugins: { legend: { display: false } }
         }
     });
+}
+
+// Notification system
+function showNotification(message, type = 'info') {
+    // Remove any existing notifications
+    document.querySelectorAll('.notification').forEach(n => n.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${getNotificationIcon(type)}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${getNotificationColor(type)};
+        color: white;
+        padding: 16px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        animation: slideInRight 0.3s ease-out;
+        max-width: 300px;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+function getNotificationIcon(type) {
+    switch(type) {
+        case 'success': return 'check-circle';
+        case 'error': return 'exclamation-circle';
+        case 'warning': return 'exclamation-triangle';
+        default: return 'info-circle';
+    }
+}
+
+function getNotificationColor(type) {
+    switch(type) {
+        case 'success': return '#10B981';
+        case 'error': return '#EF4444';
+        case 'warning': return '#F59E0B';
+        default: return '#3B82F6';
+    }
+}
+
+// Add CSS animation for notifications
+if (!document.getElementById('notification-styles')) {
+    const notificationStyle = document.createElement('style');
+    notificationStyle.id = 'notification-styles';
+    notificationStyle.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    `;
+    document.head.appendChild(notificationStyle);
 }

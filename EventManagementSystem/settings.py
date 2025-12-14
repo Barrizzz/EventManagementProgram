@@ -43,7 +43,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django_extensions',
+    'django_extensions', 
     'accounts',
     'home',
     'events',

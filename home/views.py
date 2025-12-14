@@ -15,7 +15,8 @@ def index(request):
         'finished_events': [],
     }
     
-    all_events = Event.objects.all()
+    # Use select_related to efficiently load foreign key relationships
+    all_events = Event.objects.select_related('category', 'datetime', 'venue', 'organizer').all()
     for event in all_events:
         status = event.status
         if status == 'upcoming':

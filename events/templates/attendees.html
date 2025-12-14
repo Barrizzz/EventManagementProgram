@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="{% static 'script.js' %}" defer></script>
 </head>
 
 <body>
@@ -41,22 +40,22 @@
       <section class="attendee-stats">
         <div class="stat-card">
           <h3>Subscribed Members</h3>
-          <p>0</p>
+          <p>{{ subscribed_members }}</p>
         </div>
 
         <div class="stat-card">
           <h3>Non-Subscribed</h3>
-          <p>0</p>
+          <p>{{ non_subscribed }}</p>
         </div>
 
         <div class="stat-card">
           <h3>Top Attendees</h3>
-          <p>0</p>
+          <p>{{ top_attendees|length }}</p>
         </div>
 
         <div class="stat-card">
           <h3>New This Month</h3>
-          <p>0</p>
+          <p>{{ new_this_month }}</p>
         </div>
       </section>
 
@@ -120,17 +119,47 @@
             </thead>
 
             <tbody>
-              <!-- Attendee data will be populated from database -->
-              <tr>
-                <td colspan="6" style="text-align: center; padding: 40px; color: #64748B;">
-                  No attendee data available. Data will be loaded from database.
-                </td>
-              </tr>
+              {% if attendees %}
+                {% for attendee in attendees %}
+                <tr data-attendee-id="{{ attendee.customer.customerID }}">
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                        {{ attendee.customer.fName|first }}{{ attendee.customer.lName|first }}
+                      </div>
+                      <div>
+                        <div style="font-weight: 600;">{{ attendee.customer.fName }} {{ attendee.customer.lName }}</div>
+                        <div style="font-size: 0.875rem; color: #64748B;">{{ attendee.customer.email }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="status-badge {% if attendee.events_attended > 0 %}active{% else %}inactive{% endif %}">
+                      {% if attendee.events_attended > 0 %}Subscribed{% else %}Non-Subscribed{% endif %}
+                    </span>
+                  </td>
+                  <td>{{ attendee.events_attended }}</td>
+                  <td>{% if attendee.latest_event_date %}{{ attendee.latest_event_date }}{% else %}Never{% endif %}</td>
+                  <td>{% if attendee.customer.phoneNum %}{{ attendee.customer.phoneNum }}{% else %}N/A{% endif %}</td>
+                  <td>
+                    <button class="action-btn view-details-btn" data-attendee-id="{{ attendee.customer.customerID }}" title="View Details">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 40px; color: #64748B;">
+                    No attendees found
+                  </td>
+                </tr>
+              {% endif %}
             </tbody>
           </table>
 
           <div class="pagination">
-            <div class="pagination-info">Showing 0-0 of 0 attendees</div>
+            <div class="pagination-info">Showing 1-{{ attendees|length }} of {{ attendees|length }} attendees</div>
             <div class="pagination-controls">
               <button class="pagination-btn"><i class="fas fa-chevron-left"></i></button>
               <button class="pagination-btn active">1</button>
@@ -170,7 +199,6 @@
     </main>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="{% static 'common.js' %}"></script>
   <script src="{% static 'attendees.js' %}"></script>
 </body>

@@ -270,45 +270,90 @@ function showEventModal(eventData = null) {
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="eventDate">Date *</label>
+                            <label for="eventDate">Event Date *</label>
                             <input type="date" id="eventDate" name="date" required>
                         </div>
+                    </div>
+                    
+                    <div class="form-row">
                         <div class="form-group">
-                            <label for="eventTime">Time *</label>
-                            <input type="time" id="eventTime" name="time" required>
+                            <label for="eventStartTime">Start Time *</label>
+                            <input type="time" id="eventStartTime" name="startTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventEndTime">End Time *</label>
+                            <input type="time" id="eventEndTime" name="endTime" required>
                         </div>
                     </div>
                 </div>
 
                 <!-- Organizer -->
                 <div class="form-section">
-                    <h3 class="form-section-title">Organizer</h3>
+                    <h3 class="form-section-title">Organizer Information</h3>
                     
                     <div class="form-group">
-                        <label for="eventOrganizer">Event Organizer Name *</label>
-                        <input type="text" id="eventOrganizer" name="organizer" 
+                        <label for="eventOrganizer">Organizer Name *</label>
+                        <input type="text" id="eventOrganizer" name="organizerName" 
                             placeholder="Enter organizer name" 
                             list="organizerList" required>
                         <datalist id="organizerList">
                             <!-- Options will be populated from existing organizers -->
                         </datalist>
-                        <small class="form-help">Type to enter new organizer or select from existing ones</small>
+                        <small class="form-help">Type to select existing or enter new organizer</small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="organizerEmail">Organizer Email *</label>
+                            <input type="email" id="organizerEmail" name="organizerEmail" 
+                                placeholder="organizer@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="organizerContact">Contact Number *</label>
+                            <input type="tel" id="organizerContact" name="organizerContact" 
+                                placeholder="+1-555-0100" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="organizerWebsite">Website (Optional)</label>
+                        <input type="url" id="organizerWebsite" name="organizerWebsite" 
+                            placeholder="www.organizer.com">
                     </div>
                 </div>
 
                 <!-- Venue -->
                 <div class="form-section">
-                    <h3 class="form-section-title">Venue</h3>
+                    <h3 class="form-section-title">Venue Information</h3>
                     
                     <div class="form-group">
                         <label for="eventVenue">Venue Name *</label>
-                        <input type="text" id="eventVenue" name="venue" 
+                        <input type="text" id="eventVenue" name="venueName" 
                             placeholder="Enter venue name" 
                             list="venueList" required>
                         <datalist id="venueList">
                             <!-- Options will be populated from existing venues -->
                         </datalist>
-                        <small class="form-help">Type to enter new venue or select from existing ones</small>
+                        <small class="form-help">Type to select existing or enter new venue</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="venueAddress">Venue Address *</label>
+                        <input type="text" id="venueAddress" name="venueAddress" 
+                            placeholder="123 Main St, Suite 100" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="venueCity">City *</label>
+                            <input type="text" id="venueCity" name="venueCity" 
+                                placeholder="City name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="venueCapacity">Capacity *</label>
+                            <input type="number" id="venueCapacity" name="venueCapacity" 
+                                placeholder="100" min="1" required>
+                        </div>
                     </div>
                 </div>
 
@@ -708,25 +753,117 @@ function populateEventFormDropdowns(modal, eventData = null) {
 function collectEventFormData(form) {
     const formData = new FormData(form);
     
-    // Convert to object with proper structure
+    // Convert to object with proper structure for creating all related tables
     const eventData = {
         // Main event fields
         name: formData.get('name'),
         description: formData.get('description'),
         rundown: formData.get('rundown'),
-        materials: formData.get('materials') || null,
+        materials: formData.get('materials') || '',
         
-        // Related data (backend will handle creating/linking these)
+        // Category data
         category: formData.get('category'),
-        organizer: formData.get('organizer'),
-        venue: formData.get('venue'),
         
-        // Date and time fields
-        date: formData.get('date'),
-        time: formData.get('time')
+        // Organizer data (all fields needed to create organizer table entry)
+        organizer: {
+            name: formData.get('organizerName'),
+            email: formData.get('organizerEmail'),
+            contactNum: formData.get('organizerContact'),
+            website: formData.get('organizerWebsite') || ''
+        },
+        
+        // Venue data (all fields needed to create venue table entry)
+        venue: {
+            name: formData.get('venueName'),
+            address: formData.get('venueAddress'),
+            city: formData.get('venueCity'),
+            capacity: parseInt(formData.get('venueCapacity'))
+        },
+        
+        // DateTime data (all fields needed to create eventDateTime table entry)
+        datetime: {
+            date: formData.get('date'),
+            startTime: formData.get('startTime'),
+            endTime: formData.get('endTime')
+        }
     };
     
     console.log('Collected event data:', eventData);
     return eventData;
 }
 
+// Notification system
+function showNotification(message, type = 'info') {
+    // Remove any existing notifications
+    document.querySelectorAll('.notification').forEach(n => n.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${getNotificationIcon(type)}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${getNotificationColor(type)};
+        color: white;
+        padding: 16px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        animation: slideInRight 0.3s ease-out;
+        max-width: 300px;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+function getNotificationIcon(type) {
+    switch(type) {
+        case 'success': return 'check-circle';
+        case 'error': return 'exclamation-circle';
+        case 'warning': return 'exclamation-triangle';
+        default: return 'info-circle';
+    }
+}
+
+function getNotificationColor(type) {
+    switch(type) {
+        case 'success': return '#10B981';
+        case 'error': return '#EF4444';
+        case 'warning': return '#F59E0B';
+        default: return '#3B82F6';
+    }
+}
+
+// Add CSS animation for notifications
+if (!document.getElementById('notification-styles')) {
+    const notificationStyle = document.createElement('style');
+    notificationStyle.id = 'notification-styles';
+    notificationStyle.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    `;
+    document.head.appendChild(notificationStyle);
+}
