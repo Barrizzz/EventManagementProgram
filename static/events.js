@@ -41,8 +41,6 @@ function initializeEventsPage() {
     initializeEventCardActions();
 }
 
-document.addEventListener('DOMContentLoaded', initializeEventsPage);
-
 function filterEvents(searchTerm) {
     const cards = document.querySelectorAll('.events-cards-view .event-card');
     const rows = document.querySelectorAll('.events-table tbody tr');
@@ -308,19 +306,22 @@ function showEventModal(eventData = null) {
                         <div class="form-group">
                             <label for="organizerEmail">Organizer Email *</label>
                             <input type="email" id="organizerEmail" name="organizerEmail" 
-                                placeholder="organizer@example.com" required>
+                                placeholder="organizer@example.com" 
+                                value="${isEditMode ? eventData.organizerEmail || '' : ''}" required>
                         </div>
                         <div class="form-group">
                             <label for="organizerContact">Contact Number *</label>
                             <input type="tel" id="organizerContact" name="organizerContact" 
-                                placeholder="+1-555-0100" required>
+                                placeholder="+1-555-0100" 
+                                value="${isEditMode ? eventData.organizerContact || '' : ''}" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="organizerWebsite">Website (Optional)</label>
                         <input type="url" id="organizerWebsite" name="organizerWebsite" 
-                            placeholder="www.organizer.com">
+                            placeholder="www.organizer.com" 
+                            value="${isEditMode ? eventData.organizerWebsite || '' : ''}">
                     </div>
                 </div>
 
@@ -342,19 +343,22 @@ function showEventModal(eventData = null) {
                     <div class="form-group">
                         <label for="venueAddress">Venue Address *</label>
                         <input type="text" id="venueAddress" name="venueAddress" 
-                            placeholder="123 Main St, Suite 100" required>
+                            placeholder="123 Main St, Suite 100" 
+                            value="${isEditMode ? eventData.venueAddress || '' : ''}" required>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label for="venueCity">City *</label>
                             <input type="text" id="venueCity" name="venueCity" 
-                                placeholder="City name" required>
+                                placeholder="City name" 
+                                value="${isEditMode ? eventData.venueCity || '' : ''}" required>
                         </div>
                         <div class="form-group">
                             <label for="venueCapacity">Capacity *</label>
                             <input type="number" id="venueCapacity" name="venueCapacity" 
-                                placeholder="100" min="1" required>
+                                placeholder="100" min="1" 
+                                value="${isEditMode ? eventData.venueCapacity || '' : ''}" required>
                         </div>
                     </div>
                 </div>
@@ -737,6 +741,7 @@ function populateEventFormDropdowns(modal, eventData = null) {
             const selectedName = this.value;
             const organizer = organizers.find(o => o.name === selectedName);
             if (organizer) {
+                // Fill in the details of the selected organizer
                 modal.querySelector('#organizerEmail').value = organizer.email || '';
                 modal.querySelector('#organizerContact').value = organizer.contactNum || '';
                 modal.querySelector('#organizerWebsite').value = organizer.website || '';
@@ -767,6 +772,7 @@ function populateEventFormDropdowns(modal, eventData = null) {
             const selectedName = this.value;
             const venue = venues.find(v => v.name === selectedName);
             if (venue) {
+                // Fill in the details of the selected venue
                 modal.querySelector('#venueAddress').value = venue.address || '';
                 modal.querySelector('#venueCity').value = venue.city || '';
                 modal.querySelector('#venueCapacity').value = venue.capacity || '';
