@@ -85,7 +85,19 @@
                         </div>
                         <div class="events-grid">
                             {% for event in ongoing_events %}
-                            <div class="event-card ongoing" data-event-id="{{ event.eventID }}">
+                            <div class="event-card ongoing" 
+                                data-event-id="{{ event.eventID }}"
+                                data-category="{{ event.category }}"
+                                data-rundown="{{ event.rundown }}"
+                                data-materials="{{ event.materials|default:'' }}"
+                                data-organizer="{{ event.organizer_name }}"
+                                data-organizer-email="{{ event.email }}"
+                                data-organizer-contact="{{ event.contactNum }}"
+                                data-organizer-website="{{ event.website|default:'' }}"
+                                data-venue="{{ event.venue_name }}"
+                                data-venue-address="{{ event.address }}"
+                                data-venue-city="{{ event.city }}"
+                                data-venue-capacity="{{ event.capacity }}">
                                 <div class="event-image">
                                     <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=200&fit=crop" alt="{{ event.name }}">
                                     <div class="event-status-badge ongoing">Live Now</div>
@@ -134,7 +146,19 @@
                         </div>
                         <div class="events-grid">
                             {% for event in upcoming_events %}
-                            <div class="event-card upcoming" data-event-id="{{ event.eventID }}">
+                            <div class="event-card upcoming" 
+                                data-event-id="{{ event.eventID }}"
+                                data-category="{{ event.category }}"
+                                data-rundown="{{ event.rundown }}"
+                                data-materials="{{ event.materials|default:'' }}"
+                                data-organizer="{{ event.organizer_name }}"
+                                data-organizer-email="{{ event.email }}"
+                                data-organizer-contact="{{ event.contactNum }}"
+                                data-organizer-website="{{ event.website|default:'' }}"
+                                data-venue="{{ event.venue_name }}"
+                                data-venue-address="{{ event.address }}"
+                                data-venue-city="{{ event.city }}"
+                                data-venue-capacity="{{ event.capacity }}">
                                 <div class="event-image">
                                     <img src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=200&fit=crop" alt="{{ event.name }}">
                                     <div class="event-status-badge upcoming">Upcoming</div>
@@ -183,7 +207,19 @@
                         </div>
                         <div class="events-grid">
                             {% for event in finished_events %}
-                            <div class="event-card finished" data-event-id="{{ event.eventID }}">
+                            <div class="event-card finished" 
+                                data-event-id="{{ event.eventID }}"
+                                data-category="{{ event.category }}"
+                                data-rundown="{{ event.rundown }}"
+                                data-materials="{{ event.materials|default:'' }}"
+                                data-organizer="{{ event.organizer_name }}"
+                                data-organizer-email="{{ event.email }}"
+                                data-organizer-contact="{{ event.contactNum }}"
+                                data-organizer-website="{{ event.website|default:'' }}"
+                                data-venue="{{ event.venue_name }}"
+                                data-venue-address="{{ event.address }}"
+                                data-venue-city="{{ event.city }}"
+                                data-venue-capacity="{{ event.capacity }}">
                                 <div class="event-image">
                                     <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400&h=200&fit=crop" alt="{{ event.name }}">
                                     <div class="event-status-badge finished">Finished</div>
