@@ -205,51 +205,18 @@ function displayTicketSelectionForm(container, eventId, eventName, ticketTypes, 
                     </div>
                 </div>
                 
-                <!-- Seat Selection -->
-                <div class="form-section">
-                    <h3>Select Your Seat</h3>
-                    <div class="seat-selection">
-                        <div class="form-group">
-                            <label for="rowNumber">Row Number *</label>
-                            <input type="number" 
-                                id="rowNumber" 
-                                name="rowNumber" 
-                                min="1" 
-                                max="50" 
-                                placeholder="Enter row number" 
-                                required>
-                            <small class="form-help">Rows 1-50</small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="seatNumber">Seat Number *</label>
-                            <input type="number" 
-                                id="seatNumber" 
-                                name="seatNumber" 
-                                min="1" 
-                                max="20" 
-                                placeholder="Enter seat number" 
-                                required>
-                            <small class="form-help">Seats 1-20 per row</small>
-                        </div>
-                    </div>
-                    
-                    <p class="seat-note">
-                        <i class="fas fa-exclamation-circle"></i>
-                        Note: The system will check if your selected seat is available. 
-                        Each seat can only be assigned once per event.
-                    </p>
-                </div>
-                
                 <!-- Registration Summary -->
-                <div class="registration-summary" id="registrationSummary" style="display: none;">
+                <div class="registration-summary" id="registrationSummary">
                     <h4>Registration Summary</h4>
                     <div class="summary-content">
                         <p><strong>Event:</strong> ${eventName}</p>
                         <p><strong>Ticket Type:</strong> <span id="summaryTicketType">-</span></p>
-                        <p><strong>Seat:</strong> <span id="summarySeat">-</span></p>
                         <p><strong>Total:</strong> <span id="summaryTotal">$0.00</span></p>
                     </div>
+                    <p class="auto-assign-note">
+                        <i class="fas fa-info-circle"></i>
+                        Your seat will be automatically assigned upon confirmation.
+                    </p>
                 </div>
                 
                 <div class="form-actions">
@@ -343,8 +310,6 @@ function handleTicketRegistration(eventId, ticketTypes) {
     // Collect form data
     const formData = new FormData(form);
     const ticketTypeId = formData.get('ticketType');
-    const rowNumber = parseInt(formData.get('rowNumber'));
-    const seatNumber = parseInt(formData.get('seatNumber'));
     
     // Prepare data for backend
     // Backend will:
@@ -355,8 +320,6 @@ function handleTicketRegistration(eventId, ticketTypes) {
     const registrationData = {
         event_id: eventId,
         ticket_type_id: ticketTypeId,
-        row_number: rowNumber,
-        seat_number: seatNumber
     };
     
     // TODO: Call backend endpoint to create ticket and eventCustomer record
