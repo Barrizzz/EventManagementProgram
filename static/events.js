@@ -681,7 +681,9 @@ function populateEventFormDropdowns(modal, eventData = null) {
     const organizerInput = modal.querySelector('#eventOrganizer');
     const venueInput = modal.querySelector('#eventVenue');
     const dateInput = modal.querySelector('#eventDate');
-    const timeInput = modal.querySelector('#eventTime');
+    
+    const startTimeInput = modal.querySelector('#eventStartTime');
+    const endTimeInput = modal.querySelector('#eventEndTime');
 
     // If editing, populate form fields
     if (eventData) {
@@ -689,12 +691,14 @@ function populateEventFormDropdowns(modal, eventData = null) {
         organizerInput.value = eventData.organizer || '';
         venueInput.value = eventData.venue || '';
         dateInput.value = eventData.date || '';
-        timeInput.value = eventData.time || '';
+        
+        startTimeInput.value = eventData.startTime || '';
+        endTimeInput.value = eventData.endTime || '';
     }
 
     // TODO: BACKEND WORK NEEDED
     // Fetch categories for autocomplete suggestions
-    fetch('/api/categories/', {
+    fetch('/events/api/categories/', {
         headers: {
             'X-CSRFToken': getCSRFToken()
         }
@@ -704,7 +708,7 @@ function populateEventFormDropdowns(modal, eventData = null) {
         const categories = data.categories || data || [];
         categories.forEach(category => {
             const option = document.createElement('option');
-            option.value = category.name;
+            option.value = category;
             categoryList.appendChild(option);
         });
     })
@@ -713,7 +717,7 @@ function populateEventFormDropdowns(modal, eventData = null) {
     });
 
     // Fetch organizers for autocomplete suggestions
-    fetch('/api/organizers/', {
+    fetch('/events/api/organizers/', {
         headers: {
             'X-CSRFToken': getCSRFToken()
         }
@@ -732,7 +736,7 @@ function populateEventFormDropdowns(modal, eventData = null) {
     });
 
     // Fetch venues for autocomplete suggestions
-    fetch('/api/venues/', {
+    fetch('/events/api/venues/', {
         headers: {
             'X-CSRFToken': getCSRFToken()
         }
@@ -869,3 +873,7 @@ if (!document.getElementById('notification-styles')) {
     `;
     document.head.appendChild(notificationStyle);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    initializeEventsPage();
+});

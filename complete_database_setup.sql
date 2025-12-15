@@ -29,7 +29,8 @@ INSERT INTO venue (venueID, name, address, city, capacity) VALUES
 (1, 'Main Conference Hall', '123 Business St, Suite 100', 'New York', 500),
 (2, 'Training Room A', '123 Business St, Room 201', 'New York', 50),
 (3, 'Grand Ballroom', '456 Event Plaza', 'Los Angeles', 1000),
-(4, 'Innovation Center', '789 Tech Drive', 'San Francisco', 200);
+(4, 'Innovation Center', '789 Tech Drive', 'San Francisco', 200),
+(5, 'ICE BSD', 'BSD', 'Tangerang Selatan, Banten', 1000);
 
 -- 4. Insert Event DateTimes
 INSERT INTO eventDateTime (eventDateTimeID, date, startTime, endTime) VALUES
@@ -47,7 +48,7 @@ INSERT INTO event (eventID, name, description, rundown, materials, category_id, 
     '09:00 - Registration and Networking\n10:00 - Keynote Speech\n12:00 - Lunch Break\n13:00 - Panel Discussions\n16:00 - Closing Remarks', 
     'Laptop, Notebook, Pen, Conference Badge', 
     1, 1, 1, 1),
-    
+
 (2, 'Python Workshop', 
     'Hands-on workshop covering Python programming basics and advanced concepts', 
     '14:00 - Introduction to Python\n15:00 - Data Structures\n16:00 - Functions and Modules\n17:00 - Q&A Session', 
