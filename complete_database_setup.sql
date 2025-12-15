@@ -4,8 +4,6 @@
 -- Run this in MySQL Workbench
 -- =====================================================
 
--- Drop database if exists and create fresh
-DROP DATABASE IF EXISTS ems_db;
 USE ems_db;
 
 -- =====================================================
