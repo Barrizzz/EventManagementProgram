@@ -41,6 +41,8 @@ function initializeEventsPage() {
     initializeEventCardActions();
 }
 
+document.addEventListener('DOMContentLoaded', initializeEventsPage);
+
 function filterEvents(searchTerm) {
     const cards = document.querySelectorAll('.events-cards-view .event-card');
     const rows = document.querySelectorAll('.events-table tbody tr');

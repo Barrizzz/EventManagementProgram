@@ -7,6 +7,8 @@ function initializeHomePage() {
     initializeRegisterButtons();
 }
 
+document.addEventListener('DOMContentLoaded', initializeHomePage);
+
 // Initialize "Register Now" button listeners for upcoming events
 function initializeRegisterButtons() {
     // Get all "Register Now" buttons on the page
