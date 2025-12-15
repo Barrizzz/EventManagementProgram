@@ -329,6 +329,7 @@ def delete_event(request, event_id):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
+# TODO: edit data will be used for the details aswell, add all the details (eg. organizerEmail, contactNum, venue address, city, capacity etc.)
 def get_event(request, event_id):
     """Get event data for editing"""
     try:

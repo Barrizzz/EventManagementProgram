@@ -100,8 +100,8 @@ function initializeEventCardActions() {
     const viewDetails = document.querySelectorAll('.btn-action.primary');
     viewDetails.forEach(btn => {
         btn.addEventListener('click', function() {
-            const title = this.closest('.event-card').querySelector('.event-title').textContent;
-            showNotification(`Opening details for "${title}"`, 'info');
+            const eventCard = this.closest('.event-card');
+            showEventDetails(eventCard);
         });
     });
 
@@ -781,6 +781,162 @@ function populateEventFormDropdowns(modal, eventData = null) {
     })
     .catch(error => {
         console.log('Venues not loaded (empty or error):', error);
+    });
+}
+
+// Show details function, this will show the event details such as description, organizer, venue, date & time, etc.
+function showEventDetails(eventCard) {
+    // Extract event information from the card
+    const eventTitle = eventCard.querySelector('.event-title').textContent;
+    const eventDescription = eventCard.querySelector('.event-description').textContent;
+    const eventDate = eventCard.querySelector('.event-date span').textContent;
+    const eventAttendees = eventCard.querySelector('.event-attendees span').textContent;
+    const eventStatus = eventCard.querySelector('.event-status-badge').textContent;
+    const eventImage = eventCard.querySelector('.event-image img').src;
+
+    // TODO: Further details, fetch from data attributes or backend as needed
+    const category = eventCard.getAttribute('data-category') || 'N/A';
+    const rundown = eventCard.getAttribute('data-rundown') || 'Not provided';
+    const materials = eventCard.getAttribute('data-materials') || 'Not provided';
+    
+    const organizer = eventCard.getAttribute('data-organizer') || 'N/A';
+    const organizerEmail = eventCard.getAttribute('data-organizer-email') || 'N/A';
+    const organizerContact = eventCard.getAttribute('data-organizer-contact') || 'N/A';
+    const organizerWebsite = eventCard.getAttribute('data-organizer-website') || '';
+
+    const venue = eventCard.getAttribute('data-venue') || 'N/A';
+    const venueAddress = eventCard.getAttribute('data-venue-address') || 'N/A';
+    const venueCity = eventCard.getAttribute('data-venue-city') || 'N/A';
+    const venueCapacity = eventCard.getAttribute('data-venue-capacity') || 'N/A';
+
+    
+    // Create modal HTML
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content details-modal">
+            <div class="modal-header">
+                <h2>Event Details</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="event-details-container">
+                    <img src="${eventImage}" alt="${eventTitle}" class="details-image">
+                    
+                    <div class="details-badge ${eventStatus.toLowerCase().replace(' ', '-')}">
+                        ${eventStatus}
+                    </div>
+                    
+                    <h3 class="details-title">${eventTitle}</h3>
+                    
+                    <div class="details-section">
+                        <div class="details-item">
+                            <i class="fas fa-tag"></i>
+                            <strong>Category:</strong>
+                            <span>${category}</span>
+                        </div>
+                        
+                        <div class="details-item">
+                            <i class="fas fa-calendar"></i>
+                            <strong>Date & Time:</strong>
+                            <span>${eventDate}</span>
+                        </div>
+                        
+                        <div class="details-item">
+                            <i class="fas fa-users"></i>
+                            <strong>Capacity:</strong>
+                            <span>${eventAttendees}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="details-section">
+                        <h4><i class="fas fa-info-circle"></i> Description</h4>
+                        <p>${eventDescription}</p>
+                    </div>
+                    
+                    <div class="details-section">
+                        <h4><i class="fas fa-file-alt"></i> Event Rundown</h4>
+                        <p>${rundown.startsWith('http') ? `<a href="${rundown}" target="_blank" class="details-link"><i class="fas fa-external-link-alt"></i> View Rundown Document</a>` : rundown}</p>
+                    </div>
+                    
+                    <div class="details-section">
+                        <h4><i class="fas fa-box"></i> Materials Needed</h4>
+                        <p>${materials.startsWith('http') ? `<a href="${materials}" target="_blank" class="details-link"><i class="fas fa-external-link-alt"></i> View Materials Folder</a>` : materials}</p>
+                    </div>
+                    
+                    <div class="details-section">
+                        <h4><i class="fas fa-building"></i> Venue Information</h4>
+                        <div class="details-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <strong>Venue:</strong>
+                            <span>${venue}</span>
+                        </div>
+                        <div class="details-item">
+                            <i class="fas fa-home"></i>
+                            <strong>Address:</strong>
+                            <span>${venueAddress}, ${venueCity}</span>
+                        </div>
+                        <div class="details-item">
+                            <i class="fas fa-door-open"></i>
+                            <strong>Venue Capacity:</strong>
+                            <span>${venueCapacity} people</span>
+                        </div>
+                    </div>
+                    
+                    <div class="details-section">
+                        <h4><i class="fas fa-user-tie"></i> Organizer Information</h4>
+                        <div class="details-item">
+                            <i class="fas fa-user"></i>
+                            <strong>Name:</strong>
+                            <span>${organizer}</span>
+                        </div>
+                        <div class="details-item">
+                            <i class="fas fa-envelope"></i>
+                            <strong>Email:</strong>
+                            <span><a href="mailto:${organizerEmail}" class="details-link">${organizerEmail}</a></span>
+                        </div>
+                        <div class="details-item">
+                            <i class="fas fa-phone"></i>
+                            <strong>Contact:</strong>
+                            <span><a href="tel:${organizerContact}" class="details-link">${organizerContact}</a></span>
+                        </div>
+                        ${organizerWebsite ? `
+                        <div class="details-item">
+                            <i class="fas fa-globe"></i>
+                            <strong>Website:</strong>
+                            <span><a href="${organizerWebsite.startsWith('http') ? organizerWebsite : 'https://' + organizerWebsite}" target="_blank" class="details-link">${organizerWebsite}</a></span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary close-modal">Close</button>
+                <button class="btn-primary">Register for Event</button>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to page
+    document.body.appendChild(modal);
+    
+    // Add event listeners for closing
+    const closeBtn = modal.querySelector('.modal-close');
+    const closeModalBtn = modal.querySelector('.close-modal');
+    
+    closeBtn.addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    closeModalBtn.addEventListener('click', () => {
+        modal.remove();
+    });
+    
+    // Close on overlay click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
     });
 }
 
