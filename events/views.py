@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
+from django.db import connection
 from django.db.models import Count, Sum, Avg, Q, F
 import json
 from datetime import datetime, timedelta
@@ -16,22 +16,74 @@ from accounts.models import Customer
 @login_required
 def events_page(request):
     # GET request - display events
+    user = request.user
     context = {
+        'user': user,
         'upcoming_events': [],
         'ongoing_events': [],
         'finished_events': [],
     }
     
-    all_events = Event.objects.select_related('category', 'datetime', 'venue', 'organizer').all()
-    for event in all_events:
-        status = event.status
-        if status == 'upcoming':
+    # Use select_related to efficiently load foreign key relationships
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT
+                e.eventID,
+                e.name AS event_name,
+                e.description,
+                e.rundown,
+                e.materials,
+
+                c.CategoryID,
+                c.category,
+
+                d.eventDateTimeID,
+                d.date,
+                d.startTime,
+                d.endTime,
+
+                v.venueID,
+                v.name AS venue_name,
+                v.address,
+                v.city,
+                v.capacity,
+
+                o.organizerID,
+                o.name AS organizer_name,
+                o.email,
+                o.contactNum,
+                o.website
+
+            FROM Event e
+            JOIN EventCategory c
+                ON e.category_id = c.categoryID
+            JOIN EventDateTime d
+                ON e.datetime_id = d.eventDateTimeID
+            JOIN Venue v
+                ON e.venue_id = v.venueID
+            JOIN Organizer o
+                ON e.organizer_id = o.organizerID
+        """)
+
+        columns = [col[0] for col in cursor.description]
+        print(columns)
+        rows = cursor.fetchall()
+
+    now = datetime.now()
+
+    for row in rows:
+        event = dict(zip(columns, row))
+
+        start_dt = datetime.combine(event['date'], event['startTime'])
+        end_dt = datetime.combine(event['date'], event['endTime'])
+
+        if now < start_dt:
             context['upcoming_events'].append(event)
-        elif status == 'ongoing':
+        elif start_dt <= now <= end_dt:
             context['ongoing_events'].append(event)
-        elif status == 'finished':
+        else:
             context['finished_events'].append(event)
-            
+    
     return render(request, 'events.html', context)
 
 @require_POST

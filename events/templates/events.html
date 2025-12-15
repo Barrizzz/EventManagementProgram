@@ -91,20 +91,20 @@
                                     <div class="event-status-badge ongoing">Live Now</div>
                                 </div>
                                 <div class="event-info">
-                                    <h3 class="event-title">{{ event.name }}</h3>
+                                    <h3 class="event-title">{{ event.event_name }}</h3>
                                     <p class="event-location">
                                         <i class="fas fa-map-marker-alt"></i>
-                                        {{ event.venue.city }}, {{ event.venue.name }} - {{ event.venue.address }}
+                                        {{ event.city }}, {{ event.venue_name }} - {{ event.address }}
                                     </p>
                                     <p class="event-description">{{ event.description }}</p>
                                     <div class="event-details">
                                         <div class="event-date">
                                             <i class="fas fa-calendar"></i>
-                                            <span>{{ event.datetime.date|date:"M d, Y" }} | {{ event.datetime.startTime|time:"g:i A" }} - {{ event.datetime.endTime|time:"g:i A" }}</span>
+                                            <span>{{ event.date|date:"M d, Y" }} | {{ event.startTime|time:"g:i A" }} - {{ event.endTime|time:"g:i A" }}</span>
                                         </div>
                                         <div class="event-attendees">
                                             <i class="fas fa-users"></i>
-                                            <span>Max Attendees: {{ event.venue.capacity }}</span>
+                                            <span>Max Attendees: {{ event.capacity }}</span>
                                         </div>
                                     </div>
                                     <div class="event-actions">
@@ -140,20 +140,20 @@
                                     <div class="event-status-badge upcoming">Upcoming</div>
                                 </div>
                                 <div class="event-info">
-                                    <h3 class="event-title">{{ event.name }}</h3>
+                                    <h3 class="event-title">{{ event.event_name }}</h3>
                                     <p class="event-location">
                                         <i class="fas fa-map-marker-alt"></i>
-                                        {{ event.venue.city }}, {{ event.venue.name }} - {{ event.venue.address }} 
+                                        {{ event.city }}, {{ event.venue_name }} - {{ event.address }} 
                                     </p>
                                     <p class="event-description">{{ event.description }}</p>
                                     <div class="event-details">
                                         <div class="event-date">
                                             <i class="fas fa-calendar"></i>
-                                            <span>{{ event.datetime.date|date:"M d, Y" }} | {{ event.datetime.startTime|time:"g:i A" }} - {{ event.datetime.endTime|time:"g:i A" }}</span>
+                                            <span>{{ event.date|date:"M d, Y" }} | {{ event.startTime|time:"g:i A" }} - {{ event.endTime|time:"g:i A" }}</span>
                                         </div>
                                         <div class="event-attendees">
                                             <i class="fas fa-users"></i>
-                                            <span>Max Attendees: {{ event.venue.capacity }}</span>
+                                            <span>Max Attendees: {{ event.capacity }}</span>
                                         </div>
                                     </div>
                                     <div class="event-actions">
@@ -189,20 +189,20 @@
                                     <div class="event-status-badge finished">Finished</div>
                                 </div>
                                 <div class="event-info">
-                                    <h3 class="event-title">{{ event.name }}</h3>
+                                    <h3 class="event-title">{{ event.event_name }}</h3>
                                     <p class="event-location">
                                         <i class="fas fa-map-marker-alt"></i>
-                                        {{ event.venue.city }}, {{ event.venue.name }} - {{ event.venue.address }}
+                                        {{ event.city }}, {{ event.venue_name }} - {{ event.address }}
                                     </p>
                                     <p class="event-description">{{ event.description }}</p>
                                     <div class="event-details">
                                         <div class="event-date">
                                             <i class="fas fa-calendar"></i>
-                                            <span>{{ event.datetime.date|date:"M d, Y" }} | {{ event.datetime.startTime|time:"g:i A" }} - {{ event.datetime.endTime|time:"g:i A" }}</span>
+                                            <span>{{ event.date|date:"M d, Y" }} | {{ event.startTime|time:"g:i A" }} - {{ event.endTime|time:"g:i A" }}</span>
                                         </div>
                                         <div class="event-attendees">
                                             <i class="fas fa-users"></i>
-                                            <span>Max Attendees: {{ event.venue.capacity }}</span>
+                                            <span>Max Attendees: {{ event.capacity }}</span>
                                         </div>
                                     </div>
                                     <div class="event-actions">
@@ -241,21 +241,21 @@
                                 <tr class="event-row {{ event.status }}" data-event-id="{{ event.eventID }}">
                                     <td>
                                         <div class="event-cell">
-                                            <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=60&h=60&fit=crop" alt="{{ event.name }}" class="event-thumb">
+                                            <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=60&h=60&fit=crop" alt="{{ event.event_name }}" class="event-thumb">
                                             <div class="event-info-cell">
-                                                <h4>{{ event.name }}</h4>
+                                                <h4>{{ event.event_name }}</h4>
                                                 <p>{{ event.description }}</p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ event.datetime.date|date:"M d, Y" }}<br>{{ event.datetime.startTime|time:"g:i A" }} - {{ event.datetime.endTime|time:"g:i A" }}</td>
-                                    <td>{{ event.venue.name }}, {{ event.venue.city }}</td>
+                                    <td>{{ event.date|date:"M d, Y" }}<br>{{ event.startTime|time:"g:i A" }} - {{ event.endTime|time:"g:i A" }}</td>
+                                    <td>{{ event.venue_name }}, {{ event.city }}</td>
                                     <td>
                                         <span class="status-badge {{ event.status }}">
                                             {% if event.status == 'ongoing' %}Live Now{% elif event.status == 'upcoming' %}Upcoming{% else %}Finished{% endif %}
                                         </span>
                                     </td>
-                                    <td>{{ event.venue.capacity }} max</td>
+                                    <td>{{ event.capacity }} max</td>
                                     <td>
                                         <button class="btn-action primary">View</button>
                                         <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.eventID }}">Edit</button>

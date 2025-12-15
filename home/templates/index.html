@@ -59,12 +59,12 @@
                                     <i class="fas fa-calendar"></i>
                                 </div>
                                 <div class="event-content">
-                                    <h3>{{ event.name }}</h3>
-                                    <p class="location">{{ event.venue.city }}, {{ event.venue.name }} - {{ event.venue.address }}</p>
+                                    <h3>{{ event.event_name }}</h3>
+                                    <p class="location">{{ event.city }}, {{ event.venue_name }} - {{ event.address }}</p>
                                     <p class="description">{{ event.description }}</p>
                                     <div class="event-details">
-                                        <span class="datetime">{{ event.datetime.date|date:"M d, Y" }} | {{ event.datetime.startTime|time:"g:i A" }} - {{ event.datetime.endTime|time:"g:i A" }}</span>
-                                        <span class="attendees">Max Attendees: {{ event.venue.capacity }}</span>
+                                        <span class="datetime">{{ event.date|date:"M d, Y" }} | {{ event.startTime|time:"g:i A" }} - {{ event.endTime|time:"g:i A" }}</span>
+                                        <span class="attendees">Max Attendees: {{ event.capacity }}</span>
                                     </div>
                                     <button class="btn-live">Live Now</button>
                                 </div>
@@ -92,12 +92,12 @@
                                     <i class="fas fa-calendar-plus"></i>
                                 </div>
                                 <div class="event-content">
-                                    <h3>{{ event.name }}</h3>
-                                    <p class="location">{{ event.venue.city }}, {{ event.venue.name }} - {{ event.venue.address }}</p>
+                                    <h3>{{ event.event_name }}</h3>
+                                    <p class="location">{{ event.city }}, {{ event.venue_name }} - {{ event.address }}</p>
                                     <p class="description">{{ event.description }}</p>
                                     <div class="event-details">
-                                        <span class="datetime">{{ event.datetime.date|date:"M d, Y" }} | {{ event.datetime.startTime|time:"g:i A" }} - {{ event.datetime.endTime|time:"g:i A" }}</span>
-                                        <span class="attendees">Max Attendees: {{ event.venue.capacity }}</span>
+                                        <span class="datetime">{{ event.date|date:"M d, Y" }} | {{ event.startTime|time:"g:i A" }} - {{ event.endTime|time:"g:i A" }}</span>
+                                        <span class="attendees">Max Attendees: {{ event.capacity }}</span>
                                     </div>
                                     <button class="btn-register">Register Now!</button>
                                 </div>

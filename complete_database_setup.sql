@@ -3,7 +3,6 @@
 -- This script creates and populates the entire database
 -- Run this in MySQL Workbench
 -- =====================================================
-
 USE ems_db;
 
 -- =====================================================
@@ -38,7 +37,8 @@ INSERT INTO eventDateTime (eventDateTimeID, date, startTime, endTime) VALUES
 (2, '2025-01-20', '14:00:00', '18:00:00'),
 (3, '2025-02-05', '10:00:00', '16:00:00'),
 (4, '2025-03-10', '09:00:00', '15:00:00'),
-(5, '2025-04-15', '13:00:00', '17:00:00');
+(5, '2025-04-15', '13:00:00', '17:00:00'),
+(6, '2026-1-20', '13:00:00', '17:00:00');
 
 -- 5. Insert Events
 INSERT INTO event (eventID, name, description, rundown, materials, category_id, datetime_id, organizer_id, venue_id) VALUES
@@ -64,7 +64,13 @@ INSERT INTO event (eventID, name, description, rundown, materials, category_id, 
     'Explore the latest developments in artificial intelligence and machine learning',
     '09:00 - Registration\n10:00 - AI Overview\n12:00 - Lunch\n13:00 - ML Workshops\n14:30 - Panel Discussion',
     'Laptop, Conference materials provided',
-    1, 4, 4, 4);
+    1, 4, 4, 4),
+    
+(5, 'Game Dev Conference',
+	'Explore game development',
+     '09:00 - Registration\n10:00 - Game Dev Overview\n12:00 - Lunch\n13:00 - Game Dev Workshops\n14:30 - Panel Discussion',
+     '',
+     2, 6, 4, 4); 
 
 -- 6. Insert Ticket Types
 INSERT INTO ticketType (ticketTypeID, type, zone, price) VALUES
