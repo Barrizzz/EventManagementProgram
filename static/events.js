@@ -730,6 +730,18 @@ function populateEventFormDropdowns(modal, eventData = null) {
             option.value = organizer.name;
             organizerList.appendChild(option);
         });
+
+        // Auto-fill organizer details when filling an existing organizer
+        // Listen for input changes in the organizer input field
+        organizerInput.addEventListener('input', function() {
+            const selectedName = this.value;
+            const organizer = organizers.find(o => o.name === selectedName);
+            if (organizer) {
+                modal.querySelector('#organizerEmail').value = organizer.email || '';
+                modal.querySelector('#organizerContact').value = organizer.contactNum || '';
+                modal.querySelector('#organizerWebsite').value = organizer.website || '';
+            }
+        });
     })
     .catch(error => {
         console.log('Organizers not loaded (empty or error):', error);
@@ -748,6 +760,17 @@ function populateEventFormDropdowns(modal, eventData = null) {
             const option = document.createElement('option');
             option.value = venue.name;
             venueList.appendChild(option);
+        });
+
+        // Auto-fill venue details when filling an existing venue
+        venueInput.addEventListener('input', function() {
+            const selectedName = this.value;
+            const venue = venues.find(v => v.name === selectedName);
+            if (venue) {
+                modal.querySelector('#venueAddress').value = venue.address || '';
+                modal.querySelector('#venueCity').value = venue.city || '';
+                modal.querySelector('#venueCapacity').value = venue.capacity || '';
+            }
         });
     })
     .catch(error => {
