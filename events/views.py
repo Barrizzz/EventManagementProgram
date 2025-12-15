@@ -110,7 +110,7 @@ def create_event(request):
                 if category_name:
                     # 1a. Try to select the existing category
                     cursor.execute(
-                        "SELECT `id` FROM `event_eventcategory` WHERE `category` = %s",
+                        "SELECT `categoryID` FROM `eventcategory` WHERE `category` = %s",
                         [category_name]
                     )
                     row = cursor.fetchone()
@@ -120,7 +120,7 @@ def create_event(request):
                     else:
                         # 1b. Insert new category and get its ID (using LAST_INSERT_ID() for MySQL)
                         cursor.execute(
-                            "INSERT INTO `event_eventcategory` (`category`) VALUES (%s)",
+                            "INSERT INTO `eventcategory` (`category`) VALUES (%s)",
                             [category_name]
                         )
                         cursor.execute("SELECT LAST_INSERT_ID()")
@@ -138,7 +138,7 @@ def create_event(request):
                     
                     # 2a. Try to select the existing organizer
                     cursor.execute(
-                        "SELECT `id` FROM `event_organizer` WHERE `name` = %s",
+                        "SELECT `organizerID` FROM `organizer` WHERE `name` = %s",
                         [organizer_name]
                     )
                     row = cursor.fetchone()
@@ -148,9 +148,9 @@ def create_event(request):
                         organizer_id = row[0]
                         cursor.execute(
                             """
-                            UPDATE `event_organizer` 
+                            UPDATE `organizer` 
                             SET `email` = %s, `contactNum` = %s, `website` = %s 
-                            WHERE `id` = %s
+                            WHERE `organizerID` = %s
                             """,
                             [email, contact_num, website, organizer_id]
                         )
@@ -158,7 +158,7 @@ def create_event(request):
                         # 2b. Insert new organizer and get its ID
                         cursor.execute(
                             """
-                            INSERT INTO `event_organizer` (`name`, `email`, `contactNum`, `website`) 
+                            INSERT INTO `organizer` (`name`, `email`, `contactNum`, `website`) 
                             VALUES (%s, %s, %s, %s)
                             """,
                             [organizer_name, email, contact_num, website]
@@ -183,7 +183,7 @@ def create_event(request):
                     
                     # 3a. Try to select the existing venue
                     cursor.execute(
-                        "SELECT `id` FROM `event_venue` WHERE `name` = %s",
+                        "SELECT `venueID` FROM `venue` WHERE `name` = %s",
                         [venue_name]
                     )
                     row = cursor.fetchone()
@@ -193,9 +193,9 @@ def create_event(request):
                         venue_id = row[0]
                         cursor.execute(
                             """
-                            UPDATE `event_venue` 
+                            UPDATE `venue` 
                             SET `address` = %s, `city` = %s, `capacity` = %s 
-                            WHERE `id` = %s
+                            WHERE `venueID` = %s
                             """,
                             [address, city, capacity, venue_id]
                         )
@@ -203,7 +203,7 @@ def create_event(request):
                         # 3b. Insert new venue and get its ID
                         cursor.execute(
                             """
-                            INSERT INTO `event_venue` (`name`, `address`, `city`, `capacity`) 
+                            INSERT INTO `venue` (`name`, `address`, `city`, `capacity`) 
                             VALUES (%s, %s, %s, %s)
                             """,
                             [venue_name, address, city, capacity]
@@ -230,7 +230,7 @@ def create_event(request):
                 # 4a. Try to select the existing datetime
                 cursor.execute(
                     """
-                    SELECT `id` FROM `event_eventdatetime` 
+                    SELECT `eventdatetimeID` FROM `eventdatetime` 
                     WHERE `date` = %s AND `startTime` = %s AND `endTime` = %s
                     """,
                     [date_str, start_time_obj, end_time_obj]
@@ -243,7 +243,7 @@ def create_event(request):
                     # 4b. Insert new datetime and get its ID
                     cursor.execute(
                         """
-                        INSERT INTO `event_eventdatetime` (`date`, `startTime`, `endTime`) 
+                        INSERT INTO `eventdatetime` (`date`, `startTime`, `endTime`) 
                         VALUES (%s, %s, %s)
                         """,
                         [date_str, start_time_obj, end_time_obj]
@@ -264,7 +264,7 @@ def create_event(request):
                 # Insert the new Event and retrieve its ID
                 cursor.execute(
                     """
-                    INSERT INTO `event_event` 
+                    INSERT INTO `event` 
                     (`name`, `description`, `rundown`, `materials`, `category_id`, `datetime_id`, `organizer_id`, `venue_id`) 
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                     """,
