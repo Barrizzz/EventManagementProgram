@@ -612,3 +612,34 @@ def reports_page(request):
     
     return render(request, 'reports.html', context)
 
+@login_required
+# TODO - Implement event registration
+def register_event(request, event_id):
+    if request.method == 'GET':
+        # Check if user has registered for an event
+        user = request.user
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    ec.eventCustomerID,
+                    ec.customer_id,
+                    ec.event_id,
+                    ec.ticket_id,
+                    t.ticketType_id,
+                    tt.typeName,
+                    tt.price
+                FROM eventcustomer ec
+                JOIN ticket t ON ec.ticket_id = t.ticketID
+                JOIN tickettype tt ON t.ticketType_id = tt.ticketTypeID
+                WHERE ec.event_id = %s AND ec.customer_id = %s
+            """, [event_id, user.id])
+            row = cursor.fetchone()
+            if row:
+                columns = [col[0] for col in cursor.description]
+                registration_info = dict(zip(columns, row))
+                return JsonResponse({
+                    'registered': True,
+                    'registration_info': registration_info
+                })
+            else:
+                return JsonResponse({'registered': False})

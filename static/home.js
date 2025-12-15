@@ -84,6 +84,7 @@ function showTicketRegistrationModal(eventId, eventName) {
  * 2. Fetch available TicketType records for display
  * 3. Return venue capacity to calculate available seats
  */
+
 function loadTicketRegistrationForm(eventId, eventName) {
     const modalBody = document.getElementById('ticketModalBody');
     
@@ -96,7 +97,7 @@ function loadTicketRegistrationForm(eventId, eventName) {
     //   available_seats: number
     // }
     
-    fetch(`/events/${eventId}/registration-info/`, {
+    fetch(`/events/${eventId}/register/`, {
         headers: {
             'X-CSRFToken': getCSRFToken()
         }
