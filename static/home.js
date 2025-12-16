@@ -105,7 +105,6 @@ function loadTicketRegistrationForm(eventId, eventName) {
     .then(response => response.json())
     .then(data => {
         if (data.registered) {
-            console.log("User already registered for this event");
             // User already has a ticket - show their ticket info
             displayAlreadyRegistered(modalBody, data.registration_info);
         } else {
@@ -197,7 +196,7 @@ function displayTicketSelectionForm(container, eventId, eventName, ticketTypes, 
                                     required>
                                 <label for="ticket_${type.ticketTypeID}">
                                     <div class="ticket-type-header">
-                                        <span class="ticket-type-name">${type.type}</span>
+                                        <span class="ticket-type-name">${type.ticket_type}</span>
                                         <span class="ticket-zone">Zone ${type.zone}</span>
                                     </div>
                                     <div class="ticket-price">$${parseFloat(type.price).toFixed(2)}</div>

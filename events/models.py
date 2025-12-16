@@ -94,7 +94,7 @@ class TicketType(models.Model):
         on_delete=models.CASCADE,
         related_name="ticket_types",
     )
-    type = models.CharField(max_length=50)
+    ticket_type = models.CharField(max_length=50)
     zone = models.CharField(max_length=1)
     price = models.DecimalField(
         max_digits=10, decimal_places=2

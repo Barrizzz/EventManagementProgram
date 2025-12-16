@@ -849,7 +849,7 @@ def register_event(request, event_id):
                     ec.customer_id,
                     ec.ticket_id,
                     t.ticket_type_id,
-                    tt.type,
+                    tt.ticket_type,
                     tt.price
                 FROM eventcustomer ec
                 JOIN ticket t ON ec.ticket_id = t.ticketID
@@ -870,36 +870,15 @@ def register_event(request, event_id):
                     cursor.execute(
                         """
                     SELECT
-                        tt.ticketTypeID,
-                        tt.type,
-                        tt.price,
-                        tt.zone,
-                        
-                        -- Use the capacity from the Venue linked to the Event
-                        v.capacity - IFNULL(SUM(t.ticketID IS NOT NULL AND t.status IN ('sold', 'checked_in')), 0) AS available_seats
-                        
-                    FROM 
-                        tickettype tt
-                    
-                    -- 1. LEFT JOIN to Ticket to count sales AND get the link to the Event
-                    LEFT JOIN 
-                        ticket t ON tt.ticketTypeID = t.ticket_type_id AND t.status IN ('sold', 'checked_in')
+                    tt.ticketTypeID,
+                    tt.ticket_type,
+                    tt.zone,
+                    tt.price
 
-                    -- 2. JOIN Event to filter AND get the venue_id
-                    JOIN 
-                        event e ON t.event_id = e.eventID -- ***ASSUMPTION: The 'ticket' table links to the 'event' table via 't.event_id'***
 
-                    -- 3. JOIN Venue using the event's venue_id
-                    JOIN 
-                        venue v ON e.venue_id = v.venueID
-                        
-                    -- Filter by the specific Event
-                    WHERE 
-                        e.eventID = %s 
-                    
-                    -- Group by all non-aggregated columns
-                    GROUP BY
-                        tt.ticketTypeID, tt.type, tt.price, tt.zone, v.capacity
+
+                    from tickettype tt
+                    where tt.event_id = %s;
                     """,
                         [event_id],
                     )
@@ -907,12 +886,47 @@ def register_event(request, event_id):
                     columns = [col[0] for col in cursor.description]
                     rows = cursor.fetchall()
 
-                    return JsonResponse(
-                        {
+                    res = {
                             "registered": False,
                             "ticket_types": [dict(zip(columns, row)) for row in rows],
                         }
-                    )
+                    
+                    cursor.execute("""
+SELECT
+    -- Calculate available seats: (Venue Capacity) - (Total Sold Tickets)
+    (V.capacity - COALESCE(T_Sold.TotalSold, 0)) AS AvailableSeats
+FROM
+    -- 1. Get the Event and its related Venue capacity
+    Event E
+INNER JOIN
+    Venue V ON E.venue_id = V.venueID
+LEFT JOIN
+    -- 2. CTE to Count Sold Tickets for the Event
+    (
+        SELECT
+            T.event_id,
+            COUNT(T.ticketID) AS TotalSold
+        FROM
+            Ticket T
+        WHERE
+            -- Only count tickets for the specific event
+            T.event_id = %s
+            AND T.status IN ('reserved', 'checked in') -- Only count active/valid tickets
+        GROUP BY
+            T.event_id
+    ) T_Sold ON E.eventID = T_Sold.event_id
+WHERE
+    -- 3. Filter for the specific Event
+    E.eventID = %s;
+                                   """,
+                    [event_id, event_id])
+                    
+                    row = cursor.fetchone()
+                    res["available_seats"] = row[0] if row else 0
+                    
+                    print(res)
+
+                    return JsonResponse(res)
 
 
 @login_required
