@@ -395,59 +395,203 @@ def get_event(request, event_id):
 def update_event(request, event_id):
     """Update an existing event"""
     try:
-        event = get_object_or_404(Event, eventID=event_id)
-        
-        # Parse JSON data from request body
         data = json.loads(request.body)
-        
-        # Update basic event fields
-        event.name = data.get('name')
-        event.description = data.get('description')
-        event.rundown = data.get('rundown')
-        event.materials = data.get('materials')
-        
-        # Update or create category
-        category_name = data.get('category')
-        if category_name:
-            category, created = EventCategory.objects.get_or_create(category=category_name)
-            event.category = category
-        
-        # Update or create organizer
-        organizer_name = data.get('organizer')
-        if organizer_name:
-            organizer, created = Organizer.objects.get_or_create(
-                name=organizer_name,
-                defaults={'email': f'{organizer_name.replace(" ", "").lower()}@example.com', 'contactNum': '000-000-0000'}
-            )
-            event.organizer = organizer
-        
-        # Update or create venue
-        venue_name = data.get('venue')
-        if venue_name:
-            venue, created = Venue.objects.get_or_create(
-                name=venue_name,
-                defaults={'address': 'TBD', 'city': 'TBD', 'capacity': 100}
-            )
-            event.venue = venue
-        
-        # Update datetime
-        date = data.get('date')
-        time = data.get('time')
-        if date and time:
-            from datetime import datetime, time as dt_time
-            start_time = datetime.strptime(time, '%H:%M').time()
-            end_time = datetime.strptime('18:00', '%H:%M').time()  # Default 6 PM end
-            
-            event_datetime, created = EventDateTime.objects.get_or_create(
-                date=date,
-                startTime=start_time,
-                defaults={'endTime': end_time}
-            )
-            event.datetime = event_datetime
-        
-        event.save()
-        return JsonResponse({'success': True, 'message': f'Event "{event.name}" updated successfully'})
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON format in request body'})
     except Exception as e:
+        return JsonResponse({'success': False, 'error': f'An error occurred during JSON parsing: {str(e)}'})
+
+    # Extract data with default None/empty string for safety
+    event_name = data.get('name')
+    event_description = data.get('description')
+    event_rundown = data.get('rundown')
+    event_materials = data.get('materials')
+    category_name = data.get('category')
+    organizer_data = data.get('organizer')
+    venue_data = data.get('venue')
+    datetime_data = data.get('datetime')
+    
+    # IDs for foreign keys (initially None)
+    category_id = None
+    organizer_id = None
+    venue_id = None
+    datetime_id = None
+    
+    try:
+        # Use transaction for atomic operations (important for multiple inserts/updates)
+        with transaction.atomic():
+            with connection.cursor() as cursor:
+                # 2. Check if the Event exists (Equivalent to get_object_or_404)
+                cursor.execute(
+                    "SELECT category_id, organizer_id, venue_id, datetime_id, name "
+                    "FROM event WHERE eventID = %s",
+                    [event_id]
+                )
+                event_row = cursor.fetchone()
+                
+                if not event_row:
+                    return JsonResponse({'success': False, 'error': f'Event with ID {event_id} not found'})
+                
+                # Unpack existing foreign key IDs and name
+                (existing_category_id, existing_organizer_id, existing_venue_id, existing_datetime_id, old_event_name) = event_row
+
+                # 3. Handle Category (get_or_create)
+                if category_name:
+                    cursor.execute(
+                        "SELECT categoryID FROM eventcategory WHERE category = %s",
+                        [category_name]
+                    )
+                    row = cursor.fetchone()
+                    if row:
+                        category_id = row[0]
+                    else:
+                        cursor.execute(
+                            "INSERT INTO eventcategory (category) VALUES (%s)",
+                            [category_name]
+                        )
+                        category_id = cursor.lastrowid
+                else:
+                    category_id = existing_category_id # Keep old ID if no update provided
+
+                # 4. Handle Organizer (get_or_create)
+                if organizer_data:
+                    # Check for existing organizer by name
+                    cursor.execute(
+                        "SELECT organizerID FROM organizer WHERE name = %s",
+                        [organizer_data['name']]
+                    )
+                    row = cursor.fetchone()
+                    if row:
+                        organizer_id = row[0]
+                        # Optional: Update existing organizer's fields (Django's ORM might not do this 
+                        # on get_or_create unless explicitly told, but often desired in updates)
+                        cursor.execute(
+                            "UPDATE organizer SET email = %s, contactNum = %s, website = %s WHERE organizerID = %s",
+                            [
+                                organizer_data.get('email'),
+                                organizer_data.get('contactNum'),
+                                organizer_data.get('website'),
+                                organizer_id
+                            ]
+                        )
+                    else:
+                        # Insert new organizer
+                        cursor.execute(
+                            "INSERT INTO organizer (name, email, contactNum, website) "
+                            "VALUES (%s, %s, %s, %s)",
+                            [
+                                organizer_data['name'],
+                                organizer_data.get('email'),
+                                organizer_data.get('contactNum'),
+                                organizer_data.get('website')
+                            ]
+                        )
+                        organizer_id = cursor.lastrowid
+                else:
+                    organizer_id = existing_organizer_id # Keep old ID
+
+                # 5. Handle Venue (get_or_create)
+                if venue_data:
+                    # Check for existing venue by name
+                    cursor.execute(
+                        "SELECT venueID FROM venue WHERE name = %s",
+                        [venue_data['name']]
+                    )
+                    row = cursor.fetchone()
+                    if row:
+                        venue_id = row[0]
+                        # Optional: Update existing venue's fields
+                        cursor.execute(
+                            "UPDATE venue SET address = %s, city = %s, capacity = %s WHERE venueID = %s",
+                            [
+                                venue_data.get('address'),
+                                venue_data.get('city'),
+                                venue_data.get('capacity'),
+                                venue_id
+                            ]
+                        )
+                    else:
+                        # Insert new venue
+                        cursor.execute(
+                            "INSERT INTO venue (name, address, city, capacity) "
+                            "VALUES (%s, %s, %s, %s)",
+                            [
+                                venue_data['name'],
+                                venue_data.get('address'),
+                                venue_data.get('city'),
+                                venue_data.get('capacity')
+                            ]
+                        )
+                        venue_id = cursor.lastrowid
+                else:
+                    venue_id = existing_venue_id # Keep old ID
+                
+                # 6. Handle EventDateTime (get_or_create)
+                if datetime_data:
+                    # Prepare datetime objects (Must be done in Python)
+                    start_time = datetime.strptime(datetime_data['startTime'], '%H:%M').time()
+                    date = datetime.strptime(datetime_data['date'], '%Y-%m-%d').date()
+                    end_time = datetime.strptime(datetime_data['endTime'], '%H:%M').time()
+                    
+                    # Check for existing EventDateTime by date and startTime
+                    cursor.execute(
+                        "SELECT eventDateTimeID FROM eventdatetime WHERE date = %s AND startTime = %s",
+                        [date, start_time]
+                    )
+                    row = cursor.fetchone()
+                    if row:
+                        datetime_id = row[0]
+                        # Optional: Update existing datetime's endTime
+                        cursor.execute(
+                            "UPDATE eventdatetime SET endTime = %s WHERE eventDateTimeID = %s",
+                            [end_time, datetime_id]
+                        )
+                    else:
+                        # Insert new EventDateTime
+                        cursor.execute(
+                            "INSERT INTO eventdatetime (date, startTime, endTime) VALUES (%s, %s, %s)",
+                            [date, start_time, end_time]
+                        )
+                        datetime_id = cursor.lastrowid
+                else:
+                    datetime_id = existing_datetime_id # Keep old ID
+
+                # 7. Final Event UPDATE
+                # Use COALESCE logic to only update fields if new data is provided, otherwise keep old data.
+                # However, since we re-fetch the foreign key IDs, we only need to construct the basic UPDATE statement
+                # with the potentially new FKs and the basic fields.
+
+                # Simple way: just update all fields that were potentially changed/set
+                cursor.execute(
+                    "UPDATE event SET "
+                    "name = %s, "
+                    "description = %s, "
+                    "rundown = %s, "
+                    "materials = %s, "
+                    "category_id = %s, "
+                    "organizer_id = %s, "
+                    "venue_id = %s, "
+                    "datetime_id = %s "
+                    "WHERE eventID = %s",
+                    [
+                        event_name if event_name is not None else old_event_name, # Fallback to old name if not provided
+                        event_description,
+                        event_rundown,
+                        event_materials,
+                        category_id,
+                        organizer_id,
+                        venue_id,
+                        datetime_id,
+                        event_id
+                    ]
+                )
+                
+                final_event_name = event_name if event_name is not None else old_event_name
+                return JsonResponse({'success': True, 'message': f'Event "{final_event_name}" updated successfully'})
+
+    except Exception as e:
+        # Rollback is automatically handled by transaction.atomic() on exception
+        print(e)
         return JsonResponse({'success': False, 'error': str(e)})
 
 # API Endpoints for autocomplete
