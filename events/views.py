@@ -545,41 +545,6 @@ def update_event(request, event_id):
                 else:
                     organizer_id = existing_organizer_id  # Keep old ID
 
-                # 5. Handle Venue (get_or_create)
-                if venue_data:
-                    # Check for existing venue by name
-                    cursor.execute(
-                        "SELECT venueID FROM venue WHERE name = %s",
-                        [venue_data["name"]],
-                    )
-                    row = cursor.fetchone()
-                    if row:
-                        venue_id = row[0]
-                        # Optional: Update existing venue's fields
-                        cursor.execute(
-                            "UPDATE venue SET address = %s, city = %s, capacity = %s WHERE venueID = %s",
-                            [
-                                venue_data.get("address"),
-                                venue_data.get("city"),
-                                venue_data.get("capacity"),
-                                venue_id,
-                            ],
-                        )
-                    else:
-                        # Insert new venue
-                        cursor.execute(
-                            "INSERT INTO venue (name, address, city, capacity) "
-                            "VALUES (%s, %s, %s, %s)",
-                            [
-                                venue_data["name"],
-                                venue_data.get("address"),
-                                venue_data.get("city"),
-                                venue_data.get("capacity"),
-                            ],
-                        )
-                        venue_id = cursor.lastrowid
-                else:
-                    venue_id = existing_venue_id  # Keep old ID
 
                 # 6. Handle EventDateTime (get_or_create)
                 if datetime_data:
@@ -629,7 +594,6 @@ def update_event(request, event_id):
                     "materials = %s, "
                     "category_id = %s, "
                     "organizer_id = %s, "
-                    "venue_id = %s, "
                     "datetime_id = %s "
                     "WHERE eventID = %s",
                     [
@@ -641,7 +605,6 @@ def update_event(request, event_id):
                         event_materials,
                         category_id,
                         organizer_id,
-                        venue_id,
                         datetime_id,
                         event_id,
                     ],
