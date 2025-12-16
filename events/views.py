@@ -913,3 +913,45 @@ def register_event(request, event_id):
                             "ticket_types": [dict(zip(columns, row)) for row in rows],
                         }
                     )
+
+
+@login_required
+@require_POST
+def create_ticket_type(request):
+    """Create a new ticket type for an event"""
+    try:
+        data = json.loads(request.body)
+        event_id = data.get("event_id")
+        ticket_type = data.get("type")
+        price = data.get("price")
+        zone = data.get("zone", "")
+
+        if not (event_id and ticket_type and price is not None):
+            return JsonResponse(
+                {
+                    "success": False,
+                    "error": "event_id, type, and price are required fields.",
+                },
+                status=400,
+            )
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                INSERT INTO tickettype (event_id, type, price, zone)
+                VALUES (%s, %s, %s, %s)
+            """,
+                [event_id, ticket_type, price, zone],
+            )
+            ticket_type_id = cursor.lastrowid
+
+        return JsonResponse(
+            {
+                "success": True,
+                "message": f'Ticket type "{ticket_type}" for event ID {event_id} created successfully.',
+                "ticket_type_id": ticket_type_id,
+            }
+        )
+
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
