@@ -42,49 +42,37 @@ INSERT INTO eventDateTime (eventDateTimeID, date, startTime, endTime) VALUES
 (6, '2026-1-20', '13:00:00', '17:00:00');
 
 -- 5. Insert Events
-INSERT INTO event (eventID, name, description, remaining_capacity, rundown, materials, category_id, datetime_id, organizer_id, venue_id) VALUES
+INSERT INTO event (eventID, name, description, rundown, materials, category_id, datetime_id, organizer_id, venue_id) VALUES
 (1, 'Tech Summit 2025', 
     'Annual technology conference featuring industry leaders and innovative solutions', 
-    500,
     '09:00 - Registration and Networking\n10:00 - Keynote Speech\n12:00 - Lunch Break\n13:00 - Panel Discussions\n16:00 - Closing Remarks', 
     'Laptop, Notebook, Pen, Conference Badge', 
     1, 1, 1, 1),
 
 (2, 'Python Workshop', 
     'Hands-on workshop covering Python programming basics and advanced concepts', 
-    50,
     '14:00 - Introduction to Python\n15:00 - Data Structures\n16:00 - Functions and Modules\n17:00 - Q&A Session', 
     'Laptop with Python installed, USB drive', 
     2, 2, 2, 2),
     
 (3, 'Business Leadership Seminar',
     'Learn essential leadership skills for modern business environment',
-    1000,
     '10:00 - Opening and Introductions\n11:00 - Leadership Fundamentals\n13:00 - Case Studies\n15:00 - Interactive Workshop',
     'Notepad, Pen, Business cards',
     3, 3, 3, 3),
     
 (4, 'AI & Machine Learning Conference',
     'Explore the latest developments in artificial intelligence and machine learning',
-    200,
     '09:00 - Registration\n10:00 - AI Overview\n12:00 - Lunch\n13:00 - ML Workshops\n14:30 - Panel Discussion',
     'Laptop, Conference materials provided',
     1, 4, 4, 4),
     
 (5, 'Game Dev Conference',
 	'Explore game development',
-	200,
      '09:00 - Registration\n10:00 - Game Dev Overview\n12:00 - Lunch\n13:00 - Game Dev Workshops\n14:30 - Panel Discussion',
      '',
      2, 6, 4, 4); 
-     
--- 6. Insert Ticket Types
-INSERT INTO ticketType (ticketTypeID, ticket_type, zone, price) VALUES
-(1, 'VIP', 'A', 150.00),
-(2, 'Premium', 'B', 100.00),
-(3, 'General Admission', 'C', 50.00),
-(4, 'Student', 'C', 25.00),
-(5, 'Early Bird', 'B', 75.00);
+
 
 -- 7. Insert Customers (10 sample customers)
 -- Note: Passwords are hashed using Django's default hasher (not plain text)
@@ -100,7 +88,6 @@ INSERT INTO customer (customerID, password, last_login, fName, lName, email, pho
 (9, 'pbkdf2_sha256$600000$sample9$hash', '2025-01-15 10:40:00', 'Isabel', 'Ivanov', 'isabel.ivanov@email.com', '+1-555-1009', 0),
 (10, 'pbkdf2_sha256$600000$sample10$hash', '2025-01-15 12:25:00', 'Jack', 'Jackson', 'jack.jackson@email.com', '+1-555-1010', 0),
 (11, 'pbkdf2_sha256$600000$admin$hash', '2025-01-16 09:00:00', 'Admin', 'User', 'admin@ems.com', '+1-555-9999', 1);
-
 
 -- =====================================================
 -- VERIFICATION QUERIES
@@ -214,5 +201,3 @@ ORDER BY e.name, tt.price DESC;
 SELECT '✅ Database setup complete!' AS status,
        'ems_db' AS database_name,
        'All tables created and populated with sample data' AS message;
-       
-select * from venue;

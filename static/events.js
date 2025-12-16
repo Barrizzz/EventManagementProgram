@@ -333,8 +333,7 @@ function showEventModal(eventData = null) {
                         <label for="eventVenue">Venue Name *</label>
                         <input type="text" id="eventVenue" name="venueName" 
                             placeholder="Enter venue name" 
-                            list="venueList" required
-                            ${isEditMode ? 'disabled' : ''}>
+                            list="venueList" required>
                         <datalist id="venueList">
                             <!-- Options will be populated from existing venues -->
                         </datalist>
@@ -345,8 +344,7 @@ function showEventModal(eventData = null) {
                         <label for="venueAddress">Venue Address *</label>
                         <input type="text" id="venueAddress" name="venueAddress" 
                             placeholder="123 Main St, Suite 100" 
-                            value="${isEditMode ? eventData.venueAddress || '' : ''}" required
-                            ${isEditMode ? 'disabled' : ''}>
+                            value="${isEditMode ? eventData.venueAddress || '' : ''}" required>
                     </div>
 
                     <div class="form-row">
@@ -354,15 +352,13 @@ function showEventModal(eventData = null) {
                             <label for="venueCity">City *</label>
                             <input type="text" id="venueCity" name="venueCity" 
                                 placeholder="City name" 
-                                value="${isEditMode ? eventData.venueCity || '' : ''}" required
-                                ${isEditMode ? 'disabled' : ''}>
+                                value="${isEditMode ? eventData.venueCity || '' : ''}" required>
                         </div>
                         <div class="form-group">
                             <label for="venueCapacity">Capacity *</label>
                             <input type="number" id="venueCapacity" name="venueCapacity" 
                                 placeholder="100" min="1" 
-                                value="${isEditMode ? eventData.venueCapacity || '' : ''}" required
-                                ${isEditMode ? 'disabled' : ''}>
+                                value="${isEditMode ? eventData.venueCapacity || '' : ''}" required>
                         </div>
                     </div>
                 </div>

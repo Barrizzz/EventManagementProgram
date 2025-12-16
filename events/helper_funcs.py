@@ -1,4 +1,5 @@
-from .models import Venue, Organizer, EventDateTime, EventCategory, TicketType, Event, Ticket
+from .models import Venue, Organizer, EventDateTime, EventCategory
+
 
 def create_venue(name, address, capacity, city):
     """Helper function to create a Venue instance"""
@@ -42,23 +43,3 @@ def create_event_category(category_name):
     event_category = EventCategory.objects.create(category=category_name)
 
     return event_category
-
-def create_ticket_type(ticket_type, price, zone):
-    """Helper function to create a TicketType instance"""
-    ticket_type = TicketType.objects.create(
-        ticket_type=ticket_type, price=price, zone=zone
-    )
-    return ticket_type
-
-def generate_tickets(event_id, ticket_type_id, capacity):
-    """Helper function to generate Ticket instances for an event based on ticket type and capacity"""
-    tickets = []
-
-    for i in range(capacity):
-        ticket = Ticket.objects.create(
-            event=event_id,
-            rowNum = i,
-            seatNum = i,
-            ticket_type=ticket_type_id,
-        )
-        tickets.append(ticket)
