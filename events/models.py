@@ -95,7 +95,6 @@ class TicketType(models.Model):
         related_name="ticket_types",
     )
     ticket_type = models.CharField(max_length=50)
-    zone = models.CharField(max_length=1)
     price = models.DecimalField(
         max_digits=10, decimal_places=2
     )  # Using DecimalField for currency
@@ -104,7 +103,7 @@ class TicketType(models.Model):
         db_table = "ticketType"
 
     def __str__(self):
-        return f"{self.type} (Zone {self.zone})"
+        return f"{self.type}"
 
 
 class Event(models.Model):
