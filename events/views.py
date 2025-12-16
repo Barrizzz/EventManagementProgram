@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
 from django.db import connection, transaction
 from django.db.models import Sum
@@ -836,9 +836,8 @@ def reports_page(request):
 
 
 @login_required
-# TODO - Implement event registration
-def register_event(request, event_id):
-    if request.method == "GET":
+@require_GET
+def registration_info(request, event_id):
         # Check if user has registered for an event
         user = request.user
         with connection.cursor() as cursor:
@@ -887,48 +886,54 @@ def register_event(request, event_id):
                     rows = cursor.fetchall()
 
                     res = {
-                            "registered": False,
-                            "ticket_types": [dict(zip(columns, row)) for row in rows],
-                        }
-                    
-                    cursor.execute("""
-SELECT
-    -- Calculate available seats: (Venue Capacity) - (Total Sold Tickets)
-    (V.capacity - COALESCE(T_Sold.TotalSold, 0)) AS AvailableSeats
-FROM
-    -- 1. Get the Event and its related Venue capacity
-    Event E
-INNER JOIN
-    Venue V ON E.venue_id = V.venueID
-LEFT JOIN
-    -- 2. CTE to Count Sold Tickets for the Event
-    (
-        SELECT
-            T.event_id,
-            COUNT(T.ticketID) AS TotalSold
-        FROM
-            Ticket T
-        WHERE
-            -- Only count tickets for the specific event
-            T.event_id = %s
-            AND T.status IN ('reserved', 'checked in') -- Only count active/valid tickets
-        GROUP BY
-            T.event_id
-    ) T_Sold ON E.eventID = T_Sold.event_id
-WHERE
-    -- 3. Filter for the specific Event
-    E.eventID = %s;
+                        "registered": False,
+                        "ticket_types": [dict(zip(columns, row)) for row in rows],
+                    }
+
+                    cursor.execute(
+                        """
+                        SELECT
+                            -- Calculate available seats: (Venue Capacity) - (Total Sold Tickets)
+                            (V.capacity - COALESCE(T_Sold.TotalSold, 0)) AS AvailableSeats
+                        FROM
+                            -- 1. Get the Event and its related Venue capacity
+                            Event E
+                        INNER JOIN
+                            Venue V ON E.venue_id = V.venueID
+                        LEFT JOIN
+                            -- 2. CTE to Count Sold Tickets for the Event
+                            (
+                                SELECT
+                                    T.event_id,
+                                    COUNT(T.ticketID) AS TotalSold
+                                FROM
+                                    Ticket T
+                                WHERE
+                                    -- Only count tickets for the specific event
+                                    T.event_id = %s
+                                    AND T.status IN ('reserved', 'checked in') -- Only count active/valid tickets
+                                GROUP BY
+                                    T.event_id
+                            ) T_Sold ON E.eventID = T_Sold.event_id
+                        WHERE
+                            -- 3. Filter for the specific Event
+                            E.eventID = %s;
                                    """,
-                    [event_id, event_id])
-                    
+                        [event_id, event_id],
+                    )
+
                     row = cursor.fetchone()
                     res["available_seats"] = row[0] if row else 0
-                    
+
                     print(res)
 
                     return JsonResponse(res)
-
-
+                
+@login_required
+@require_POST # TODO - Implement event registration
+def register_event(request, event_id):
+    return None
+        
 @login_required
 @require_POST
 def create_ticket_type(request):

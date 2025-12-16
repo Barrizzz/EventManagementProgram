@@ -241,25 +241,19 @@ function displayTicketSelectionForm(container, eventId, eventName, ticketTypes, 
 function setupTicketRegistrationFormListeners(eventId, ticketTypes) {
     const form = document.getElementById('ticketRegistrationForm');
     const ticketTypeCards = document.querySelectorAll('.ticket-type-card');
-    const rowInput = document.getElementById('rowNumber');
-    const seatInput = document.getElementById('seatNumber');
     const summary = document.getElementById('registrationSummary');
     const cancelBtn = document.getElementById('cancelRegistration');
     
     // Update summary when selections change
     const updateSummary = () => {
         const selectedTicketType = document.querySelector('input[name="ticketType"]:checked');
-        const row = rowInput.value;
-        const seat = seatInput.value;
         
-        if (selectedTicketType && row && seat) {
+        if (selectedTicketType) {
             const ticketTypeId = selectedTicketType.value;
             const ticketType = ticketTypes.find(t => t.ticketTypeID == ticketTypeId);
             
             document.getElementById('summaryTicketType').textContent = 
-                `${ticketType.type} (Zone ${ticketType.zone})`;
-            document.getElementById('summarySeat').textContent = 
-                `Row ${row}, Seat ${seat}`;
+                `${ticketType.ticket_type} (Zone ${ticketType.zone})`;
             document.getElementById('summaryTotal').textContent = 
                 `$${parseFloat(ticketType.price).toFixed(2)}`;
             
