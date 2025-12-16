@@ -839,7 +839,6 @@ def registration_info(request, event_id):
                     SELECT
                     tt.ticketTypeID,
                     tt.ticket_type,
-                    tt.zone,
                     tt.price
 
 
@@ -913,7 +912,6 @@ def create_ticket_type(request):
         event_id = data.get("event_id")
         ticket_type = data.get("type")
         price = data.get("price")
-        zone = data.get("zone", "")
 
         if not (event_id and ticket_type and price is not None):
             return JsonResponse(
@@ -927,10 +925,10 @@ def create_ticket_type(request):
         with connection.cursor() as cursor:
             cursor.execute(
                 """
-                INSERT INTO tickettype (event_id, type, price, zone)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO tickettype (event_id, type, price)
+                VALUES (%s, %s, %s)
             """,
-                [event_id, ticket_type, price, zone],
+                [event_id, ticket_type, price],
             )
             ticket_type_id = cursor.lastrowid
 
