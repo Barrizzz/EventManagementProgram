@@ -51,8 +51,8 @@ class Venue(models.Model):
     """
 
     venueID = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
-    address = models.CharField(max_length=255)
+    name = models.CharField(max_length=100, unique=True)
+    address = models.CharField(max_length=255, unique=True)
     city = models.CharField(max_length=50)
     capacity = models.IntegerField()
 
@@ -145,6 +145,7 @@ class Event(models.Model):
 
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    remaining_capacity = models.IntegerField()
     rundown = models.TextField(blank=True)
     materials = models.TextField(blank=True)
 

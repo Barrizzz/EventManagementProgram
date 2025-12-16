@@ -42,33 +42,38 @@ INSERT INTO eventDateTime (eventDateTimeID, date, startTime, endTime) VALUES
 (6, '2026-1-20', '13:00:00', '17:00:00');
 
 -- 5. Insert Events
-INSERT INTO event (eventID, name, description, rundown, materials, category_id, datetime_id, organizer_id, venue_id) VALUES
+INSERT INTO event (eventID, name, description, remaining_capacity, rundown, materials, category_id, datetime_id, organizer_id, venue_id) VALUES
 (1, 'Tech Summit 2025', 
     'Annual technology conference featuring industry leaders and innovative solutions', 
+    500,
     '09:00 - Registration and Networking\n10:00 - Keynote Speech\n12:00 - Lunch Break\n13:00 - Panel Discussions\n16:00 - Closing Remarks', 
     'Laptop, Notebook, Pen, Conference Badge', 
     1, 1, 1, 1),
 
 (2, 'Python Workshop', 
-    'Hands-on workshop covering Python programming basics and advanced concepts', 
+    'Hands-on workshop covering Python programming basics and advanced concepts',
+    50,
     '14:00 - Introduction to Python\n15:00 - Data Structures\n16:00 - Functions and Modules\n17:00 - Q&A Session', 
     'Laptop with Python installed, USB drive', 
     2, 2, 2, 2),
     
 (3, 'Business Leadership Seminar',
     'Learn essential leadership skills for modern business environment',
+    1000,
     '10:00 - Opening and Introductions\n11:00 - Leadership Fundamentals\n13:00 - Case Studies\n15:00 - Interactive Workshop',
     'Notepad, Pen, Business cards',
     3, 3, 3, 3),
     
 (4, 'AI & Machine Learning Conference',
     'Explore the latest developments in artificial intelligence and machine learning',
+    200,
     '09:00 - Registration\n10:00 - AI Overview\n12:00 - Lunch\n13:00 - ML Workshops\n14:30 - Panel Discussion',
     'Laptop, Conference materials provided',
     1, 4, 4, 4),
     
 (5, 'Game Dev Conference',
 	'Explore game development',
+    200,
      '09:00 - Registration\n10:00 - Game Dev Overview\n12:00 - Lunch\n13:00 - Game Dev Workshops\n14:30 - Panel Discussion',
      '',
      2, 6, 4, 4); 

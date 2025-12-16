@@ -212,8 +212,13 @@ def create_event(request):
                             """,
                             [venue_name, address, city, capacity],
                         )
-                        cursor.execute("SELECT LAST_INSERT_ID()")
-                        venue_id = cursor.fetchone()[0]
+                        venue_id = cursor.lastrowid
+    
+                    cursor.execute("""
+                        SELECT `capacity` FROM `venue` WHERE `venueID` = %s
+                                   """, [venue_id])
+                    
+                    venue_capacity = cursor.fetchone()[0]
 
                 # --- 4. Get or Create Datetime ---
                 datetime_data = data.get("datetime", {})
@@ -275,12 +280,13 @@ def create_event(request):
                 cursor.execute(
                     """
                     INSERT INTO `event` 
-                    (`name`, `description`, `rundown`, `materials`, `category_id`, `datetime_id`, `organizer_id`, `venue_id`) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    (`name`, `description`, `remaining_capacity`, `rundown`, `materials`, `category_id`, `datetime_id`, `organizer_id`, `venue_id`) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """,
                     [
                         event_name,
                         description,
+                        venue_capacity,
                         rundown,
                         materials,
                         category_id,
