@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import connection, transaction
 from django.db.models import Sum
 import json
+from .helper_funcs import generate_tickets
 from datetime import datetime, timedelta
 from django.utils import timezone
 
@@ -215,6 +216,12 @@ def create_event(request):
                         cursor.execute("SELECT LAST_INSERT_ID()")
                         venue_id = cursor.fetchone()[0]
 
+                # Get venue capacity for ticket generation later
+                cursor.execute(
+                    "SELECT `capacity` FROM `venue` WHERE `venueID` = %s", [venue_id]
+                )
+                capacity = cursor.fetchone()[0]
+
                 # --- 4. Get or Create Datetime ---
                 datetime_data = data.get("datetime", {})
                 date_str = datetime_data.get("date")
@@ -275,12 +282,13 @@ def create_event(request):
                 cursor.execute(
                     """
                     INSERT INTO `event` 
-                    (`name`, `description`, `rundown`, `materials`, `category_id`, `datetime_id`, `organizer_id`, `venue_id`) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    (`name`, `description`,`remaining_capacity`, `rundown`, `materials`, `category_id`, `datetime_id`, `organizer_id`, `venue_id`) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """,
                     [
                         event_name,
                         description,
+                        capacity,
                         rundown,
                         materials,
                         category_id,
@@ -838,96 +846,8 @@ def reports_page(request):
 @login_required
 @require_GET
 def registration_info(request, event_id):
-        # Check if user has registered for an event
-        user = request.user
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT 
-                    ec.id,
-                    ec.customer_id,
-                    ec.ticket_id,
-                    t.ticket_type_id,
-                    tt.ticket_type,
-                    tt.price
-                FROM eventcustomer ec
-                JOIN ticket t ON ec.ticket_id = t.ticketID
-                JOIN tickettype tt ON t.ticket_type_id = tt.ticketTypeID
-                WHERE ec.event_id = %s AND ec.customer_id = %s
-            """,
-                [event_id, user.customerID],
-            )
-            row = cursor.fetchone()
-            if row:
-                columns = [col[0] for col in cursor.description]
-                registration_info = dict(zip(columns, row))
-                return JsonResponse(
-                    {"registered": True, "registration_info": registration_info}
-                )
-            else:
-                with connection.cursor() as cursor:
-                    cursor.execute(
-                        """
-                    SELECT
-                    tt.ticketTypeID,
-                    tt.ticket_type,
-                    tt.zone,
-                    tt.price
-
-
-
-                    from tickettype tt
-                    where tt.event_id = %s;
-                    """,
-                        [event_id],
-                    )
-
-                    columns = [col[0] for col in cursor.description]
-                    rows = cursor.fetchall()
-
-                    res = {
-                        "registered": False,
-                        "ticket_types": [dict(zip(columns, row)) for row in rows],
-                    }
-
-                    cursor.execute(
-                        """
-                        SELECT
-                            -- Calculate available seats: (Venue Capacity) - (Total Sold Tickets)
-                            (V.capacity - COALESCE(T_Sold.TotalSold, 0)) AS AvailableSeats
-                        FROM
-                            -- 1. Get the Event and its related Venue capacity
-                            Event E
-                        INNER JOIN
-                            Venue V ON E.venue_id = V.venueID
-                        LEFT JOIN
-                            -- 2. CTE to Count Sold Tickets for the Event
-                            (
-                                SELECT
-                                    T.event_id,
-                                    COUNT(T.ticketID) AS TotalSold
-                                FROM
-                                    Ticket T
-                                WHERE
-                                    -- Only count tickets for the specific event
-                                    T.event_id = %s
-                                    AND T.status IN ('reserved', 'checked in') -- Only count active/valid tickets
-                                GROUP BY
-                                    T.event_id
-                            ) T_Sold ON E.eventID = T_Sold.event_id
-                        WHERE
-                            -- 3. Filter for the specific Event
-                            E.eventID = %s;
-                                   """,
-                        [event_id, event_id],
-                    )
-
-                    row = cursor.fetchone()
-                    res["available_seats"] = row[0] if row else 0
-
-                    print(res)
-
-                    return JsonResponse(res)
+    # TODO - Implement event registration info retrieval
+    return None
                 
 @login_required
 @require_POST # TODO - Implement event registration
@@ -944,6 +864,7 @@ def create_ticket_type(request):
         ticket_type = data.get("type")
         price = data.get("price")
         zone = data.get("zone", "")
+        capacity = data.get("capacity", 0)
 
         if not (event_id and ticket_type and price is not None):
             return JsonResponse(
@@ -955,6 +876,26 @@ def create_ticket_type(request):
             )
 
         with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT remaining_capacity FROM event WHERE eventID = %s
+            """, [event_id])
+
+            row = cursor.fetchone()
+            if not row:
+                return JsonResponse(
+                    {"success": False, "error": f"Event ID {event_id} not found."},
+                    status=404,
+                )
+
+            if capacity > row[0]:
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "error": f"Capacity {capacity} exceeds event's remaining capacity of {row[0]}.",
+                    },
+                    status=400,
+                )
+
             cursor.execute(
                 """
                 INSERT INTO tickettype (event_id, type, price, zone)
@@ -963,6 +904,9 @@ def create_ticket_type(request):
                 [event_id, ticket_type, price, zone],
             )
             ticket_type_id = cursor.lastrowid
+
+            # Generate tickets based on the capacity
+            generate_tickets(event_id, ticket_type_id, capacity)
 
         return JsonResponse(
             {

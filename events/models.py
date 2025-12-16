@@ -90,7 +90,6 @@ class TicketType(models.Model):
 
     ticketTypeID = models.AutoField(primary_key=True)
     ticket_type = models.CharField(max_length=50)
-    zone = models.CharField(max_length=1)
     price = models.DecimalField(
         max_digits=10, decimal_places=2
     )  # Using DecimalField for currency
@@ -140,6 +139,7 @@ class Event(models.Model):
 
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    remaining_capacity = models.IntegerField()
     rundown = models.TextField(blank=True)
     materials = models.TextField(blank=True)
 
