@@ -838,11 +838,11 @@ def reports_page(request):
 @login_required
 @require_GET
 def registration_info(request, event_id):
-        # Check if user has registered for an event
-        user = request.user
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
+    # Check if user has registered for an event
+    user = request.user
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
                 SELECT 
                     ec.id,
                     ec.customer_id,
@@ -855,19 +855,19 @@ def registration_info(request, event_id):
                 JOIN tickettype tt ON t.ticket_type_id = tt.ticketTypeID
                 WHERE ec.event_id = %s AND ec.customer_id = %s
             """,
-                [event_id, user.customerID],
+            [event_id, user.customerID],
+        )
+        row = cursor.fetchone()
+        if row:
+            columns = [col[0] for col in cursor.description]
+            registration_info = dict(zip(columns, row))
+            return JsonResponse(
+                {"registered": True, "registration_info": registration_info}
             )
-            row = cursor.fetchone()
-            if row:
-                columns = [col[0] for col in cursor.description]
-                registration_info = dict(zip(columns, row))
-                return JsonResponse(
-                    {"registered": True, "registration_info": registration_info}
-                )
-            else:
-                with connection.cursor() as cursor:
-                    cursor.execute(
-                        """
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
                     SELECT
                     tt.ticketTypeID,
                     tt.ticket_type,
@@ -879,19 +879,19 @@ def registration_info(request, event_id):
                     from tickettype tt
                     where tt.event_id = %s;
                     """,
-                        [event_id],
-                    )
+                    [event_id],
+                )
 
-                    columns = [col[0] for col in cursor.description]
-                    rows = cursor.fetchall()
+                columns = [col[0] for col in cursor.description]
+                rows = cursor.fetchall()
 
-                    res = {
-                        "registered": False,
-                        "ticket_types": [dict(zip(columns, row)) for row in rows],
-                    }
+                res = {
+                    "registered": False,
+                    "ticket_types": [dict(zip(columns, row)) for row in rows],
+                }
 
-                    cursor.execute(
-                        """
+                cursor.execute(
+                    """
                         SELECT
                             -- Calculate available seats: (Venue Capacity) - (Total Sold Tickets)
                             (V.capacity - COALESCE(T_Sold.TotalSold, 0)) AS AvailableSeats
@@ -919,21 +919,23 @@ def registration_info(request, event_id):
                             -- 3. Filter for the specific Event
                             E.eventID = %s;
                                    """,
-                        [event_id, event_id],
-                    )
+                    [event_id, event_id],
+                )
 
-                    row = cursor.fetchone()
-                    res["available_seats"] = row[0] if row else 0
+                row = cursor.fetchone()
+                res["available_seats"] = row[0] if row else 0
 
-                    print(res)
+                print(res)
 
-                    return JsonResponse(res)
-                
+                return JsonResponse(res)
+
+
 @login_required
-@require_POST # TODO - Implement event registration
+@require_POST  # TODO - Implement event registration
 def register_event(request, event_id):
     return None
-        
+
+
 @login_required
 @require_POST
 def create_ticket_type(request):
