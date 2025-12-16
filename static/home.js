@@ -92,7 +92,7 @@ function loadTicketRegistrationForm(eventId, eventName) {
     // Expected endpoint: GET /events/<eventId>/registration-info/
     // Expected response: {
     //   already_registered: boolean,
-    //   ticket_types: [{ticketTypeID, type, zone, price}, ...],
+    //   ticket_types: [{ticketTypeID, type, price}],
     //   venue_capacity: number,
     //   available_seats: number
     // }
@@ -140,10 +140,6 @@ function displayAlreadyRegistered(container, ticketInfo) {
                     <div class="ticket-info-item">
                         <span class="label">Ticket Type:</span>
                         <span class="value">${ticketInfo.ticket_type}</span>
-                    </div>
-                    <div class="ticket-info-item">
-                        <span class="label">Zone:</span>
-                        <span class="value">${ticketInfo.zone}</span>
                     </div>
                     <div class="ticket-info-item">
                         <span class="label">Seat:</span>
@@ -195,10 +191,6 @@ function displayTicketSelectionForm(container, eventId, eventName, ticketTypes, 
                                     value="${type.ticketTypeID}" 
                                     required>
                                 <label for="ticket_${type.ticketTypeID}">
-                                    <div class="ticket-type-header">
-                                        <span class="ticket-type-name">${type.ticket_type}</span>
-                                        <span class="ticket-zone">Zone ${type.zone}</span>
-                                    </div>
                                     <div class="ticket-price">$${parseFloat(type.price).toFixed(2)}</div>
                                 </label>
                             </div>
@@ -253,7 +245,7 @@ function setupTicketRegistrationFormListeners(eventId, ticketTypes) {
             const ticketType = ticketTypes.find(t => t.ticketTypeID == ticketTypeId);
             
             document.getElementById('summaryTicketType').textContent = 
-                `${ticketType.ticket_type} (Zone ${ticketType.zone})`;
+                `${ticketType.ticket_type}`;
             document.getElementById('summaryTotal').textContent = 
                 `$${parseFloat(ticketType.price).toFixed(2)}`;
             
