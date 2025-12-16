@@ -367,6 +367,23 @@ function showEventModal(eventData = null) {
                     </div>
                 </div>
 
+                <!-- Ticket Types -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Ticket Types & Pricing (maximum 10)</h3>
+                    
+                    <div class="form-group">
+                        <label for="numTicketTypes">Number of Ticket Types *</label>
+                        <input type="number" id="numTicketTypes" name="numTicketTypes" 
+                            placeholder="Enter number of ticket types (e.g., 2, 3)" 
+                            min="1" max="10" value="1" required>
+                        <small class="form-help">Specify how many different ticket types you want to offer</small>
+                    </div>
+                    
+                    <div id="ticketTypesContainer">
+                        <!-- Ticket type fields will be dynamically added here -->
+                    </div>
+                </div>
+
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
                     <button type="submit" class="btn-primary">
@@ -574,6 +591,61 @@ function showEventModal(eventData = null) {
         .form-help a:hover {
             text-decoration: underline;
         }
+
+        .ticket-type-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .ticket-type-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .ticket-type-header h4 {
+            margin: 0;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-remove-ticket {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-remove-ticket:hover {
+            background: #fecaca;
+        }
+
+        .ticket-type-fields {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .auto-fill-badge {
+            display: inline-block;
+            background: #ddd6fe;
+            color: #6d28d9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
     `;
         document.head.appendChild(style);
     }
@@ -583,6 +655,9 @@ function showEventModal(eventData = null) {
 
     // Populate dropdowns with data
     populateEventFormDropdowns(modal, eventData);
+
+    // Initialize ticket types functionality
+    initializeTicketTypes(modal);
 
     // Event listeners
     const closeBtn = modal.querySelector('.modal-close');
@@ -618,6 +693,11 @@ function showEventModal(eventData = null) {
     // Form submission
     form.addEventListener('submit', function(e) {
         e.preventDefault();
+
+        // Validate ticket allocations before submission
+        if (!validateTicketAllocations(form)) {
+            return;
+        }
 
         // Collect and structure the form data
         const submitData = collectEventFormData(form);
@@ -780,6 +860,20 @@ function populateEventFormDropdowns(modal, eventData = null) {
                 modal.querySelector('#venueAddress').value = venue.address || '';
                 modal.querySelector('#venueCity').value = venue.city || '';
                 modal.querySelector('#venueCapacity').value = venue.capacity || '';
+                
+                // Trigger auto-fill for ticket types
+                const venueCapacityInput = modal.querySelector('#venueCapacity');
+                const ticketTypesContainer = modal.querySelector('#ticketTypesContainer');
+                const numTicketTypesInput = modal.querySelector('#numTicketTypes');
+                const numTypes = parseInt(numTicketTypesInput.value) || 1;
+                
+                if (ticketTypesContainer && venueCapacityInput) {
+                    if (numTypes === 1) {
+                        autoFillSingleTicketType(ticketTypesContainer, venueCapacityInput);
+                    } else {
+                        autoFillLastTicketType(ticketTypesContainer, venueCapacityInput);
+                    }
+                }
             }
         });
     })
@@ -945,10 +1039,224 @@ function showEventDetails(eventCard) {
 }
 
 // Helper function to collect form data
+// Validate ticket allocations
+function validateTicketAllocations(form) {
+    const venueCapacityInput = form.querySelector('#venueCapacity');
+    const totalCapacity = parseInt(venueCapacityInput.value) || 0;
+    
+    if (totalCapacity === 0) {
+        showNotification('Please enter a valid venue capacity', 'error');
+        venueCapacityInput.focus();
+        return false;
+    }
+    
+    const ticketTypeItems = form.querySelectorAll('.ticket-type-item');
+    let allocatedSeats = 0;
+    const ticketTypes = [];
+    
+    // Check each ticket type
+    for (let i = 0; i < ticketTypeItems.length; i++) {
+        const typeInput = ticketTypeItems[i].querySelector(`input[name=\"ticketTypeName_${i}\"]`);
+        const priceInput = ticketTypeItems[i].querySelector(`input[name=\"ticketTypePrice_${i}\"]`);
+        const seatsInput = ticketTypeItems[i].querySelector(`input[name=\"ticketTypeSeats_${i}\"]`);
+        
+        const typeName = typeInput.value.trim();
+        const price = parseFloat(priceInput.value);
+        const seats = parseInt(seatsInput.value);
+        
+        // Validate fields are filled
+        if (!typeName) {
+            showNotification(`Please enter a name for Ticket Type ${i + 1}`, 'error');
+            typeInput.focus();
+            return false;
+        }
+        
+        if (isNaN(price) || price < 0) {
+            showNotification(`Please enter a valid price for Ticket Type ${i + 1}`, 'error');
+            priceInput.focus();
+            return false;
+        }
+        
+        if (isNaN(seats) || seats < 0) {
+            showNotification(`Please enter a valid number of seats for Ticket Type ${i + 1}`, 'error');
+            seatsInput.focus();
+            return false;
+        }
+        
+        // Check for duplicate ticket type names
+        if (ticketTypes.includes(typeName.toLowerCase())) {
+            showNotification(`Duplicate ticket type name: "${typeName}". Please use unique names.`, 'error');
+            typeInput.focus();
+            return false;
+        }
+        
+        ticketTypes.push(typeName.toLowerCase());
+        allocatedSeats += seats;
+    }
+    
+    // Check if total allocated seats matches venue capacity
+    if (allocatedSeats > totalCapacity) {
+        showNotification(`Total allocated seats (${allocatedSeats}) exceeds venue capacity (${totalCapacity})`, 'error');
+        return false;
+    }
+    
+    if (allocatedSeats < totalCapacity) {
+        const confirmed = confirm(
+            `You have allocated ${allocatedSeats} seats out of ${totalCapacity} total capacity. ` +
+            `${totalCapacity - allocatedSeats} seats will remain unallocated. Continue?`
+        );
+        if (!confirmed) return false;
+    }
+    
+    return true;
+}
+
+// Initialize ticket types functionality
+function initializeTicketTypes(modal) {
+    const numTicketTypesInput = modal.querySelector('#numTicketTypes');
+    const ticketTypesContainer = modal.querySelector('#ticketTypesContainer');
+    const venueCapacityInput = modal.querySelector('#venueCapacity');
+    
+    // Generate initial ticket type fields
+    generateTicketTypeFields(1, ticketTypesContainer, venueCapacityInput);
+    
+    // Listen for changes in number of ticket types
+    numTicketTypesInput.addEventListener('change', function() {
+        const numTypes = parseInt(this.value) || 1;
+        if (numTypes < 1) {
+            this.value = 1;
+            return;
+        }
+        // IMPORTANT: Limit to maximum 10 ticket types if too much are created nanti rusak
+        if (numTypes > 10) {
+            this.value = 10;
+            showNotification('Maximum 10 ticket types allowed', 'warning');
+            return;
+        }
+        generateTicketTypeFields(numTypes, ticketTypesContainer, venueCapacityInput);
+    });
+    
+    // Listen for venue capacity changes to auto-fill
+    venueCapacityInput.addEventListener('input', function() {
+        const numTypes = parseInt(numTicketTypesInput.value) || 1;
+        if (numTypes === 1) {
+            autoFillSingleTicketType(ticketTypesContainer, venueCapacityInput);
+        } else {
+            autoFillLastTicketType(ticketTypesContainer, venueCapacityInput);
+        }
+    });
+}
+
+// Generate ticket type input fields dynamically
+function generateTicketTypeFields(numTypes, container, venueCapacityInput) {
+    container.innerHTML = '';
+    
+    for (let i = 0; i < numTypes; i++) {
+        const isLastType = i === numTypes - 1;
+        
+        const ticketTypeItem = document.createElement('div');
+        ticketTypeItem.className = 'ticket-type-item';
+        ticketTypeItem.innerHTML = `
+            <div class=\"ticket-type-header\">
+                <h4>Ticket Type ${i + 1}${isLastType ? ' <span class=\"auto-fill-badge\">AUTO-FILL</span>' : ''}</h4>
+            </div>
+            <div class=\"ticket-type-fields\">
+                <div class=\"form-group\" style=\"margin-bottom: 0;\">
+                    <label for=\"ticketTypeName_${i}\">Type Name *</label>
+                    <input type=\"text\" id=\"ticketTypeName_${i}\" name=\"ticketTypeName_${i}\" 
+                        placeholder=\"e.g., VIP, Regular, Student...\" required>
+                </div>
+                <div class=\"form-group\" style=\"margin-bottom: 0;\">
+                    <label for=\"ticketTypePrice_${i}\">Price ($) *</label>
+                    <input type=\"number\" id=\"ticketTypePrice_${i}\" name=\"ticketTypePrice_${i}\" 
+                        placeholder=\"0.00\" min=\"0\" step=\"0.01\" required>
+                </div>
+                <div class=\"form-group\" style=\"margin-bottom: 0;\">
+                    <label for=\"ticketTypeSeats_${i}\">Seats *</label>
+                    <input type=\"number\" id=\"ticketTypeSeats_${i}\" name=\"ticketTypeSeats_${i}\" 
+                        placeholder=\"0\" min=\"${isLastType ? '0' : '1'}\" 
+                        ${isLastType && numTypes > 1 ? 'readonly' : ''} required>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(ticketTypeItem);
+        
+        // Add input listeners for auto-fill
+        const seatsInput = ticketTypeItem.querySelector(`input[name=\"ticketTypeSeats_${i}\"]`);
+        if (!isLastType || numTypes === 1) {
+            seatsInput.addEventListener('input', function() {
+                if (numTypes > 1) {
+                    autoFillLastTicketType(container, venueCapacityInput);
+                }
+            });
+        }
+    }
+    
+    // Auto-fill if venue capacity is set
+    if (venueCapacityInput.value) {
+        if (numTypes === 1) {
+            autoFillSingleTicketType(container, venueCapacityInput);
+        } else {
+            autoFillLastTicketType(container, venueCapacityInput);
+        }
+    }
+}
+
+// Auto-fill single ticket type with total capacity
+function autoFillSingleTicketType(container, venueCapacityInput) {
+    const totalCapacity = parseInt(venueCapacityInput.value) || 0;
+    const seatsInput = container.querySelector('input[name="ticketTypeSeats_0"]');
+    if (seatsInput) {
+        seatsInput.value = totalCapacity;
+    }
+}
+
+// Auto-fill the last ticket type with remaining capacity
+function autoFillLastTicketType(container, venueCapacityInput) {
+    const ticketTypeItems = container.querySelectorAll('.ticket-type-item');
+    if (ticketTypeItems.length <= 1) return;
+    
+    const totalCapacity = parseInt(venueCapacityInput.value) || 0;
+    if (totalCapacity === 0) return;
+    
+    let allocatedSeats = 0;
+    
+    // Calculate seats allocated to all ticket types except the last one
+    for (let i = 0; i < ticketTypeItems.length - 1; i++) {
+        const seatsInput = ticketTypeItems[i].querySelector(`input[name=\"ticketTypeSeats_${i}\"]`);
+        allocatedSeats += parseInt(seatsInput.value) || 0;
+    }
+    
+    // Set remaining seats to the last ticket type
+    const lastSeatsInput = ticketTypeItems[ticketTypeItems.length - 1].querySelector(`input[name=\"ticketTypeSeats_${ticketTypeItems.length - 1}\"]`);
+    const remainingSeats = Math.max(0, totalCapacity - allocatedSeats);
+    lastSeatsInput.value = remainingSeats;
+}
+
 function collectEventFormData(form) {
     const formData = new FormData(form);
     
-    // Convert to object with proper structure for creating all related tables
+    // Collect ticket types (this part has to be a bit different since we have to take into consideration of the dynamic fields)
+    // So if the user changes the capacity by typing it, it has to be auto-filled, and if the user uses the data from the database to fill the capacity, it has to be auto-filled as well
+    const ticketTypes = [];
+    const ticketTypeItems = form.querySelectorAll('.ticket-type-item');
+    
+    ticketTypeItems.forEach((item, index) => {
+        const typeInput = item.querySelector(`input[name="ticketTypeName_${index}"]`);
+        const priceInput = item.querySelector(`input[name="ticketTypePrice_${index}"]`);
+        const seatsInput = item.querySelector(`input[name="ticketTypeSeats_${index}"]`);
+        
+        if (typeInput && priceInput && seatsInput) {
+            ticketTypes.push({
+                type: typeInput.value,
+                price: parseFloat(priceInput.value),
+                seats: parseInt(seatsInput.value)
+            });
+        }
+    });
+    
+    // Send the collected data from the form to the backend
     const eventData = {
         // Main event fields
         name: formData.get('name'),
@@ -980,7 +1288,10 @@ function collectEventFormData(form) {
             date: formData.get('date'),
             startTime: formData.get('startTime'),
             endTime: formData.get('endTime')
-        }
+        },
+        
+        // Ticket types data
+        ticketTypes: ticketTypes
     };
     
     console.log('Collected event data:', eventData);
