@@ -73,13 +73,6 @@ INSERT INTO event (eventID, name, description, rundown, materials, category_id, 
      '',
      2, 6, 4, 4); 
 
--- 6. Insert Ticket Types
-INSERT INTO ticketType (ticketTypeID, type, zone, price) VALUES
-(1, 'VIP', 'A', 150.00),
-(2, 'Premium', 'B', 100.00),
-(3, 'General Admission', 'C', 50.00),
-(4, 'Student', 'C', 25.00),
-(5, 'Early Bird', 'B', 75.00);
 
 -- 7. Insert Customers (10 sample customers)
 -- Note: Passwords are hashed using Django's default hasher (not plain text)

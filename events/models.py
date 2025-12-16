@@ -89,6 +89,11 @@ class TicketType(models.Model):
     """
 
     ticketTypeID = models.AutoField(primary_key=True)
+    event = models.ForeignKey(
+        "Event",
+        on_delete=models.CASCADE,
+        related_name="ticket_types",
+    )
     type = models.CharField(max_length=50)
     zone = models.CharField(max_length=1)
     price = models.DecimalField(
