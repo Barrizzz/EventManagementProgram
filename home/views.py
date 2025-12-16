@@ -66,15 +66,15 @@ def index(request):
     for row in rows:
         event = dict(zip(columns, row))
 
-    start_dt = datetime.combine(event["date"], event["startTime"])
-    end_dt = datetime.combine(event["date"], event["endTime"])
+        start_dt = datetime.combine(event["date"], event["startTime"])
+        end_dt = datetime.combine(event["date"], event["endTime"])
 
-    if now < start_dt:
-        context["upcoming_events"].append(event)
-    elif start_dt <= now <= end_dt:
-        context["ongoing_events"].append(event)
-    else:
-        context["finished_events"].append(event)
+        if now < start_dt:
+            context["upcoming_events"].append(event)
+        elif start_dt <= now <= end_dt:
+            context["ongoing_events"].append(event)
+        else:
+            context["finished_events"].append(event)
 
     return render(request, "index.html", context)
 
