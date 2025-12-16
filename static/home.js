@@ -104,9 +104,10 @@ function loadTicketRegistrationForm(eventId, eventName) {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.already_registered) {
+        if (data.registered) {
+            console.log("User already registered for this event");
             // User already has a ticket - show their ticket info
-            displayAlreadyRegistered(modalBody, data.ticket_info);
+            displayAlreadyRegistered(modalBody, data.registration_info);
         } else {
             // Show ticket selection form
             displayTicketSelectionForm(modalBody, eventId, eventName, data.ticket_types, data.available_seats);
