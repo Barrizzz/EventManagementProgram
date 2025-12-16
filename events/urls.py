@@ -18,5 +18,6 @@ urlpatterns = [
     path("reports/", views.reports_page, name="reports"),
     # Ticketing endpoints
     path("<int:event_id>/register/", views.registration_info, name="registration_info"),
+    path("<int:event_id>/register/", views.register_event, name="register_event"),
     path("api/tickettypes/", views.create_ticket_type, name="create_ticket_type"),
 ]
