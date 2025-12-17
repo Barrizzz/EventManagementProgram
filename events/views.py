@@ -100,6 +100,7 @@ def create_event(request):
     try:
         # Decode request body and parse JSON data
         data = json.loads(request.body.decode("utf-8"))
+        print(data)
     except json.JSONDecodeError:
         return JsonResponse(
             {"success": False, "error": "Invalid JSON in request body."}, status=400
@@ -295,10 +296,18 @@ def create_event(request):
                         venue_id,
                     ],
                 )
-                cursor.execute("SELECT LAST_INSERT_ID()")
-                event_id = cursor.fetchone()[0]
+                event_id = cursor.lastrowid
 
-        # Commit happens automatically if the 'with transaction.atomic()' block succeeds
+                # Initialize ticket types for event
+                for ticket_type in data.get("ticketTypes", []):
+                    print(ticket_type)
+                    cursor.execute(
+                        """
+                        INSERT INTO `tickettype` (`event_id`, `ticket_type`, `price`, `seats`) 
+                        VALUES (%s, %s, %s, %s);
+                        """,
+                        [event_id, ticket_type["type"], ticket_type["price"], ticket_type["seats"]],
+                    )
 
         return JsonResponse(
             {
@@ -841,8 +850,6 @@ def registration_info(request, event_id):
                     tt.ticket_type,
                     tt.price
 
-
-
                     from tickettype tt
                     where tt.event_id = %s;
                     """,
@@ -859,34 +866,9 @@ def registration_info(request, event_id):
 
                 cursor.execute(
                     """
-                        SELECT
-                            -- Calculate available seats: (Venue Capacity) - (Total Sold Tickets)
-                            (V.capacity - COALESCE(T_Sold.TotalSold, 0)) AS AvailableSeats
-                        FROM
-                            -- 1. Get the Event and its related Venue capacity
-                            Event E
-                        INNER JOIN
-                            Venue V ON E.venue_id = V.venueID
-                        LEFT JOIN
-                            -- 2. CTE to Count Sold Tickets for the Event
-                            (
-                                SELECT
-                                    T.event_id,
-                                    COUNT(T.ticketID) AS TotalSold
-                                FROM
-                                    Ticket T
-                                WHERE
-                                    -- Only count tickets for the specific event
-                                    T.event_id = %s
-                                    AND T.status IN ('reserved', 'checked in') -- Only count active/valid tickets
-                                GROUP BY
-                                    T.event_id
-                            ) T_Sold ON E.eventID = T_Sold.event_id
-                        WHERE
-                            -- 3. Filter for the specific Event
-                            E.eventID = %s;
+                    SELECT remaining_capacity FROM event WHERE eventID = %s;
                                    """,
-                    [event_id, event_id],
+                    [event_id],
                 )
 
                 row = cursor.fetchone()
