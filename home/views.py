@@ -12,6 +12,7 @@ def index(request):
     user = request.user
     context = {
         "user": user,
+        "is_staff": user.is_staff,
         "upcoming_events": [],
         "ongoing_events": [],
         "finished_events": [],
@@ -81,7 +82,7 @@ def index(request):
 
 @login_required
 def settings(request):
-    return render(request, "settings.html", {"user": request.user})
+    return render(request, "settings.html", {"user": request.user, "is_staff": request.user.is_staff})
 
 
 @login_required

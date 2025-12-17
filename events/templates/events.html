@@ -18,8 +18,12 @@
         </button>
         
                 <!-- Include Sidebar -->
-        {% include 'sidebar.html' %}
-
+        {% if user.is_staff %}
+            {% include 'sidebar.html' %}
+        {% else %}
+            {% include 'cust_sidebar.html' %}
+        {% endif %}
+        
         <!-- Main Content Area -->
         <main class="main-content">
             <!-- Page Header -->
@@ -180,6 +184,7 @@
                                             <span>Max Attendees: {{ event.capacity }}</span>
                                         </div>
                                     </div>
+                                    {% if is_staff %}
                                     <div class="event-actions">
                                         <button class="btn-action primary">View Details</button>
                                         <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.eventID }}">Edit Event</button>
@@ -188,6 +193,7 @@
                                     <div class="event-actions event-actions-secondary">
                                         <button class="btn-action danger delete-event-btn" data-event-id="{{ event.eventID }}">Delete Event</button>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             {% empty %}
@@ -245,6 +251,7 @@
                                             <span>Max Attendees: {{ event.capacity }}</span>
                                         </div>
                                     </div>
+                                    {% if is_staff %}
                                     <div class="event-actions">
                                         <button class="btn-action primary">View Details</button>
                                         <button class="btn-action secondary">View Report</button>
@@ -252,6 +259,7 @@
                                     <div class="event-actions event-actions-secondary">
                                         <button class="btn-action danger delete-event-btn" data-event-id="{{ event.eventID }}">Delete Event</button>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             {% empty %}

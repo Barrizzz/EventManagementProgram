@@ -25,6 +25,7 @@ def events_page(request):
     user = request.user
     context = {
         "user": user,
+        "is_staff": user.is_staff,
         "upcoming_events": [],
         "ongoing_events": [],
         "finished_events": [],
