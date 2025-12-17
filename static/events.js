@@ -1121,7 +1121,6 @@ function showEventDetails(eventCard) {
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary close-modal">Close</button>
-                <button class="btn-primary">Register for Event</button>
             </div>
         </div>
     `;

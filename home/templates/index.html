@@ -103,7 +103,8 @@
                                         <span class="datetime">{{ event.date|date:"M d, Y" }} | {{ event.startTime|time:"g:i A" }} - {{ event.endTime|time:"g:i A" }}</span>
                                         <span class="attendees">Max Attendees: {{ event.capacity }}</span>
                                     </div>
-                                    <button class="btn-register">Register Now!</button>
+                                    <!--- Write View Ticket! if the user is registered for the event, otherwise Register Now! -->
+                                    <button class="btn-register">{% if event.is_registered %}View Ticket!{% else %}Register Now!{% endif %}</button>
                                 </div>
                             </div>
                             {% empty %}

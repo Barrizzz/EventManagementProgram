@@ -4,6 +4,7 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.db import connection
+from events.models import EventCustomer
 
 
 # Create your views here.
@@ -64,8 +65,14 @@ def index(request):
 
     now = datetime.now()
 
+    # fetch eventIDs the current user has registered for 
+    registered_event_ids = set(EventCustomer.objects.filter(customer=user).values_list('event__eventID', flat=True))
+
     for row in rows:
         event = dict(zip(columns, row))
+
+        # mark registration status for current user
+        event['is_registered'] = event.get('eventID') in registered_event_ids
 
         start_dt = datetime.combine(event["date"], event["startTime"])
         end_dt = datetime.combine(event["date"], event["endTime"])
