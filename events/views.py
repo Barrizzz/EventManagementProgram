@@ -396,8 +396,14 @@ def get_event(request, event_id):
                     d.endTime,
 
                     v.name AS venue_name,
+                    v.address AS venue_address,
+                    v.city AS venue_city,
+                    v.capacity AS venue_capacity,
 
-                    o.name AS organizer_name
+                    o.name AS organizer_name,
+                    o.email AS organizer_email,
+                    o.contactNum AS organizer_contact,
+                    o.website AS organizer_website
 
                 FROM Event e
                 LEFT JOIN EventCategory c
@@ -430,7 +436,13 @@ def get_event(request, event_id):
                         "materials": event["materials"],
                         "category": event["category"] if event["category"] else "",
                         "organizer": event["organizer_name"],
+                        "organizerEmail": event["organizer_email"] if event["organizer_email"] else "",
+                        "organizerContact": event["organizer_contact"] if event["organizer_contact"] else "",
+                        "organizerWebsite": event["organizer_website"] if event["organizer_website"] else "",
                         "venue": event["venue_name"],
+                        "venueAddress": event["venue_address"] if event["venue_address"] else "",
+                        "venueCity": event["venue_city"] if event["venue_city"] else "",
+                        "venueCapacity": event["venue_capacity"] if event["venue_capacity"] else 0,
                         "date": event["date"].strftime("%Y-%m-%d"),
                         "startTime": event["startTime"].strftime("%H:%M"),
                         "endTime": event["endTime"].strftime("%H:%M"),
