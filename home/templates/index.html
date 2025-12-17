@@ -132,7 +132,8 @@
                         </div>
                     </div> -->
                 </div>
-
+                 
+                {% if user.is_staff %}
                 <!-- Right Column -->
                 <div class="right-column">
                     <!-- Revenue Trends -->
@@ -209,6 +210,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </main>
     </div>
