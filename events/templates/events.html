@@ -183,7 +183,7 @@
                                     <div class="event-actions">
                                         <button class="btn-action primary">View Details</button>
                                         <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.eventID }}">Edit Event</button>
-                                        <button class="btn-action secondary add-ticket-type-btn">Edit Ticket Types</button>
+                                        <button class="btn-action secondary edit-tickets-btn" data-event-id="{{ event.eventID }}">Edit Tickets & Pricing</button>
                                     </div>
                                 </div>
                             </div>
@@ -296,8 +296,9 @@
                                     <td>
                                         <button class="btn-action primary">View</button>
                                         <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.eventID }}">Edit</button>
+                                        <button class="btn-action secondary edit-tickets-btn" data-event-id="{{ event.eventID }}">Edit Tickets & Pricing</button>
                                     </td>
-                                </tr>
+                                </tr>   
                                 {% empty %}
                                 <tr>
                                     <td colspan="6" style="text-align: center; padding: 2rem;">

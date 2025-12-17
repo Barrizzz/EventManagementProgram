@@ -1,5 +1,242 @@
+// Load modal styles once
+function loadModalStyles() {
+    if (!document.getElementById('event-modal-styles')) {
+        const style = document.createElement('style');
+        style.id = 'event-modal-styles';
+        style.textContent = `
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .event-form {
+            padding: 24px;
+        }
+
+        .form-section {
+            margin-bottom: 24px;
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #8b5cf6;
+        }
+
+        .form-help {
+            display: block;
+            margin-top: 4px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .event-form .form-section:last-of-type {
+            margin-bottom: 0;
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #374151;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .form-group input:disabled,
+        .form-group input[readonly] {
+            background-color: #f1f5f9;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 24px;
+            padding-top: 0;
+        }
+
+        .btn-primary, .btn-secondary, .btn-danger {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #7c3aed;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .right-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .ticket-type-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .ticket-type-header {
+            margin-bottom: 12px;
+        }
+
+        .ticket-type-header h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .ticket-type-fields {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .auto-fill-badge {
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
 // Events page specific JavaScript
 function initializeEventsPage() {
+    loadModalStyles(); // Load styles on page init
     const viewButtons = document.querySelectorAll('.view-btn');
     const cardsView = document.getElementById('cardsView');
     const tableView = document.getElementById('tableView');
@@ -105,7 +342,7 @@ function initializeEventCardActions() {
         });
     });
 
-    // Handle edit buttons
+    // Handle edit events
     const editButtons = document.querySelectorAll('.edit-event-btn');
     console.log('Found edit buttons:', editButtons.length);
     editButtons.forEach(button => {
@@ -135,6 +372,23 @@ function initializeEventCardActions() {
                     console.error('Error:', error);
                     showNotification('Error loading event data. Please try again.', 'error');
                 });
+            } else {
+                showNotification('Error: Could not find event ID', 'error');
+            }
+        });
+    });
+
+    // Handle edit tickets buttons
+    const editTicketsButtons = document.querySelectorAll('.edit-tickets-btn');
+    console.log('Found edit tickets buttons:', editTicketsButtons.length);
+    editTicketsButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const eventId = this.getAttribute('data-event-id');
+            console.log('Edit tickets button clicked for event ID:', eventId);
+            if (eventId) {
+                showEditTicketTypesModal(eventId);
             } else {
                 showNotification('Error: Could not find event ID', 'error');
             }
@@ -192,6 +446,155 @@ function showEditEventForm(eventId) {
     .then(data => {
         if (data.success) {
             showEventModal(data.event);
+        } else {
+            showNotification('Error loading event data: ' + data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error loading event data. Please try again.', 'error');
+    });
+}
+
+// Show modal for editing ticket types only
+function showEditTicketTypesModal(eventId) {
+    // Fetch event data first
+    fetch(`/events/get/${eventId}/`, {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const eventData = data.event;
+            
+            // Create modal overlay
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content event-modal">
+                    <div class="modal-header">
+                        <h2>Edit Ticket Types & Pricing - ${eventData.name}</h2>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <form class="event-form" id="ticketTypesForm" data-event-id="${eventId}">
+                        <!-- Venue Capacity (readonly for reference) -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">Venue Information</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Venue</label>
+                                    <input type="text" value="${eventData.venue}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Total Capacity</label>
+                                    <input type="number" id="venueCapacity" value="${eventData.venueCapacity}" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ticket Types -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">Ticket Types & Pricing</h3>
+                            
+                            <div class="form-group">
+                                <label for="numTicketTypes">Number of Ticket Types *</label>
+                                <input type="number" id="numTicketTypes" name="numTicketTypes" 
+                                    placeholder="Enter number of ticket types (e.g., 2, 3)" 
+                                    min="1" max="10" value="1" required>
+                                <small class="form-help">Specify how many different ticket types you want to offer</small>
+                            </div>
+                            
+                            <div id="ticketTypesContainer">
+                                <!-- Ticket type fields will be dynamically added here -->
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i> Update Ticket Types
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            // Initialize ticket types functionality
+            initializeTicketTypes(modal);
+
+            // Event listeners
+            const closeBtn = modal.querySelector('.modal-close');
+            const cancelBtn = modal.querySelector('#cancelBtn');
+            const form = modal.querySelector('#ticketTypesForm');
+
+            const closeModal = () => modal.remove();
+
+            closeBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Validate ticket allocations
+                if (!validateTicketAllocations(form)) {
+                    return;
+                }
+
+                // Collect ticket types data
+                const ticketTypes = [];
+                const ticketTypeItems = form.querySelectorAll('.ticket-type-item');
+                
+                ticketTypeItems.forEach((item, index) => {
+                    const typeInput = item.querySelector(`input[name="ticketTypeName_${index}"]`);
+                    const priceInput = item.querySelector(`input[name="ticketTypePrice_${index}"]`);
+                    const seatsInput = item.querySelector(`input[name="ticketTypeSeats_${index}"]`);
+                    
+                    if (typeInput && priceInput && seatsInput) {
+                        ticketTypes.push({
+                            type: typeInput.value,
+                            price: parseFloat(priceInput.value),
+                            seats: parseInt(seatsInput.value)
+                        });
+                    }
+                });
+
+                const submitData = { ticketTypes: ticketTypes };
+
+                console.log('Updating ticket types:', submitData);
+
+                // Submit to backend
+                fetch(`/events/update-ticket-types/${eventId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify(submitData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Ticket types updated successfully!', 'success');
+                        closeModal();
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        showNotification(`Error: ${data.error}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('An error occurred. Please try again.', 'error');
+                });
+            });
         } else {
             showNotification('Error loading event data: ' + data.error, 'error');
         }
@@ -367,23 +770,6 @@ function showEventModal(eventData = null) {
                     </div>
                 </div>
 
-                <!-- Ticket Types -->
-                <div class="form-section">
-                    <h3 class="form-section-title">Ticket Types & Pricing (maximum 10)</h3>
-                    
-                    <div class="form-group">
-                        <label for="numTicketTypes">Number of Ticket Types *</label>
-                        <input type="number" id="numTicketTypes" name="numTicketTypes" 
-                            placeholder="Enter number of ticket types (e.g., 2, 3)" 
-                            min="1" max="10" value="1" required>
-                        <small class="form-help">Specify how many different ticket types you want to offer</small>
-                    </div>
-                    
-                    <div id="ticketTypesContainer">
-                        <!-- Ticket type fields will be dynamically added here -->
-                    </div>
-                </div>
-
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
                     <button type="submit" class="btn-primary">
@@ -394,270 +780,11 @@ function showEventModal(eventData = null) {
         </div>
     `;
 
-    // Add modal styles (only once)
-    if (!document.getElementById('event-modal-styles')) {
-        const style = document.createElement('style');
-        style.id = 'event-modal-styles';
-        style.textContent = `
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-            color: #1e293b;
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #64748b;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-
-        .modal-close:hover {
-            background: #f1f5f9;
-            color: #334155;
-        }
-
-        .create-event-form {
-            padding: 24px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            color: #374151;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.2s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #8b5cf6;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            align-items: center;
-            margin-top: 24px;
-            padding-top: 0;
-        }
-
-        .btn-primary, .btn-secondary, .btn-danger {
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            background: #8b5cf6;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #7c3aed;
-        }
-
-        .btn-secondary {
-            background: #f1f5f9;
-            color: #475569;
-        }
-
-        .btn-secondary:hover {
-            background: #e2e8f0;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
-        }
-
-        .right-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .event-form {
-            padding: 24px;
-        }
-
-        .form-section {
-            margin-bottom: 24px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .form-section:last-of-type {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .form-section-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .form-help {
-            display: block;
-            margin-top: 6px;
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .form-help a {
-            color: #8b5cf6;
-            text-decoration: none;
-        }
-
-        .form-help a:hover {
-            text-decoration: underline;
-        }
-
-        .ticket-type-item {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
-            position: relative;
-        }
-
-        .ticket-type-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .ticket-type-header h4 {
-            margin: 0;
-            color: #475569;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .btn-remove-ticket {
-            background: #fee2e2;
-            color: #dc2626;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-remove-ticket:hover {
-            background: #fecaca;
-        }
-
-        .ticket-type-fields {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 12px;
-        }
-
-        .auto-fill-badge {
-            display: inline-block;
-            background: #ddd6fe;
-            color: #6d28d9;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-    `;
-        document.head.appendChild(style);
-    }
-
     // Add modal to page
     document.body.appendChild(modal);
 
     // Populate dropdowns with data
     populateEventFormDropdowns(modal, eventData);
-
-    // Initialize ticket types functionality
-    initializeTicketTypes(modal);
 
     // Event listeners
     const closeBtn = modal.querySelector('.modal-close');
@@ -694,13 +821,8 @@ function showEventModal(eventData = null) {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        // Validate ticket allocations before submission
-        if (!validateTicketAllocations(form)) {
-            return;
-        }
-
         // Collect and structure the form data
-        const submitData = collectEventFormData(form);
+        const submitData = collectEditEventFormData(form);
         
         const url = isEditMode ? `/events/update/${eventData.id}/` : '/events/create/';
         const successMessage = isEditMode ? 'Event updated successfully!' : 'Event created successfully!';
@@ -782,6 +904,28 @@ function populateEventFormDropdowns(modal, eventData = null) {
         
         startTimeInput.value = eventData.startTime || '';
         endTimeInput.value = eventData.endTime || '';
+        
+        // Populate organizer additional fields if available
+        if (eventData.organizerEmail) {
+            modal.querySelector('#organizerEmail').value = eventData.organizerEmail;
+        }
+        if (eventData.organizerContact) {
+            modal.querySelector('#organizerContact').value = eventData.organizerContact;
+        }
+        if (eventData.organizerWebsite) {
+            modal.querySelector('#organizerWebsite').value = eventData.organizerWebsite;
+        }
+        
+        // Populate venue additional fields if available
+        if (eventData.venueAddress) {
+            modal.querySelector('#venueAddress').value = eventData.venueAddress;
+        }
+        if (eventData.venueCity) {
+            modal.querySelector('#venueCity').value = eventData.venueCity;
+        }
+        if (eventData.venueCapacity) {
+            modal.querySelector('#venueCapacity').value = eventData.venueCapacity;
+        }
     }
 
     // TODO: BACKEND WORK NEEDED
@@ -1295,6 +1439,40 @@ function collectEventFormData(form) {
     };
     
     console.log('Collected event data:', eventData);
+    return eventData;
+}
+
+function collectEditEventFormData(form) {
+    const formData = new FormData(form);
+    
+    // For edit mode, don't include ticket types or venue data
+    const eventData = {
+        // Main event fields
+        name: formData.get('name'),
+        description: formData.get('description'),
+        rundown: formData.get('rundown'),
+        materials: formData.get('materials') || '',
+        
+        // Category data
+        category: formData.get('category'),
+        
+        // Organizer data
+        organizer: {
+            name: formData.get('organizerName'),
+            email: formData.get('organizerEmail'),
+            contactNum: formData.get('organizerContact'),
+            website: formData.get('organizerWebsite') || ''
+        },
+        
+        // DateTime data
+        datetime: {
+            date: formData.get('date'),
+            startTime: formData.get('startTime'),
+            endTime: formData.get('endTime')
+        }
+    };
+    
+    console.log('Collected edit event data:', eventData);
     return eventData;
 }
 
