@@ -1267,7 +1267,7 @@ function initializeTicketTypesViewMode(modal) {
     // Fetch ticket types from backend
     const eventId = modal.querySelector('#ticketTypesForm').getAttribute('data-event-id');
     
-    fetch(`/events/get/${eventId}/`, {
+    fetch(`/events/api/fetchttypes/${eventId}/`, {
         method: 'GET',
         headers: {
             'X-CSRFToken': getCSRFToken(),
@@ -1275,8 +1275,8 @@ function initializeTicketTypesViewMode(modal) {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success && data.event.ticketTypes && data.event.ticketTypes.length > 0) {
-            const ticketTypes = data.event.ticketTypes;
+        if (data.success && data.ticket_types && data.ticket_types.length > 0) {
+            const ticketTypes = data.ticket_types;
             numTicketTypesInput.value = ticketTypes.length;
             
             // Generate readonly ticket type fields
