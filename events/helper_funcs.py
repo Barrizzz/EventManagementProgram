@@ -1,4 +1,5 @@
 from .models import Venue, Organizer, EventDateTime, EventCategory
+from django.core.exceptions import PermissionDenied
 
 
 def create_venue(name, address, capacity, city):
@@ -43,3 +44,8 @@ def create_event_category(category_name):
     event_category = EventCategory.objects.create(category=category_name)
 
     return event_category
+
+def is_staff_check(user):
+    if user.is_staff and user.is_authenticated:
+        return True
+    raise PermissionDenied

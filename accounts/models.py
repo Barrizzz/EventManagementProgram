@@ -1,10 +1,10 @@
 from django.db import models
 from .managers import CustomerManager
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
 
 # Create your models here.
-class Customer(AbstractBaseUser):
+class Customer(AbstractBaseUser, PermissionsMixin):
     """
     Model representing an application user/customer.
     Maps to the Customer entity.

@@ -2,7 +2,7 @@ from random import randint # Placeholder for seat assignment
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import connection, transaction
 from django.db.models import Sum
 import json
@@ -15,6 +15,7 @@ from .models import (
     EventCustomer,
 )
 from accounts.models import Customer
+from .helper_funcs import is_staff_check
 
 
 # Create your views here.
@@ -94,6 +95,7 @@ def events_page(request):
 
 @require_POST
 @login_required
+@user_passes_test(is_staff_check)
 def create_event(request):
     """
     Create a new event with all related data using raw SQL execution (MySQL syntax).
@@ -339,6 +341,7 @@ def create_event(request):
 
 @require_POST
 @login_required
+@user_passes_test(is_staff_check)
 def delete_event(request, event_id):
     """
     -- 1. Check existing constraints on the table (for MySQL)
@@ -365,12 +368,11 @@ def delete_event(request, event_id):
     REFERENCES `event` (`eventID`)
     ON DELETE CASCADE;
     """
+
     try:
-        with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM `event` WHERE `eventID` = %s", [event_id])
-        return JsonResponse(
-            {"success": True, "message": f"Event ID {event_id} deleted successfully"}
-        )
+        event = Event.objects.get(eventID=event_id)
+        event.delete()
+        return JsonResponse({"success": True, "message": "Event deleted successfully."})
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
@@ -456,6 +458,7 @@ def get_event(request, event_id):
 
 @require_POST
 @login_required
+@user_passes_test(is_staff_check)
 def update_event(request, event_id):
     """Update an existing event"""
     try:
@@ -690,6 +693,7 @@ def get_venues(request):
 
 # Attendees Page Views
 @login_required
+@user_passes_test(is_staff_check)
 def attendees_page(request):
     """Render the attendees page with all data"""
     # Get all customers who have attended events
@@ -766,6 +770,7 @@ def attendees_page(request):
 
 # Reports Page Views
 @login_required
+@user_passes_test(is_staff_check)
 def reports_page(request):
     """Render the reports page with analytics data"""
     # Get all events with related data
@@ -958,6 +963,7 @@ def register_event(request, event_id):
 
 @login_required
 @require_POST
+@user_passes_test(is_staff_check)
 def create_ticket_type(request):
     """Create a new ticket type for an event"""
     try:
@@ -1040,3 +1046,9 @@ def fetch_ticket_types(request, event_id):
 
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+def handler403(request, exception=None):
+    return JsonResponse({
+        'error': 'Permission Denied',
+        'message': 'You do not have staff administrative privileges.'
+    }, status=403)
