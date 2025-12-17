@@ -191,6 +191,9 @@ function displayTicketSelectionForm(container, eventId, eventName, ticketTypes, 
                                     value="${type.ticketTypeID}" 
                                     required>
                                 <label for="ticket_${type.ticketTypeID}">
+                                    <div class="ticket-type-header">
+                                        <span class="ticket-type-name">${type.ticket_type}</span>
+                                    </div>
                                     <div class="ticket-price">$${parseFloat(type.price).toFixed(2)}</div>
                                 </label>
                             </div>

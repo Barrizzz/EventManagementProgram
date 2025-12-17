@@ -185,6 +185,9 @@
                                         <button class="btn-action secondary edit-event-btn" data-event-id="{{ event.eventID }}">Edit Event</button>
                                         <button class="btn-action secondary edit-tickets-btn" data-event-id="{{ event.eventID }}">Edit Tickets & Pricing</button>
                                     </div>
+                                    <div class="event-actions event-actions-secondary">
+                                        <button class="btn-action danger delete-event-btn" data-event-id="{{ event.eventID }}">Delete Event</button>
+                                    </div>
                                 </div>
                             </div>
                             {% empty %}

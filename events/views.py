@@ -100,6 +100,7 @@ def create_event(request):
     try:
         # Decode request body and parse JSON data
         data = json.loads(request.body.decode("utf-8"))
+        print(data)
     except json.JSONDecodeError:
         return JsonResponse(
             {"success": False, "error": "Invalid JSON in request body."}, status=400
@@ -295,10 +296,27 @@ def create_event(request):
                         venue_id,
                     ],
                 )
-                cursor.execute("SELECT LAST_INSERT_ID()")
-                event_id = cursor.fetchone()[0]
+                event_id = cursor.lastrowid
+                using_seats = 0
 
-        # Commit happens automatically if the 'with transaction.atomic()' block succeeds
+                for ticket_type in data.get("ticketTypes", []):
+                    using_seats += ticket_type.get("seats", 0)
+
+                if using_seats > venue_capacity:
+                    raise ValueError(
+                        f"Total seats for ticket types ({using_seats}) exceed venue capacity ({venue_capacity})."
+                    )
+
+                # Initialize ticket types for event
+                for ticket_type in data.get("ticketTypes", []):
+                    print(ticket_type)
+                    cursor.execute(
+                        """
+                        INSERT INTO `tickettype` (`event_id`, `ticket_type`, `price`, `seats`) 
+                        VALUES (%s, %s, %s, %s);
+                        """,
+                        [event_id, ticket_type["type"], ticket_type["price"], ticket_type["seats"]],
+                    )
 
         return JsonResponse(
             {
@@ -841,8 +859,6 @@ def registration_info(request, event_id):
                     tt.ticket_type,
                     tt.price
 
-
-
                     from tickettype tt
                     where tt.event_id = %s;
                     """,
@@ -859,34 +875,9 @@ def registration_info(request, event_id):
 
                 cursor.execute(
                     """
-                        SELECT
-                            -- Calculate available seats: (Venue Capacity) - (Total Sold Tickets)
-                            (V.capacity - COALESCE(T_Sold.TotalSold, 0)) AS AvailableSeats
-                        FROM
-                            -- 1. Get the Event and its related Venue capacity
-                            Event E
-                        INNER JOIN
-                            Venue V ON E.venue_id = V.venueID
-                        LEFT JOIN
-                            -- 2. CTE to Count Sold Tickets for the Event
-                            (
-                                SELECT
-                                    T.event_id,
-                                    COUNT(T.ticketID) AS TotalSold
-                                FROM
-                                    Ticket T
-                                WHERE
-                                    -- Only count tickets for the specific event
-                                    T.event_id = %s
-                                    AND T.status IN ('reserved', 'checked in') -- Only count active/valid tickets
-                                GROUP BY
-                                    T.event_id
-                            ) T_Sold ON E.eventID = T_Sold.event_id
-                        WHERE
-                            -- 3. Filter for the specific Event
-                            E.eventID = %s;
+                    SELECT remaining_capacity FROM event WHERE eventID = %s;
                                    """,
-                    [event_id, event_id],
+                    [event_id],
                 )
 
                 row = cursor.fetchone()
@@ -900,7 +891,50 @@ def registration_info(request, event_id):
 @login_required
 @require_POST  # TODO - Implement event registration
 def register_event(request, event_id):
-    return None
+    data = json.loads(request.body)
+    user = request.user
+    ticket_type_id = data.get("ticket_type_id")
+
+    try:
+        with transaction.atomic():
+            with connection.cursor() as cursor:
+                # 1. Create Ticket
+                cursor.execute(
+                    """
+                    INSERT INTO ticket (event_id, ticket_type_id, purchaseDateTime, status)
+                    VALUES (%s, %s, %s, %s)
+                    """,
+                    [event_id, ticket_type_id, timezone.now(), "sold"],
+                )
+                ticket_id = cursor.lastrowid
+
+                # 2. Create EventCustomer
+                cursor.execute(
+                    """
+                    INSERT INTO eventcustomer (event_id, customer_id, ticket_id)
+                    VALUES (%s, %s, %s)
+                    """,
+                    [event_id, user.customerID, ticket_id],
+                )
+
+                # 3. Decrease remaining capacity
+                cursor.execute(
+                    """
+                    UPDATE event
+                    SET remaining_capacity = remaining_capacity - 1
+                    WHERE eventID = %s AND remaining_capacity > 0
+                    """,
+                    [event_id],
+                )
+                if cursor.rowcount == 0:
+                    raise ValueError("No remaining capacity for this event.")
+
+        return JsonResponse(
+            {"success": True, "message": "Successfully registered for the event."}
+        )
+    
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
 
 
 @login_required
@@ -912,6 +946,7 @@ def create_ticket_type(request):
         event_id = data.get("event_id")
         ticket_type = data.get("type")
         price = data.get("price")
+        seats = data.get("seats")
 
         if not (event_id and ticket_type and price is not None):
             return JsonResponse(
@@ -925,11 +960,34 @@ def create_ticket_type(request):
         with connection.cursor() as cursor:
             cursor.execute(
                 """
-                INSERT INTO tickettype (event_id, type, price)
-                VALUES (%s, %s, %s)
-            """,
-                [event_id, ticket_type, price],
+                select capacity from venue v
+                join event e on e.venue_id = v.venueID
+                where e.eventID = %s
+                """, [event_id]
             )
+
+            venue_capacity = cursor.fetchone()[0]
+            cursor.execute("""
+                          SELECT SUM(seats) FROM tickettype WHERE event_id = %s
+                                   """, [event_id])
+            used_seats = cursor.fetchone()[0] or 0
+            if used_seats >= venue_capacity:
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "error": "Cannot add more ticket types. Venue capacity reached.",
+                    },
+                    status=400,
+                )
+            
+            cursor.execute(
+                """
+                INSERT INTO tickettype (event_id, ticket_type, price, seats)
+                VALUES (%s, %s, %s, %s)
+                """,
+                [event_id, ticket_type, price, seats],
+            )
+
             ticket_type_id = cursor.lastrowid
 
         return JsonResponse(
