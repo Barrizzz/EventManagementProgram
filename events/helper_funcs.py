@@ -45,6 +45,7 @@ def create_event_category(category_name):
 
     return event_category
 
+
 def is_staff_check(user):
     if user.is_staff and user.is_authenticated:
         return True

@@ -1,4 +1,4 @@
-from random import randint # Placeholder for seat assignment
+from random import randint  # Placeholder for seat assignment
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
@@ -217,11 +217,14 @@ def create_event(request):
                             [venue_name, address, city, capacity],
                         )
                         venue_id = cursor.lastrowid
-    
-                    cursor.execute("""
+
+                    cursor.execute(
+                        """
                         SELECT `capacity` FROM `venue` WHERE `venueID` = %s
-                                   """, [venue_id])
-                    
+                                   """,
+                        [venue_id],
+                    )
+
                     venue_capacity = cursor.fetchone()[0]
 
                 # --- 4. Get or Create Datetime ---
@@ -318,7 +321,12 @@ def create_event(request):
                         INSERT INTO `tickettype` (`event_id`, `ticket_type`, `price`, `seats`) 
                         VALUES (%s, %s, %s, %s);
                         """,
-                        [event_id, ticket_type["type"], ticket_type["price"], ticket_type["seats"]],
+                        [
+                            event_id,
+                            ticket_type["type"],
+                            ticket_type["price"],
+                            ticket_type["seats"],
+                        ],
                     )
 
         return JsonResponse(
@@ -438,13 +446,23 @@ def get_event(request, event_id):
                         "materials": event["materials"],
                         "category": event["category"] if event["category"] else "",
                         "organizer": event["organizer_name"],
-                        "organizerEmail": event["organizer_email"] if event["organizer_email"] else "",
-                        "organizerContact": event["organizer_contact"] if event["organizer_contact"] else "",
-                        "organizerWebsite": event["organizer_website"] if event["organizer_website"] else "",
+                        "organizerEmail": event["organizer_email"]
+                        if event["organizer_email"]
+                        else "",
+                        "organizerContact": event["organizer_contact"]
+                        if event["organizer_contact"]
+                        else "",
+                        "organizerWebsite": event["organizer_website"]
+                        if event["organizer_website"]
+                        else "",
                         "venue": event["venue_name"],
-                        "venueAddress": event["venue_address"] if event["venue_address"] else "",
+                        "venueAddress": event["venue_address"]
+                        if event["venue_address"]
+                        else "",
                         "venueCity": event["venue_city"] if event["venue_city"] else "",
-                        "venueCapacity": event["venue_capacity"] if event["venue_capacity"] else 0,
+                        "venueCapacity": event["venue_capacity"]
+                        if event["venue_capacity"]
+                        else 0,
                         "date": event["date"].strftime("%Y-%m-%d"),
                         "startTime": event["startTime"].strftime("%H:%M"),
                         "endTime": event["endTime"].strftime("%H:%M"),
@@ -956,7 +974,7 @@ def register_event(request, event_id):
         return JsonResponse(
             {"success": True, "message": "Successfully registered for the event."}
         )
-    
+
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
@@ -988,13 +1006,17 @@ def create_ticket_type(request):
                 select capacity from venue v
                 join event e on e.venue_id = v.venueID
                 where e.eventID = %s
-                """, [event_id]
+                """,
+                [event_id],
             )
 
             venue_capacity = cursor.fetchone()[0]
-            cursor.execute("""
+            cursor.execute(
+                """
                           SELECT SUM(seats) FROM tickettype WHERE event_id = %s
-                                   """, [event_id])
+                                   """,
+                [event_id],
+            )
             used_seats = cursor.fetchone()[0] or 0
             if used_seats >= venue_capacity:
                 return JsonResponse(
@@ -1004,7 +1026,7 @@ def create_ticket_type(request):
                     },
                     status=400,
                 )
-            
+
             cursor.execute(
                 """
                 INSERT INTO tickettype (event_id, ticket_type, price, seats)
@@ -1025,7 +1047,8 @@ def create_ticket_type(request):
 
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
-    
+
+
 def fetch_ticket_types(request, event_id):
     """Fetch ticket types for a given event"""
     try:
@@ -1047,8 +1070,12 @@ def fetch_ticket_types(request, event_id):
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
+
 def handler403(request, exception=None):
-    return JsonResponse({
-        'error': 'Permission Denied',
-        'message': 'You do not have staff administrative privileges.'
-    }, status=403)
+    return JsonResponse(
+        {
+            "error": "Permission Denied",
+            "message": "You do not have staff administrative privileges.",
+        },
+        status=403,
+    )

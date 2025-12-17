@@ -32,4 +32,4 @@ urlpatterns = [
     path("accounts/", include("accounts.urls", namespace="customers")),
 ]
 
-handler403 = 'events.views.handler403'
+handler403 = "events.views.handler403"
