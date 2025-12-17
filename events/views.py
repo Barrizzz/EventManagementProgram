@@ -596,39 +596,32 @@ def update_event(request, event_id):
                 else:
                     organizer_id = existing_organizer_id  # Keep old ID
 
-                # 6. Handle EventDateTime (get_or_create)
+                # 6. Handle EventDateTime (Strict Exact Match)
                 if datetime_data:
-                    # Prepare datetime objects (Must be done in Python)
-                    start_time = datetime.strptime(
-                        datetime_data["startTime"], "%H:%M"
-                    ).time()
+                    # Prepare datetime objects
+                    start_time = datetime.strptime(datetime_data["startTime"], "%H:%M").time()
                     date = datetime.strptime(datetime_data["date"], "%Y-%m-%d").date()
-                    end_time = datetime.strptime(
-                        datetime_data["endTime"], "%H:%M"
-                    ).time()
+                    end_time = datetime.strptime(datetime_data["endTime"], "%H:%M").time()
 
-                    # Check for existing EventDateTime by date and startTime
                     cursor.execute(
-                        "SELECT eventDateTimeID FROM eventdatetime WHERE date = %s AND startTime = %s",
-                        [date, start_time],
+                        """SELECT eventDateTimeID FROM eventdatetime 
+                        WHERE date = %s AND startTime = %s AND endTime = %s""",
+                        [date, start_time, end_time],
                     )
                     row = cursor.fetchone()
+
                     if row:
+                        # Exact record already exists, just grab the ID
                         datetime_id = row[0]
-                        # Optional: Update existing datetime's endTime
-                        cursor.execute(
-                            "UPDATE eventdatetime SET endTime = %s WHERE eventDateTimeID = %s",
-                            [end_time, datetime_id],
-                        )
                     else:
-                        # Insert new EventDateTime
-                        cursor.execute(
-                            "INSERT INTO eventdatetime (date, startTime, endTime) VALUES (%s, %s, %s)",
-                            [date, start_time, end_time],
-                        )
-                        datetime_id = cursor.lastrowid
+                        # No exact match found, so we create it.
+                            cursor.execute(
+                                "INSERT INTO eventdatetime (date, startTime, endTime) VALUES (%s, %s, %s)",
+                                [date, start_time, end_time],
+                            )
+                            datetime_id = cursor.lastrowid
                 else:
-                    datetime_id = existing_datetime_id  # Keep old ID
+                    datetime_id = existing_datetime_id
 
                 # 7. Final Event UPDATE
                 # Use COALESCE logic to only update fields if new data is provided, otherwise keep old data.
