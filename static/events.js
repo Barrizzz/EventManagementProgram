@@ -378,17 +378,17 @@ function initializeEventCardActions() {
         });
     });
 
-    // Handle edit tickets buttons
-    const editTicketsButtons = document.querySelectorAll('.edit-tickets-btn');
-    console.log('Found edit tickets buttons:', editTicketsButtons.length);
-    editTicketsButtons.forEach(button => {
+    // Handle view tickets buttons
+    const viewTicketsButtons = document.querySelectorAll('.view-tickets-btn');
+    console.log('Found view tickets buttons:', viewTicketsButtons.length);
+    viewTicketsButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             const eventId = this.getAttribute('data-event-id');
-            console.log('Edit tickets button clicked for event ID:', eventId);
+            console.log('View tickets button clicked for event ID:', eventId);
             if (eventId) {
-                showEditTicketTypesModal(eventId);
+                showViewTicketTypesModal(eventId);
             } else {
                 showNotification('Error: Could not find event ID', 'error');
             }
@@ -457,7 +457,7 @@ function showEditEventForm(eventId) {
 }
 
 // Show modal for editing ticket types only
-function showEditTicketTypesModal(eventId) {
+function showViewTicketTypesModal(eventId) {
     // Fetch event data first
     fetch(`/events/get/${eventId}/`, {
         method: 'GET',
@@ -476,10 +476,10 @@ function showEditTicketTypesModal(eventId) {
             modal.innerHTML = `
                 <div class="modal-content event-modal">
                     <div class="modal-header">
-                        <h2>Edit Ticket Types & Pricing - ${eventData.name}</h2>
+                        <h2>View Ticket Types & Pricing - ${eventData.name}</h2>
                         <button class="modal-close">&times;</button>
                     </div>
-                    <form class="event-form" id="ticketTypesForm" data-event-id="${eventId}">
+                    <div class="event-form" id="ticketTypesForm" data-event-id="${eventId}">
                         <!-- Venue Capacity (readonly for reference) -->
                         <div class="form-section">
                             <h3 class="form-section-title">Venue Information</h3>
@@ -500,11 +500,9 @@ function showEditTicketTypesModal(eventId) {
                             <h3 class="form-section-title">Ticket Types & Pricing</h3>
                             
                             <div class="form-group">
-                                <label for="numTicketTypes">Number of Ticket Types *</label>
+                                <label for="numTicketTypes">Number of Ticket Types</label>
                                 <input type="number" id="numTicketTypes" name="numTicketTypes" 
-                                    placeholder="Enter number of ticket types (e.g., 2, 3)" 
-                                    min="1" max="10" value="1" required>
-                                <small class="form-help">Specify how many different ticket types you want to offer</small>
+                                    min="1" max="10" value="1" readonly disabled>
                             </div>
                             
                             <div id="ticketTypesContainer">
@@ -513,87 +511,27 @@ function showEditTicketTypesModal(eventId) {
                         </div>
 
                         <div class="form-actions">
-                            <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
-                            <button type="submit" class="btn-primary">
-                                <i class="fas fa-save"></i> Update Ticket Types
-                            </button>
+                            <button type="button" class="btn-secondary" id="closeBtn">Close</button>
                         </div>
-                    </form>
+                    </div>
                 </div>
             `;
 
             document.body.appendChild(modal);
 
-            // Initialize ticket types functionality
-            initializeTicketTypes(modal);
+            // Initialize ticket types functionality in view mode
+            initializeTicketTypesViewMode(modal);
 
             // Event listeners
             const closeBtn = modal.querySelector('.modal-close');
-            const cancelBtn = modal.querySelector('#cancelBtn');
-            const form = modal.querySelector('#ticketTypesForm');
+            const closeActionBtn = modal.querySelector('#closeBtn');
 
             const closeModal = () => modal.remove();
 
             closeBtn.addEventListener('click', closeModal);
-            cancelBtn.addEventListener('click', closeModal);
+            closeActionBtn.addEventListener('click', closeModal);
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) closeModal();
-            });
-
-            // Form submission
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                // Validate ticket allocations
-                if (!validateTicketAllocations(form)) {
-                    return;
-                }
-
-                // Collect ticket types data
-                const ticketTypes = [];
-                const ticketTypeItems = form.querySelectorAll('.ticket-type-item');
-                
-                ticketTypeItems.forEach((item, index) => {
-                    const typeInput = item.querySelector(`input[name="ticketTypeName_${index}"]`);
-                    const priceInput = item.querySelector(`input[name="ticketTypePrice_${index}"]`);
-                    const seatsInput = item.querySelector(`input[name="ticketTypeSeats_${index}"]`);
-                    
-                    if (typeInput && priceInput && seatsInput) {
-                        ticketTypes.push({
-                            type: typeInput.value,
-                            price: parseFloat(priceInput.value),
-                            seats: parseInt(seatsInput.value)
-                        });
-                    }
-                });
-
-                const submitData = { ticketTypes: ticketTypes };
-
-                console.log('Updating ticket types:', submitData);
-
-                // Submit to backend
-                fetch(`/events/update-ticket-types/${eventId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken()
-                    },
-                    body: JSON.stringify(submitData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showNotification('Ticket types updated successfully!', 'success');
-                        closeModal();
-                        setTimeout(() => window.location.reload(), 1000);
-                    } else {
-                        showNotification(`Error: ${data.error}`, 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('An error occurred. Please try again.', 'error');
-                });
             });
         } else {
             showNotification('Error loading event data: ' + data.error, 'error');
@@ -1317,6 +1255,70 @@ function initializeTicketTypes(modal) {
         } else {
             autoFillLastTicketType(ticketTypesContainer, venueCapacityInput);
         }
+    });
+}
+
+// Initialize ticket types in view-only mode (readonly)
+function initializeTicketTypesViewMode(modal) {
+    const numTicketTypesInput = modal.querySelector('#numTicketTypes');
+    const ticketTypesContainer = modal.querySelector('#ticketTypesContainer');
+    const venueCapacityInput = modal.querySelector('#venueCapacity');
+    
+    // Fetch ticket types from backend
+    const eventId = modal.querySelector('#ticketTypesForm').getAttribute('data-event-id');
+    
+    fetch(`/events/get/${eventId}/`, {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.event.ticketTypes && data.event.ticketTypes.length > 0) {
+            const ticketTypes = data.event.ticketTypes;
+            numTicketTypesInput.value = ticketTypes.length;
+            
+            // Generate readonly ticket type fields
+            generateTicketTypeFieldsViewMode(ticketTypes, ticketTypesContainer);
+        } else {
+            ticketTypesContainer.innerHTML = '<p style="color: #666; padding: 1rem; text-align: center;">No ticket types configured for this event.</p>';
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching ticket types:', error);
+        ticketTypesContainer.innerHTML = '<p style="color: #e74c3c; padding: 1rem; text-align: center;">Error loading ticket types.</p>';
+    });
+}
+
+// Generate readonly ticket type fields for viewing
+function generateTicketTypeFieldsViewMode(ticketTypes, container) {
+    container.innerHTML = '';
+    
+    ticketTypes.forEach((ticketType, i) => {
+        const ticketTypeItem = document.createElement('div');
+        ticketTypeItem.className = 'ticket-type-item';
+        ticketTypeItem.innerHTML = `
+            <div class="ticket-type-header">
+                <h4>Ticket Type ${i + 1}</h4>
+            </div>
+            <div class="ticket-type-fields">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Type Name</label>
+                    <input type="text" value="${ticketType.type || ticketType.ticket_type || ''}" readonly>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Price ($)</label>
+                    <input type="number" value="${ticketType.price || '0.00'}" readonly>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Seats</label>
+                    <input type="number" value="${ticketType.seats || '0'}" readonly>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(ticketTypeItem);
     });
 }
 
