@@ -297,6 +297,15 @@ def create_event(request):
                     ],
                 )
                 event_id = cursor.lastrowid
+                using_seats = 0
+
+                for ticket_type in data.get("ticketTypes", []):
+                    using_seats += ticket_type.get("seats", 0)
+
+                if using_seats > venue_capacity:
+                    raise ValueError(
+                        f"Total seats for ticket types ({using_seats}) exceed venue capacity ({venue_capacity})."
+                    )
 
                 # Initialize ticket types for event
                 for ticket_type in data.get("ticketTypes", []):
@@ -882,7 +891,50 @@ def registration_info(request, event_id):
 @login_required
 @require_POST  # TODO - Implement event registration
 def register_event(request, event_id):
-    return None
+    data = json.loads(request.body)
+    user = request.user
+    ticket_type_id = data.get("ticket_type_id")
+
+    try:
+        with transaction.atomic():
+            with connection.cursor() as cursor:
+                # 1. Create Ticket
+                cursor.execute(
+                    """
+                    INSERT INTO ticket (event_id, ticket_type_id, purchaseDateTime, status)
+                    VALUES (%s, %s, %s, %s)
+                    """,
+                    [event_id, ticket_type_id, timezone.now(), "sold"],
+                )
+                ticket_id = cursor.lastrowid
+
+                # 2. Create EventCustomer
+                cursor.execute(
+                    """
+                    INSERT INTO eventcustomer (event_id, customer_id, ticket_id)
+                    VALUES (%s, %s, %s)
+                    """,
+                    [event_id, user.customerID, ticket_id],
+                )
+
+                # 3. Decrease remaining capacity
+                cursor.execute(
+                    """
+                    UPDATE event
+                    SET remaining_capacity = remaining_capacity - 1
+                    WHERE eventID = %s AND remaining_capacity > 0
+                    """,
+                    [event_id],
+                )
+                if cursor.rowcount == 0:
+                    raise ValueError("No remaining capacity for this event.")
+
+        return JsonResponse(
+            {"success": True, "message": "Successfully registered for the event."}
+        )
+    
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
 
 
 @login_required
@@ -894,6 +946,7 @@ def create_ticket_type(request):
         event_id = data.get("event_id")
         ticket_type = data.get("type")
         price = data.get("price")
+        seats = data.get("seats")
 
         if not (event_id and ticket_type and price is not None):
             return JsonResponse(
@@ -907,11 +960,34 @@ def create_ticket_type(request):
         with connection.cursor() as cursor:
             cursor.execute(
                 """
-                INSERT INTO tickettype (event_id, type, price)
-                VALUES (%s, %s, %s)
-            """,
-                [event_id, ticket_type, price],
+                select capacity from venue v
+                join event e on e.venue_id = v.venueID
+                where e.eventID = %s
+                """, [event_id]
             )
+
+            venue_capacity = cursor.fetchone()[0]
+            cursor.execute("""
+                          SELECT SUM(seats) FROM tickettype WHERE event_id = %s
+                                   """, [event_id])
+            used_seats = cursor.fetchone()[0] or 0
+            if used_seats >= venue_capacity:
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "error": "Cannot add more ticket types. Venue capacity reached.",
+                    },
+                    status=400,
+                )
+            
+            cursor.execute(
+                """
+                INSERT INTO tickettype (event_id, ticket_type, price, seats)
+                VALUES (%s, %s, %s, %s)
+                """,
+                [event_id, ticket_type, price, seats],
+            )
+
             ticket_type_id = cursor.lastrowid
 
         return JsonResponse(
