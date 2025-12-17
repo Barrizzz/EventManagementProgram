@@ -97,7 +97,7 @@ function loadTicketRegistrationForm(eventId, eventName) {
     //   available_seats: number
     // }
     
-    fetch(`/events/${eventId}/register/`, {
+    fetch(`/events/${eventId}/ticket-info/`, {
         headers: {
             'X-CSRFToken': getCSRFToken()
         }
@@ -143,7 +143,7 @@ function displayAlreadyRegistered(container, ticketInfo) {
                     </div>
                     <div class="ticket-info-item">
                         <span class="label">Seat:</span>
-                        <span class="value">Row ${ticketInfo.row}, Seat ${ticketInfo.seat}</span>
+                        <span class="value">Row ${ticketInfo.rowNum}, Seat ${ticketInfo.seatNum}</span>
                     </div>
                     <div class="ticket-info-item">
                         <span class="label">Price:</span>
@@ -151,7 +151,7 @@ function displayAlreadyRegistered(container, ticketInfo) {
                     </div>
                     <div class="ticket-info-item">
                         <span class="label">Purchase Date:</span>
-                        <span class="value">${new Date(ticketInfo.purchase_date).toLocaleString()}</span>
+                        <span class="value">${new Date(ticketInfo.purchaseDateTime).toLocaleString()}</span>
                     </div>
                     <div class="ticket-info-item">
                         <span class="label">Status:</span>

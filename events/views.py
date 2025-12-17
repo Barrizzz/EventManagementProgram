@@ -1,3 +1,4 @@
+from random import randint # Placeholder for seat assignment
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
@@ -834,6 +835,10 @@ def registration_info(request, event_id):
                     ec.customer_id,
                     ec.ticket_id,
                     t.ticket_type_id,
+                    t.purchaseDateTime,
+                    t.status,
+                    t.rowNum,
+                    t.seatNum,
                     tt.ticket_type,
                     tt.price
                 FROM eventcustomer ec
@@ -889,11 +894,13 @@ def registration_info(request, event_id):
 
 
 @login_required
-@require_POST  # TODO - Implement event registration
+@require_POST
 def register_event(request, event_id):
     data = json.loads(request.body)
     user = request.user
     ticket_type_id = data.get("ticket_type_id")
+    rowNum = randint(1, 100)
+    seatNum = randint(1, 50)
 
     try:
         with transaction.atomic():
@@ -901,10 +908,10 @@ def register_event(request, event_id):
                 # 1. Create Ticket
                 cursor.execute(
                     """
-                    INSERT INTO ticket (event_id, ticket_type_id, purchaseDateTime, status)
-                    VALUES (%s, %s, %s, %s)
+                    INSERT INTO ticket (event_id, ticket_type_id, purchaseDateTime, status, rowNum, seatNum)
+                    VALUES (%s, %s, %s, %s, %s, %s)
                     """,
-                    [event_id, ticket_type_id, timezone.now(), "sold"],
+                    [event_id, ticket_type_id, timezone.now(), "sold", rowNum, seatNum],
                 )
                 ticket_id = cursor.lastrowid
 
