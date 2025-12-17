@@ -20,4 +20,5 @@ urlpatterns = [
     path("<int:event_id>/ticket-info/", views.registration_info, name="registration_info"),
     path("<int:event_id>/register/", views.register_event, name="register_event"),
     path("api/tickettypes/", views.create_ticket_type, name="create_ticket_type"),
+    path("api/fetchttypes/<int:event_id>/", views.fetch_ticket_types, name="fetch_ticket_types"),
 ]

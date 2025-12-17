@@ -1019,3 +1019,24 @@ def create_ticket_type(request):
 
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
+    
+def fetch_ticket_types(request, event_id):
+    """Fetch ticket types for a given event"""
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT ticketTypeID, ticket_type, price, seats
+                FROM tickettype
+                WHERE event_id = %s
+                """,
+                [event_id],
+            )
+            columns = [col[0] for col in cursor.description]
+            rows = cursor.fetchall()
+            ticket_types = [dict(zip(columns, row)) for row in rows]
+
+        return JsonResponse({"success": True, "ticket_types": ticket_types})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
