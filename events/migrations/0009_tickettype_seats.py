@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0008_remove_tickettype_zone'),
+        ("events", "0008_remove_tickettype_zone"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tickettype',
-            name='seats',
+            model_name="tickettype",
+            name="seats",
             field=models.IntegerField(default=0),
             preserve_default=False,
         ),

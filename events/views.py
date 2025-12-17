@@ -1,8 +1,8 @@
-from random import randint # Placeholder for seat assignment
+from random import randint  # Placeholder for seat assignment
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import connection, transaction
 from django.db.models import Sum
 import json
@@ -15,6 +15,7 @@ from .models import (
     EventCustomer,
 )
 from accounts.models import Customer
+from .helper_funcs import is_staff_check
 
 
 # Create your views here.
@@ -94,6 +95,7 @@ def events_page(request):
 
 @require_POST
 @login_required
+@user_passes_test(is_staff_check)
 def create_event(request):
     """
     Create a new event with all related data using raw SQL execution (MySQL syntax).
@@ -215,11 +217,14 @@ def create_event(request):
                             [venue_name, address, city, capacity],
                         )
                         venue_id = cursor.lastrowid
-    
-                    cursor.execute("""
+
+                    cursor.execute(
+                        """
                         SELECT `capacity` FROM `venue` WHERE `venueID` = %s
-                                   """, [venue_id])
-                    
+                                   """,
+                        [venue_id],
+                    )
+
                     venue_capacity = cursor.fetchone()[0]
 
                 # --- 4. Get or Create Datetime ---
@@ -316,7 +321,12 @@ def create_event(request):
                         INSERT INTO `tickettype` (`event_id`, `ticket_type`, `price`, `seats`) 
                         VALUES (%s, %s, %s, %s);
                         """,
-                        [event_id, ticket_type["type"], ticket_type["price"], ticket_type["seats"]],
+                        [
+                            event_id,
+                            ticket_type["type"],
+                            ticket_type["price"],
+                            ticket_type["seats"],
+                        ],
                     )
 
         return JsonResponse(
@@ -339,6 +349,7 @@ def create_event(request):
 
 @require_POST
 @login_required
+@user_passes_test(is_staff_check)
 def delete_event(request, event_id):
     """
     -- 1. Check existing constraints on the table (for MySQL)
@@ -365,12 +376,11 @@ def delete_event(request, event_id):
     REFERENCES `event` (`eventID`)
     ON DELETE CASCADE;
     """
+
     try:
-        with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM `event` WHERE `eventID` = %s", [event_id])
-        return JsonResponse(
-            {"success": True, "message": f"Event ID {event_id} deleted successfully"}
-        )
+        event = Event.objects.get(eventID=event_id)
+        event.delete()
+        return JsonResponse({"success": True, "message": "Event deleted successfully."})
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
@@ -436,13 +446,23 @@ def get_event(request, event_id):
                         "materials": event["materials"],
                         "category": event["category"] if event["category"] else "",
                         "organizer": event["organizer_name"],
-                        "organizerEmail": event["organizer_email"] if event["organizer_email"] else "",
-                        "organizerContact": event["organizer_contact"] if event["organizer_contact"] else "",
-                        "organizerWebsite": event["organizer_website"] if event["organizer_website"] else "",
+                        "organizerEmail": event["organizer_email"]
+                        if event["organizer_email"]
+                        else "",
+                        "organizerContact": event["organizer_contact"]
+                        if event["organizer_contact"]
+                        else "",
+                        "organizerWebsite": event["organizer_website"]
+                        if event["organizer_website"]
+                        else "",
                         "venue": event["venue_name"],
-                        "venueAddress": event["venue_address"] if event["venue_address"] else "",
+                        "venueAddress": event["venue_address"]
+                        if event["venue_address"]
+                        else "",
                         "venueCity": event["venue_city"] if event["venue_city"] else "",
-                        "venueCapacity": event["venue_capacity"] if event["venue_capacity"] else 0,
+                        "venueCapacity": event["venue_capacity"]
+                        if event["venue_capacity"]
+                        else 0,
                         "date": event["date"].strftime("%Y-%m-%d"),
                         "startTime": event["startTime"].strftime("%H:%M"),
                         "endTime": event["endTime"].strftime("%H:%M"),
@@ -456,6 +476,7 @@ def get_event(request, event_id):
 
 @require_POST
 @login_required
+@user_passes_test(is_staff_check)
 def update_event(request, event_id):
     """Update an existing event"""
     try:
@@ -690,6 +711,7 @@ def get_venues(request):
 
 # Attendees Page Views
 @login_required
+@user_passes_test(is_staff_check)
 def attendees_page(request):
     """Render the attendees page with all data"""
     # Get all customers who have attended events
@@ -766,6 +788,7 @@ def attendees_page(request):
 
 # Reports Page Views
 @login_required
+@user_passes_test(is_staff_check)
 def reports_page(request):
     """Render the reports page with analytics data"""
     # Get all events with related data
@@ -951,13 +974,14 @@ def register_event(request, event_id):
         return JsonResponse(
             {"success": True, "message": "Successfully registered for the event."}
         )
-    
+
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
 
 @login_required
 @require_POST
+@user_passes_test(is_staff_check)
 def create_ticket_type(request):
     """Create a new ticket type for an event"""
     try:
@@ -982,13 +1006,17 @@ def create_ticket_type(request):
                 select capacity from venue v
                 join event e on e.venue_id = v.venueID
                 where e.eventID = %s
-                """, [event_id]
+                """,
+                [event_id],
             )
 
             venue_capacity = cursor.fetchone()[0]
-            cursor.execute("""
+            cursor.execute(
+                """
                           SELECT SUM(seats) FROM tickettype WHERE event_id = %s
-                                   """, [event_id])
+                                   """,
+                [event_id],
+            )
             used_seats = cursor.fetchone()[0] or 0
             if used_seats >= venue_capacity:
                 return JsonResponse(
@@ -998,7 +1026,7 @@ def create_ticket_type(request):
                     },
                     status=400,
                 )
-            
+
             cursor.execute(
                 """
                 INSERT INTO tickettype (event_id, ticket_type, price, seats)
@@ -1019,3 +1047,35 @@ def create_ticket_type(request):
 
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+
+def fetch_ticket_types(request, event_id):
+    """Fetch ticket types for a given event"""
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT ticketTypeID, ticket_type, price, seats
+                FROM tickettype
+                WHERE event_id = %s
+                """,
+                [event_id],
+            )
+            columns = [col[0] for col in cursor.description]
+            rows = cursor.fetchall()
+            ticket_types = [dict(zip(columns, row)) for row in rows]
+
+        return JsonResponse({"success": True, "ticket_types": ticket_types})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+
+def handler403(request, exception=None):
+    return JsonResponse(
+        {
+            "error": "Permission Denied",
+            "message": "You do not have staff administrative privileges.",
+        },
+        status=403,
+    )

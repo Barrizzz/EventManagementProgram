@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0006_event_remaining_capacity'),
+        ("events", "0006_event_remaining_capacity"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='venue',
-            name='address',
+            model_name="venue",
+            name="address",
             field=models.CharField(max_length=255, unique=True),
         ),
         migrations.AlterField(
-            model_name='venue',
-            name='name',
+            model_name="venue",
+            name="name",
             field=models.CharField(max_length=100, unique=True),
         ),
     ]
