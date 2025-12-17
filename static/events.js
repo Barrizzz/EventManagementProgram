@@ -770,6 +770,25 @@ function showEventModal(eventData = null) {
                     </div>
                 </div>
 
+                ${!isEditMode ? `
+                <!-- Ticket Types -->
+                <div class="form-section" id="ticketTypesSection">
+                    <h3 class="form-section-title">Ticket Types & Pricing (maximum 10)</h3>
+                    
+                    <div class="form-group">
+                        <label for="numTicketTypes">Number of Ticket Types *</label>
+                        <input type="number" id="numTicketTypes" name="numTicketTypes" 
+                            placeholder="Enter number of ticket types (e.g., 2, 3)" 
+                            min="1" max="10" value="1" required>
+                        <small class="form-help">Specify how many different ticket types you want to offer</small>
+                    </div>
+                    
+                    <div id="ticketTypesContainer">
+                        <!-- Ticket type fields will be dynamically added here -->
+                    </div>
+                </div>
+                ` : ''}
+
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
                     <button type="submit" class="btn-primary">
@@ -785,6 +804,11 @@ function showEventModal(eventData = null) {
 
     // Populate dropdowns with data
     populateEventFormDropdowns(modal, eventData);
+
+    // Initialize the ticket types section (only in create mode)
+    if (!isEditMode) {
+        initializeTicketTypes(modal);
+    }
 
     // Event listeners
     const closeBtn = modal.querySelector('.modal-close');
@@ -821,8 +845,13 @@ function showEventModal(eventData = null) {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
+        // Validate ticket allocations before submission (only in create mode)
+        if (!isEditMode && !validateTicketAllocations(form)) {
+            return;
+        }
+
         // Collect and structure the form data
-        const submitData = collectEditEventFormData(form);
+        const submitData = isEditMode ? collectEditEventFormData(form) : collectEventFormData(form);
         
         const url = isEditMode ? `/events/update/${eventData.id}/` : '/events/create/';
         const successMessage = isEditMode ? 'Event updated successfully!' : 'Event created successfully!';
