@@ -12,47 +12,8 @@
 <body>
     <!-- Dashboard Container -->
     <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo-section">
-                <h1 class="logo">
-                    <span class="logo-visionary">Visionary</span>
-                    <span class="logo-events">EVENTS</span>
-                </h1>
-            </div>
-
-            <nav class="navigation">
-                <a href="{% url 'home:home_page' %}" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </a>
-
-                <a href="{% url 'events:events' %}" class="nav-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Events</span>
-                </a>
-
-                <a href="{% url 'attendees' %}" class="nav-item">
-                    <i class="fas fa-users"></i>
-                    <span>Attendees</span>
-                </a>
-
-                <a href="{% url 'reports' %}" class="nav-item active">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Reports</span>
-                </a>
-
-                <a href="{% url 'settings' %}" class="nav-item">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
-
-                  <div class="nav-item logout">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Log out</span>
-      </div>
-            </nav>
-        </aside>
+        <!-- Include Sidebar -->
+        {% include 'sidebar.html' %}
 
         <!-- Main Content -->
         <main class="main-content">
@@ -68,42 +29,26 @@
                 </button>
             </header>
 
-            <!-- Summary Cards -->
+            <!-- Summary Cards - Data from Database -->
             <div class="summary-cards">
                 <div class="summary-card primary">
-                    <div class="summary-value">1,201</div>
+                    <div class="summary-value">{{ total_events }}</div>
                     <div class="summary-label">Total Events</div>
-                    <div class="summary-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        12.5% from last period
-                    </div>
                 </div>
 
                 <div class="summary-card success">
-                    <div class="summary-value">23,416</div>
+                    <div class="summary-value">{{ total_attendees }}</div>
                     <div class="summary-label">Total Attendees</div>
-                    <div class="summary-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        8.3% from last period
-                    </div>
                 </div>
 
                 <div class="summary-card warning">
-                    <div class="summary-value">19.5</div>
+                    <div class="summary-value">{{ avg_event_size }}</div>
                     <div class="summary-label">Avg. Event Size</div>
-                    <div class="summary-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        2.1% from last period
-                    </div>
                 </div>
 
                 <div class="summary-card danger">
-                    <div class="summary-value">$21,250.99</div>
+                    <div class="summary-value">${{ total_revenue }}</div>
                     <div class="summary-label">Total Revenue</div>
-                    <div class="summary-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        15.7% from last period
-                    </div>
                 </div>
             </div>
 
@@ -229,13 +174,13 @@
                 </div>
             </section>
 
-            <!-- KPI Cards -->
+            <!-- KPI Cards - Data from Database -->
             <section class="kpi-grid">
                 <div class="kpi-card">
                     <div class="kpi-icon attendance">
                         <i class="fas fa-users"></i>
                     </div>
-                    <div class="kpi-value">84.2%</div>
+                    <div class="kpi-value">0%</div>
                     <div class="kpi-label">Average Attendance Rate</div>
                 </div>
 
@@ -243,7 +188,7 @@
                     <div class="kpi-icon revenue">
                         <i class="fas fa-dollar-sign"></i>
                     </div>
-                    <div class="kpi-value">$187.50</div>
+                    <div class="kpi-value">$0.00</div>
                     <div class="kpi-label">Avg. Revenue Per Event</div>
                 </div>
 
@@ -251,7 +196,7 @@
                     <div class="kpi-icon engagement">
                         <i class="fas fa-heart"></i>
                     </div>
-                    <div class="kpi-value">76.8%</div>
+                    <div class="kpi-value">0%</div>
                     <div class="kpi-label">Attendee Satisfaction</div>
                 </div>
 
@@ -259,38 +204,38 @@
                     <div class="kpi-icon satisfaction">
                         <i class="fas fa-redo"></i>
                     </div>
-                    <div class="kpi-value">42.5%</div>
+                    <div class="kpi-value">0%</div>
                     <div class="kpi-label">Repeat Attendance Rate</div>
                 </div>
             </section>
 
-            <!-- Comparison Cards -->
+            <!-- Comparison Cards - Data from Database -->
             <section class="comparison-cards">
                 <div class="comparison-card">
                     <div class="comparison-header">
                         <h3 class="comparison-title">Current Period</h3>
-                        <span class="comparison-period">Jan 1 - Jun 30, 2023</span>
+                        <span class="comparison-period">Data from database</span>
                     </div>
                     <div class="comparison-metrics">
                         <div class="comparison-metric">
-                            <div class="metric-value">214</div>
+                            <div class="metric-value">0</div>
                             <div class="metric-label">Events</div>
-                            <div class="metric-change positive">+12%</div>
+                            <div class="metric-change positive">+0%</div>
                         </div>
                         <div class="comparison-metric">
-                            <div class="metric-value">4,182</div>
+                            <div class="metric-value">0</div>
                             <div class="metric-label">Attendees</div>
-                            <div class="metric-change positive">+8%</div>
+                            <div class="metric-change positive">+0%</div>
                         </div>
                         <div class="comparison-metric">
-                            <div class="metric-value">$8,450</div>
+                            <div class="metric-value">$0</div>
                             <div class="metric-label">Revenue</div>
-                            <div class="metric-change positive">+15%</div>
+                            <div class="metric-change positive">+0%</div>
                         </div>
                         <div class="comparison-metric">
-                            <div class="metric-value">83.7%</div>
+                            <div class="metric-value">0%</div>
                             <div class="metric-label">Satisfaction</div>
-                            <div class="metric-change positive">+3%</div>
+                            <div class="metric-change positive">+0%</div>
                         </div>
                     </div>
                 </div>
@@ -298,23 +243,23 @@
                 <div class="comparison-card">
                     <div class="comparison-header">
                         <h3 class="comparison-title">Previous Period</h3>
-                        <span class="comparison-period">Jul 1 - Dec 31, 2022</span>
+                        <span class="comparison-period">Data from database</span>
                     </div>
                     <div class="comparison-metrics">
                         <div class="comparison-metric">
-                            <div class="metric-value">191</div>
+                            <div class="metric-value">0</div>
                             <div class="metric-label">Events</div>
                         </div>
                         <div class="comparison-metric">
-                            <div class="metric-value">3,865</div>
+                            <div class="metric-value">0</div>
                             <div class="metric-label">Attendees</div>
                         </div>
                         <div class="comparison-metric">
-                            <div class="metric-value">$7,320</div>
+                            <div class="metric-value">$0</div>
                             <div class="metric-label">Revenue</div>
                         </div>
                         <div class="comparison-metric">
-                            <div class="metric-value">81.2%</div>
+                            <div class="metric-value">0%</div>
                             <div class="metric-label">Satisfaction</div>
                         </div>
                     </div>
@@ -344,51 +289,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Tech Innovation Summit 2023</td>
-                                <td>Jun 15, 2025</td>
-                                <td>245</td>
-                                <td>300</td>
-                                <td class="metric-cell">$12,450</td>
-                                <td>94%</td>
-                                <td><span class="status-badge completed">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>Digital Marketing Workshop</td>
-                                <td>Jun 22, 2025</td>
-                                <td>78</td>
-                                <td>80</td>
-                                <td class="metric-cell">$3,850</td>
-                                <td>89%</td>
-                                <td><span class="status-badge completed">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>Leadership Conference</td>
-                                <td>Jul 5, 2025</td>
-                                <td>312</td>
-                                <td>350</td>
-                                <td class="metric-cell">$18,200</td>
-                                <td>91%</td>
-                                <td><span class="status-badge upcoming">Upcoming</span></td>
-                            </tr>
-                            <tr>
-                                <td>Startup Networking Night</td>
-                                <td>Dec 30, 2025</td>
-                                <td>120</td>
-                                <td>120</td>
-                                <td class="metric-cell">$2,400</td>
-                                <td>87%</td>
-                                <td><span class="status-badge completed">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>AI & Machine Learning Expo</td>
-                                <td>Dec 18, 2025</td>
-                                <td>430</td>
-                                <td>500</td>
-                                <td class="metric-cell">$24,750</td>
-                                <td>-</td>
-                                <td><span class="status-badge upcoming">Upcoming</span></td>
-                            </tr>
+                            {% if all_events %}
+                                {% for event_data in all_events %}
+                                <tr>
+                                    <td>{{ event_data.event.name }}</td>
+                                    <td>{{ event_data.event.datetime.date }}</td>
+                                    <td>{{ event_data.tickets_sold }}</td>
+                                    <td>{{ event_data.event.venue.capacity }}</td>
+                                    <td>${{ event_data.revenue }}</td>
+                                    <td>{{ event_data.attendance_rate|floatformat:0 }}%</td>
+                                    <td>
+                                        <span class="status-badge {{ event_data.event.status }}">{{ event_data.event.status }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 40px; color: #64748B;">
+                                        No event performance data available
+                                    </td>
+                                </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
@@ -396,8 +317,6 @@
         </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'common.js' %}"></script>
-    <script src="{% static 'reports.js' %}"></script>
 </body>
 </html>

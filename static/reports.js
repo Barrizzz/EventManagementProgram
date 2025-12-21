@@ -1,19 +1,71 @@
 // Reports page specific JavaScript
-function initializeReportsCharts() {
+let reportsData = null;
+
+// Initialize reports page
+function initializeReportsPage() {
+    console.log('📊 Initializing reports page...');
+    loadReportsData();
+    setupReportsEventListeners();
+}
+
+// Load reports data from backend
+async function loadReportsData() {
+    try {
+        const response = await fetch('/events/api/reports-data/');
+        const data = await response.json();
+        
+        if (data.success) {
+            reportsData = data;
+            
+            // Update summary cards
+            updateSummaryCards(data.summary);
+            
+            // Initialize charts with data
+            initializeReportsCharts(data);
+        } else {
+            console.error('Failed to load reports data:', data.error);
+            showError('Failed to load reports data');
+        }
+    } catch (error) {
+        console.error('Error loading reports data:', error);
+        showError('Error loading reports data');
+    }
+}
+
+// Update summary cards
+function updateSummaryCards(summary) {
+    const cards = document.querySelectorAll('.summary-card');
+    if (cards.length >= 4) {
+        // Total Events
+        cards[0].querySelector('.summary-value').textContent = summary.total_events;
+        
+        // Total Attendees
+        cards[1].querySelector('.summary-value').textContent = summary.total_attendees;
+        
+        // Average Event Size
+        cards[2].querySelector('.summary-value').textContent = summary.avg_event_size;
+        
+        // Total Revenue
+        cards[3].querySelector('.summary-value').textContent = `$${summary.total_revenue.toFixed(2)}`;
+    }
+}
+
+// Initialize all charts with data
+function initializeReportsCharts(data) {
     console.log('📊 Initializing reports charts...');
 
     // Debug chart containers first
     debugChartContainers();
 
     // Main charts
-    createEventsAttendanceChart();
-    createRevenueAnalysisChart();
+    createEventsAttendanceChart(data.monthly_timeline);
+    createRevenueAnalysisChart(data.monthly_timeline);
 
     // Side charts - with delay to ensure DOM is ready
     setTimeout(() => {
-        createEventDistributionChart();
-        createAttendanceRateChart();
-        createTopEventsChart();
+        createEventDistributionChart(data.events_by_category);
+        createAttendanceRateChart(data.all_events);
+        createTopEventsChart(data.top_events);
 
         // Force resize after charts are created
         setTimeout(() => {
@@ -113,7 +165,7 @@ function setupReportsEventListeners() {
 }
 
 // Create Events & Attendance Over Time chart
-function createEventsAttendanceChart() {
+function createEventsAttendanceChart(monthlyData) {
     const canvas = document.getElementById('eventsAttendanceChart');
     if (!canvas) {
         console.error('❌ eventsAttendanceChart canvas not found');
@@ -129,14 +181,18 @@ function createEventsAttendanceChart() {
         }
 
         const ctx = canvas.getContext('2d');
+        const labels = monthlyData.map(d => d.month);
+        const eventsData = monthlyData.map(d => d.events);
+        const attendeesData = monthlyData.map(d => d.attendees);
+        
         const chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                labels: labels,
                 datasets: [
                     {
                         label: 'Events',
-                        data: [18, 22, 25, 30, 28, 35, 32],
+                        data: eventsData,
                         borderColor: '#8B5CF6',
                         backgroundColor: 'rgba(139, 92, 246, 0.1)',
                         borderWidth: 3,
@@ -149,7 +205,7 @@ function createEventsAttendanceChart() {
                     },
                     {
                         label: 'Attendance',
-                        data: [320, 380, 420, 510, 480, 590, 550],
+                        data: attendeesData,
                         borderColor: '#10B981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
                         borderWidth: 3,
@@ -218,7 +274,7 @@ function createEventsAttendanceChart() {
 }
 
 // Create Revenue Analysis chart
-function createRevenueAnalysisChart() {
+function createRevenueAnalysisChart(monthlyData) {
     const canvas = document.getElementById('revenueChart');
     if (!canvas) {
         console.error('❌ revenueChart canvas not found');
@@ -234,20 +290,17 @@ function createRevenueAnalysisChart() {
         }
 
         const ctx = canvas.getContext('2d');
+        const labels = monthlyData.map(d => d.month);
+        const revenueData = monthlyData.map(d => d.revenue);
+        
         const chart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Conference', 'Workshop', 'Networking', 'Webinar', 'Other'],
+                labels: labels,
                 datasets: [{
                     label: 'Revenue ($)',
-                    data: [12500, 4200, 1800, 3100, 1200],
-                    backgroundColor: [
-                        '#8B5CF6',
-                        '#10B981',
-                        '#F59E0B',
-                        '#EC4899',
-                        '#6B7280'
-                    ],
+                    data: revenueData,
+                    backgroundColor: '#8B5CF6',
                     borderWidth: 0,
                     borderRadius: 6
                 }]
@@ -304,7 +357,7 @@ function createRevenueAnalysisChart() {
 }
 
 // Create Event Distribution chart
-function createEventDistributionChart() {
+function createEventDistributionChart(eventsByCategory) {
     const canvas = document.getElementById('eventDistributionChart');
     if (!canvas) {
         console.error('❌ eventDistributionChart canvas not found');
@@ -320,18 +373,17 @@ function createEventDistributionChart() {
         }
 
         const ctx = canvas.getContext('2d');
+        const labels = Object.keys(eventsByCategory);
+        const data = Object.values(eventsByCategory);
+        const colors = ['#8B5CF6', '#10B981', '#F59E0B', '#EC4899', '#6B7280', '#3B82F6', '#EF4444'];
+        
         const chart = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Conference', 'Workshop', 'Networking', 'Webinar'],
+                labels: labels,
                 datasets: [{
-                    data: [35, 25, 20, 20],
-                    backgroundColor: [
-                        '#8B5CF6',
-                        '#10B981',
-                        '#F59E0B',
-                        '#EC4899'
-                    ],
+                    data: data,
+                    backgroundColor: colors.slice(0, labels.length),
                     borderWidth: 2,
                     borderColor: '#FFFFFF',
                     hoverOffset: 15
@@ -385,7 +437,7 @@ function createEventDistributionChart() {
 }
 
 // Create Attendance Rate chart
-function createAttendanceRateChart() {
+function createAttendanceRateChart(eventsData) {
     const canvas = document.getElementById('attendanceRateChart');
     if (!canvas) {
         console.error('❌ attendanceRateChart canvas not found');
@@ -401,12 +453,18 @@ function createAttendanceRateChart() {
         }
 
         const ctx = canvas.getContext('2d');
+        // Calculate overall attendance statistics
+        const totalEvents = eventsData.length;
+        const highAttendance = eventsData.filter(e => e.attendance_rate >= 70).length;
+        const mediumAttendance = eventsData.filter(e => e.attendance_rate >= 40 && e.attendance_rate < 70).length;
+        const lowAttendance = eventsData.filter(e => e.attendance_rate < 40).length;
+        
         const chart = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Attended', 'Registered', 'No Show'],
+                labels: ['High (70%+)', 'Medium (40-70%)', 'Low (<40%)'],
                 datasets: [{
-                    data: [84, 12, 4],
+                    data: [highAttendance, mediumAttendance, lowAttendance],
                     backgroundColor: [
                         '#10B981',
                         '#F59E0B',
@@ -465,7 +523,7 @@ function createAttendanceRateChart() {
 }
 
 // Create Top Events chart
-function createTopEventsChart() {
+function createTopEventsChart(topEvents) {
     const canvas = document.getElementById('topEventsChart');
     if (!canvas) {
         console.error('❌ topEventsChart canvas not found');
@@ -481,13 +539,17 @@ function createTopEventsChart() {
         }
 
         const ctx = canvas.getContext('2d');
+        const top5 = topEvents.slice(0, 5);
+        const labels = top5.map(e => e.event_name.length > 15 ? e.event_name.substring(0, 15) + '...' : e.event_name);
+        const attendances = top5.map(e => e.tickets_sold);
+        
         const chart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Tech Summit', 'Marketing Workshop', 'Leadership Conf', 'AI Expo', 'Startup Night'],
+                labels: labels,
                 datasets: [{
                     label: 'Attendance',
-                    data: [245, 180, 312, 430, 120],
+                    data: attendances,
                     backgroundColor: '#8B5CF6',
                     borderWidth: 0,
                     borderRadius: 8,
@@ -569,13 +631,27 @@ function createTopEventsChart() {
 // Update charts based on time period
 function updateChartsForTimePeriod(period) {
     showNotification(`Loading data for ${period}...`, 'info');
-
-    // Simulate API call delay
-    setTimeout(() => {
-        initializeReportsCharts();
-        showNotification(`Charts updated for ${period}`, 'success');
-    }, 1000);
+    loadReportsData(); // Reload data with new time period
 }
+
+// Update charts with filters
+function updateChartsWithFilters() {
+    loadReportsData(); // Reload data with filters applied
+}
+
+// Show error message
+function showError(message) {
+    console.error(message);
+    // Could add a toast notification here
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if we're on the reports page
+    if (document.querySelector('.summary-cards')) {
+        initializeReportsPage();
+    }
+});
 
 // Update charts with current filter values
 function updateChartsWithFilters() {
@@ -586,4 +662,80 @@ function updateChartsWithFilters() {
 
     console.log('Applying filters:', { eventType, eventStatus, ticketType, location });
     showNotification('Charts updated with filtered data', 'success');
+}
+
+// Notification system
+function showNotification(message, type = 'info') {
+    // Remove any existing notifications
+    document.querySelectorAll('.notification').forEach(n => n.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${getNotificationIcon(type)}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${getNotificationColor(type)};
+        color: white;
+        padding: 16px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        animation: slideInRight 0.3s ease-out;
+        max-width: 300px;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+function getNotificationIcon(type) {
+    switch(type) {
+        case 'success': return 'check-circle';
+        case 'error': return 'exclamation-circle';
+        case 'warning': return 'exclamation-triangle';
+        default: return 'info-circle';
+    }
+}
+
+function getNotificationColor(type) {
+    switch(type) {
+        case 'success': return '#10B981';
+        case 'error': return '#EF4444';
+        case 'warning': return '#F59E0B';
+        default: return '#3B82F6';
+    }
+}
+
+// Add CSS animation for notifications
+if (!document.getElementById('notification-styles')) {
+    const notificationStyle = document.createElement('style');
+    notificationStyle.id = 'notification-styles';
+    notificationStyle.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    `;
+    document.head.appendChild(notificationStyle);
 }

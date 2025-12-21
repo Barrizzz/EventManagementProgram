@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     initializeSettingsPage();
     initializeSidebarToggle();
+    initializeDeleteAccount();
 });
 
 // Initialize settings page functionality
@@ -32,9 +33,6 @@ function initializeMenuNavigation() {
                     section.classList.add('active');
                 }
             });
-
-            // Show notification
-            showNotification(`Switched to ${this.textContent.trim()} settings`, 'info');
         });
     });
 }
@@ -57,7 +55,6 @@ function initializeFormHandling() {
                     }
                 };
                 reader.readAsDataURL(e.target.files[0]);
-                showNotification('Avatar updated successfully!', 'success');
             }
         });
     }
@@ -67,37 +64,14 @@ function initializeFormHandling() {
     if (themeSelect) {
         themeSelect.addEventListener('change', function() {
             showNotification(`Theme changed to ${this.value}`, 'info');
-        });
+        });// Theme changed
     }
 }
 
-// Save functionality
+// Save functionality - Removed to allow form natural submission
 function initializeSaveFunctionality() {
-    const saveButton = document.querySelector('.btn-primary');
-    const resetButton = document.querySelectorAll('.btn-primary')[1];
-
-    if (saveButton) {
-        saveButton.addEventListener('click', function() {
-            // Simulate save operation
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            this.disabled = true;
-
-            setTimeout(() => {
-                this.innerHTML = '<i class="fas fa-save"></i> Save Changes';
-                this.disabled = false;
-                showNotification('Settings saved successfully!', 'success');
-            }, 1500);
-        });
-    }
-
-    if (resetButton) {
-        resetButton.addEventListener('click', function() {
-            if (confirm('Are you sure you want to reset all settings to default?')) {
-                // Reset form logic would go here
-                showNotification('Settings reset to default values', 'info');
-            }
-        });
-    }
+    // Profile form submits naturally via POST to backend
+    // No need to intercept the submission
 }
 
 // Password strength indicator
@@ -168,30 +142,42 @@ function initializeSidebarToggle() {
     }
 }
 
-// Logout functionality
-function initializeLogout() {
-    const logoutButton = document.querySelector('.nav-item.logout');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', function() {
-            if (confirm('Are you sure you want to log out?')) {
-                // Simulate logout
-                showNotification('Logging out...', 'info');
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 1000);
+// Delete account functionality
+function initializeDeleteAccount() {
+    const deleteBtn = document.getElementById('deleteAccountBtn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function() {
+            const confirmDelete = confirm(
+                'Are you absolutely sure you want to delete your account?\n\n' +
+                'This action cannot be undone. All your data will be permanently deleted.'
+            );
+            
+            if (confirmDelete) {
+                const doubleConfirm = confirm(
+                    'This is your last chance!\n\n' +
+                    'Click OK to permanently delete your account, or Cancel to keep it.'
+                );
+                
+                if (doubleConfirm) {
+                    // Submit delete form
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'delete-account/';
+                    
+                    // Add CSRF token
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrfmiddlewaretoken';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
             }
         });
     }
 }
-
-// Initialize logout when DOM is ready
-document.addEventListener('DOMContentLoaded', initializeLogout);
-
-// Export functions for global access
-window.SettingsManager = {
-    initializeSettingsPage,
-    showNotification,
-    calculatePasswordStrength
-};
 
 console.log('🎉 Settings page loaded successfully!');
